@@ -1,0 +1,288 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useIntercambios from '../hooks/useIntercambios.js';
+import useSesion from '../hooks/useSesion.js';
+import useNotificacion from '../hooks/useNotificacion.js';
+import { formatearKC } from '../utils/formatear.js';
+import api from '../utils/api.js';
+import './CrearIntercambio.scss';
+
+const CrearIntercambio = () => {
+	const { crearIntercambio } = useIntercambios();
+	const { usuario } = useSesion();
+	const { notificar } = useNotificacion();
+	const navegar = useNavigate();
+
+	const [inventario, setInventario] = useState([]);
+	const [cargandoInv, setCargandoInv] = useState(true);
+
+	// Formulario
+	const [objetoOfrecidoId, setObjetoOfrecidoId] = useState('');
+	const [monedasOfrecidas, setMonedasOfrecidas] = useState(0);
+	const [objetoSolicitadoId, setObjetoSolicitadoId] = useState('');
+	const [monedasSolicitadas, setMonedasSolicitadas] = useState(0);
+
+	// Tipo de oferta: 'venta' (item→KC), 'compra' (KC→item), 'trueque' (item→item + KC ajuste)
+	const [tipo, setTipo] = useState('venta');
+	const [enviando, setEnviando] = useState(false);
+
+	// Cargar inventario propio para seleccionar qué ofrecer
+	useEffect(() => {
+		const cargar = async () => {
+			try {
+				const res = await api.get('/mi-inventario');
+				setInventario(res.data.data);
+			} catch {
+				notificar('No se pudo cargar tu inventario.', 'error');
+			} finally {
+				setCargandoInv(false);
+			}
+		};
+		cargar();
+	}, []);
+
+	const resetForm = () => {
+		setObjetoOfrecidoId('');
+		setMonedasOfrecidas(0);
+		setObjetoSolicitadoId('');
+		setMonedasSolicitadas(0);
+	};
+
+	const cambiarTipo = (nuevoTipo) => {
+		setTipo(nuevoTipo);
+		resetForm();
+	};
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		// Validaciones básicas en cliente
+		if (tipo === 'venta' && !objetoOfrecidoId) {
+			notificar('Selecciona el objeto que quieres vender.', 'error');
+			return;
+		}
+		if (tipo === 'venta' && monedasSolicitadas <= 0) {
+			notificar('Indica cuántas Klyx Coins quieres recibir.', 'error');
+			return;
+		}
+		if (tipo === 'trueque' && !objetoOfrecidoId) {
+			notificar('Selecciona el objeto que ofreces.', 'error');
+			return;
+		}
+		if (tipo === 'trueque' && !objetoSolicitadoId) {
+			notificar('Introduce el ID del objeto que solicitas.', 'error');
+			return;
+		}
+		if (tipo === 'compra' && monedasOfrecidas <= 0) {
+			notificar('Indica cuántas Klyx Coins ofreces.', 'error');
+			return;
+		}
+		if (tipo === 'compra' && !objetoSolicitadoId) {
+			notificar('Introduce el ID del objeto que deseas comprar.', 'error');
+			return;
+		}
+
+		const datos = {
+			objeto_ofrecido_id:   objetoOfrecidoId   || null,
+			monedas_ofrecidas:    Number(monedasOfrecidas),
+			objeto_solicitado_id: objetoSolicitadoId || null,
+			monedas_solicitadas:  Number(monedasSolicitadas),
+		};
+
+		setEnviando(true);
+		const ok = await crearIntercambio(datos);
+		setEnviando(false);
+
+		if (ok) navegar('/intercambios');
+	};
+
+	return (
+		<div className="crear-intercambio-contenedor">
+			<div className="crear-intercambio-card">
+				<h1 className="crear-titulo">Nueva oferta</h1>
+				<p className="crear-subtitulo">Elige el tipo de intercambio y configura los términos.</p>
+
+				{/* Selector de tipo */}
+				<div className="tipo-selector">
+					<button
+						type="button"
+						className={`tipo-btn ${tipo === 'venta' ? 'activo' : ''}`}
+						onClick={() => cambiarTipo('venta')}
+					>
+						<span className="tipo-icono">💰</span>
+						<strong>Venta</strong>
+						<small>Objeto → KC</small>
+					</button>
+					<button
+						type="button"
+						className={`tipo-btn ${tipo === 'trueque' ? 'activo' : ''}`}
+						onClick={() => cambiarTipo('trueque')}
+					>
+						<span className="tipo-icono">⇄</span>
+						<strong>Trueque</strong>
+						<small>Objeto → Objeto</small>
+					</button>
+					<button
+						type="button"
+						className={`tipo-btn ${tipo === 'compra' ? 'activo' : ''}`}
+						onClick={() => cambiarTipo('compra')}
+					>
+						<span className="tipo-icono">🛒</span>
+						<strong>Compra</strong>
+						<small>KC → Objeto</small>
+					</button>
+				</div>
+
+				<form className="crear-form" onSubmit={handleSubmit}>
+					{/* ——— VENTA ——— */}
+					{tipo === 'venta' && (
+						<>
+							<SeccionForm titulo="Objeto que ofreces">
+								<SelectObjeto
+									inventario={inventario}
+									cargando={cargandoInv}
+									valor={objetoOfrecidoId}
+									onChange={setObjetoOfrecidoId}
+								/>
+							</SeccionForm>
+
+							<SeccionForm titulo="KC que solicitas a cambio">
+								<InputKC
+									valor={monedasSolicitadas}
+									onChange={setMonedasSolicitadas}
+									max={usuario?.saldo}
+								/>
+							</SeccionForm>
+						</>
+					)}
+
+					{/* ——— TRUEQUE ——— */}
+					{tipo === 'trueque' && (
+						<>
+							<SeccionForm titulo="Objeto que ofreces">
+								<SelectObjeto
+									inventario={inventario}
+									cargando={cargandoInv}
+									valor={objetoOfrecidoId}
+									onChange={setObjetoOfrecidoId}
+								/>
+							</SeccionForm>
+
+							<SeccionForm titulo="KC adicionales que ofreces (0 = ninguna)">
+								<InputKC valor={monedasOfrecidas} onChange={setMonedasOfrecidas} />
+							</SeccionForm>
+
+							<SeccionForm titulo="ID del objeto que solicitas">
+								<InputTexto
+									placeholder="Ej: 12 (copia el ID del vault del otro jugador)"
+									valor={objetoSolicitadoId}
+									onChange={setObjetoSolicitadoId}
+									tipo="number"
+								/>
+							</SeccionForm>
+
+							<SeccionForm titulo="KC adicionales que pides (0 = ninguna)">
+								<InputKC valor={monedasSolicitadas} onChange={setMonedasSolicitadas} />
+							</SeccionForm>
+						</>
+					)}
+
+					{/* ——— COMPRA ——— */}
+					{tipo === 'compra' && (
+						<>
+							<SeccionForm titulo="KC que ofreces">
+								<InputKC valor={monedasOfrecidas} onChange={setMonedasOfrecidas} />
+							</SeccionForm>
+
+							<SeccionForm titulo="ID del objeto que deseas comprar">
+								<InputTexto
+									placeholder="Ej: 12 (ID del objeto visible en el mercado)"
+									valor={objetoSolicitadoId}
+									onChange={setObjetoSolicitadoId}
+									tipo="number"
+								/>
+							</SeccionForm>
+						</>
+					)}
+
+					<div className="crear-acciones">
+						<button
+							type="button"
+							className="btn-crear-cancelar"
+							onClick={() => navegar('/intercambios')}
+						>
+							Cancelar
+						</button>
+						<button
+							type="submit"
+							className="btn-crear-publicar"
+							disabled={enviando}
+						>
+							{enviando ? 'Publicando...' : 'Publicar oferta'}
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	);
+};
+
+// ——— Sub-componentes del formulario ———
+
+const SeccionForm = ({ titulo, children }) => (
+	<div className="seccion-form">
+		<label className="seccion-label">{titulo}</label>
+		{children}
+	</div>
+);
+
+const SelectObjeto = ({ inventario, cargando, valor, onChange }) => {
+	if (cargando) return <p className="cargando-texto">Cargando inventario...</p>;
+	if (inventario.length === 0) return (
+		<p className="crear-aviso">Tu vault está vacío. Abre cajas para conseguir objetos.</p>
+	);
+
+	return (
+		<select
+			className="crear-select"
+			value={valor}
+			onChange={(e) => onChange(e.target.value)}
+			required
+		>
+			<option value="">— Selecciona un objeto —</option>
+			{inventario.map((obj) => (
+				<option key={obj.id} value={obj.id}>
+					{obj.nombre} ({obj.tipo}) — {obj.precio} KC
+				</option>
+			))}
+		</select>
+	);
+};
+
+const InputKC = ({ valor, onChange, max }) => (
+	<div className="input-kc-wrapper">
+		<input
+			type="number"
+			className="crear-input"
+			value={valor}
+			min={0}
+			max={max}
+			onChange={(e) => onChange(e.target.value)}
+			placeholder="0"
+		/>
+		<span className="input-kc-sufijo">KC</span>
+	</div>
+);
+
+const InputTexto = ({ placeholder, valor, onChange, tipo = 'text' }) => (
+	<input
+		type={tipo}
+		className="crear-input"
+		value={valor}
+		onChange={(e) => onChange(e.target.value)}
+		placeholder={placeholder}
+		min={tipo === 'number' ? 1 : undefined}
+	/>
+);
+
+export default CrearIntercambio;

@@ -1,0 +1,327 @@
+@use '../styles/variables' as v;
+
+.intercambios-contenedor {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 3rem 2rem;
+}
+
+.intercambios-cabecera {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 2.5rem;
+
+	h1 {
+		font-size: 2rem;
+		font-weight: 800;
+		color: v.$texto;
+		margin-bottom: 6px;
+	}
+
+	p {
+		color: v.$texto-muted;
+	}
+}
+
+.btn-nueva-oferta {
+	background-color: v.$dorado;
+	color: v.$negro;
+	border: none;
+	padding: 10px 22px;
+	border-radius: v.$radio;
+	font-weight: 700;
+	font-size: 0.9rem;
+	letter-spacing: 0.5px;
+	transition: v.$transicion;
+	white-space: nowrap;
+
+	&:hover {
+		background-color: v.$dorado-hover;
+		color: v.$negro;
+		box-shadow: 0 0 18px v.$dorado-glow;
+		transform: translateY(-2px);
+	}
+}
+
+// =====================
+// TABS
+// =====================
+.intercambios-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 2rem;
+	border-bottom: 1px solid v.$borde;
+	padding-bottom: 0;
+}
+
+.tab-btn {
+	background: transparent;
+	border: none;
+	color: v.$texto-muted;
+	font-size: 0.9rem;
+	font-weight: 600;
+	padding: 10px 18px;
+	cursor: pointer;
+	position: relative;
+	transition: v.$transicion;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+
+	&:hover {
+		color: v.$texto;
+	}
+
+	&.activo {
+		color: v.$dorado;
+		border-bottom-color: v.$dorado;
+	}
+}
+
+.tab-badge {
+	background-color: v.$borde-hover;
+	color: v.$texto-muted;
+	border-radius: 20px;
+	padding: 1px 7px;
+	font-size: 0.7rem;
+	font-weight: 700;
+
+	&.tab-badge-alerta {
+		background-color: rgba(212, 175, 55, 0.2);
+		color: v.$dorado;
+	}
+}
+
+// =====================
+// LISTA DE OFERTAS
+// =====================
+.intercambios-lista {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.tarjeta-oferta {
+	background-color: v.$negro-card;
+	border: 1px solid v.$borde-hover;
+	border-radius: v.$radio-lg;
+	padding: 1.5rem;
+	transition: v.$transicion;
+
+	&:hover {
+		border-color: v.$dorado;
+		box-shadow: 0 0 20px v.$dorado-glow;
+	}
+
+	&.oferta-inactiva {
+		opacity: 0.55;
+
+		&:hover {
+			border-color: v.$borde-hover;
+			box-shadow: none;
+		}
+	}
+}
+
+.oferta-meta {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.2rem;
+}
+
+.oferta-emisor {
+	font-weight: 700;
+	color: v.$texto;
+	font-size: 0.95rem;
+}
+
+.oferta-meta-derecha {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.oferta-estado {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	padding: 3px 10px;
+	border-radius: 20px;
+	border: 1px solid;
+
+	&.estado-pendiente  { color: v.$dorado;      border-color: v.$dorado;      background-color: v.$dorado-tenue; }
+	&.estado-aceptado   { color: #4caf50;         border-color: #4caf50;         background-color: rgba(76,175,80,0.1); }
+	&.estado-rechazado  { color: v.$error-color;  border-color: v.$error-color;  background-color: rgba(207,79,79,0.1); }
+	&.estado-cancelado  { color: v.$texto-muted;  border-color: v.$borde-hover;  background-color: transparent; }
+}
+
+.oferta-fecha {
+	font-size: 0.8rem;
+	color: v.$texto-muted;
+}
+
+// Cuerpo: dos lados + flecha
+.oferta-cuerpo {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	gap: 1rem;
+	align-items: center;
+	background-color: v.$negro-hover;
+	border-radius: v.$radio;
+	padding: 1rem 1.2rem;
+	margin-bottom: 1.2rem;
+}
+
+.oferta-lado {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.oferta-lado-etiqueta {
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	color: v.$texto-muted;
+	margin-bottom: 2px;
+}
+
+.oferta-objeto {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+
+	strong {
+		color: v.$texto;
+		font-size: 0.95rem;
+	}
+}
+
+.objeto-tipo-mini {
+	font-size: 0.7rem;
+	color: v.$texto-muted;
+	text-transform: capitalize;
+	letter-spacing: 0.5px;
+}
+
+.objeto-val {
+	font-size: 0.8rem;
+	color: v.$dorado;
+	font-weight: 600;
+}
+
+.oferta-kc {
+	color: v.$dorado;
+	font-weight: 700;
+	font-size: 0.95rem;
+}
+
+.oferta-vacio {
+	color: v.$texto-oscuro;
+	font-size: 1.2rem;
+}
+
+.oferta-flecha {
+	font-size: 1.4rem;
+	color: v.$dorado;
+	opacity: 0.6;
+	text-align: center;
+}
+
+// Acciones
+.oferta-acciones {
+	display: flex;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.btn-aceptar {
+	background-color: v.$dorado;
+	color: v.$negro;
+	border: none;
+	padding: 9px 22px;
+	border-radius: v.$radio;
+	font-weight: 700;
+	font-size: 0.85rem;
+	transition: v.$transicion;
+
+	&:hover {
+		background-color: v.$dorado-hover;
+		box-shadow: 0 0 14px v.$dorado-glow;
+	}
+}
+
+.btn-rechazar {
+	background: transparent;
+	border: 1px solid v.$error-color;
+	color: v.$error-color;
+	padding: 9px 18px;
+	border-radius: v.$radio;
+	font-weight: 600;
+	font-size: 0.85rem;
+	transition: v.$transicion;
+
+	&:hover {
+		background-color: v.$error-color;
+		color: #fff;
+	}
+}
+
+.btn-cancelar-oferta {
+	background: transparent;
+	border: 1px solid v.$borde-hover;
+	color: v.$texto-muted;
+	padding: 9px 18px;
+	border-radius: v.$radio;
+	font-weight: 600;
+	font-size: 0.85rem;
+	transition: v.$transicion;
+
+	&:hover {
+		border-color: v.$error-color;
+		color: v.$error-color;
+	}
+}
+
+// Estado vacío
+.intercambios-vacio {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 4rem 2rem;
+	text-align: center;
+
+	.intercambios-vacio-icono {
+		width: 52px;
+		height: 52px;
+		color: v.$dorado;
+		opacity: 0.45;
+	}
+
+	p {
+		color: v.$texto-muted;
+		max-width: 360px;
+	}
+}
+
+.btn-nueva-oferta-vacio {
+	margin-top: 0.5rem;
+	border: 1px solid v.$dorado;
+	color: v.$dorado;
+	padding: 10px 24px;
+	border-radius: v.$radio;
+	font-weight: 600;
+	transition: v.$transicion;
+
+	&:hover {
+		background-color: v.$dorado;
+		color: v.$negro;
+	}
+}

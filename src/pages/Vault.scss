@@ -1,0 +1,128 @@
+@use '../styles/variables' as v;
+
+.vault-contenedor {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 3rem 2rem;
+}
+
+.vault-cabecera {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 2.5rem;
+
+	h1 {
+		font-size: 2rem;
+		font-weight: 800;
+		color: v.$texto;
+		margin-bottom: 6px;
+	}
+
+	p {
+		color: v.$texto-muted;
+		font-size: 1rem;
+	}
+}
+
+.vault-contador {
+	background-color: v.$dorado-tenue;
+	color: v.$dorado;
+	border: 1px solid v.$dorado;
+	padding: 6px 16px;
+	border-radius: 20px;
+	font-size: 0.85rem;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.vault-estado {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 300px;
+	gap: 1rem;
+	text-align: center;
+
+	.vault-estado-icono {
+		font-size: 3rem;
+	}
+
+	p {
+		color: v.$texto-muted;
+		font-size: 1rem;
+		max-width: 360px;
+		line-height: 1.6;
+	}
+}
+
+.vault-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 1.5rem;
+}
+
+.tarjeta-objeto-vault {
+	background-color: v.$negro-card;
+	border: 1px solid v.$borde;
+	border-radius: v.$radio-lg;
+	overflow: hidden;
+	transition: v.$transicion;
+
+	&:hover {
+		border-color: v.$dorado;
+		box-shadow: 0 0 20px v.$dorado-glow, 0 4px 16px rgba(0,0,0,0.4);
+		transform: translateY(-4px);
+	}
+}
+
+.objeto-imagen-vault {
+	width: 100%;
+	height: 150px;
+	background-color: v.$negro-hover;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-bottom: 1px solid v.$borde;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.objeto-icono {
+		font-size: 3rem;
+		opacity: 0.6;
+	}
+}
+
+.objeto-info-vault {
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.objeto-tipo-badge {
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 1.5px;
+	text-transform: uppercase;
+	color: v.$texto-muted;
+}
+
+.objeto-nombre-vault {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: v.$texto;
+	margin: 0;
+}
+
+.objeto-precio-vault {
+	font-size: 0.9rem;
+	color: v.$dorado;
+	font-weight: 600;
+	margin: 0;
+}

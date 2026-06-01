@@ -1,0 +1,150 @@
+@use '../styles/variables' as v;
+
+.cajas-error {
+    color: v.$texto-muted;
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 1rem;
+}
+
+.listado-cajas-contenedor {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem;
+}
+
+.listado-cajas-cabecera {
+    margin-bottom: 2.5rem;
+
+    h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: v.$texto;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    p {
+        color: v.$texto-muted;
+        font-size: 0.95rem;
+    }
+}
+
+.cajas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+// Tarjeta individual de caja
+.tarjeta-caja {
+    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro-panel 100%);
+    border: 1px solid v.$borde;
+    border-radius: v.$radio-lg;
+    padding: 1.8rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    transition: v.$transicion-suave;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: v.$radio-lg;
+        background: radial-gradient(circle at 50% 0%, rgba(201,162,39,0.05) 0%, transparent 55%);
+        opacity: 0;
+        transition: v.$transicion-suave;
+    }
+
+    &:hover {
+        border-color: v.$borde-dorado;
+        box-shadow: 0 0 28px v.$dorado-glow, 0 8px 32px rgba(0,0,0,0.5);
+        transform: translateY(-6px);
+
+        &::after { opacity: 1; }
+    }
+}
+
+.badge-vip {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: v.$grad-dorado;
+    color: v.$negro;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.tarjeta-caja-imagen {
+    width: 106px;
+    height: 106px;
+    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
+    border: 1px solid v.$borde-hover;
+    border-radius: v.$radio-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem 0;
+    transition: v.$transicion;
+
+    .tarjeta-caja:hover & {
+        border-color: v.$borde-dorado;
+        box-shadow: 0 0 18px v.$dorado-glow;
+    }
+}
+
+.icono-caja {
+    font-size: 3rem;
+    color: v.$dorado;
+    opacity: 0.6;
+    transition: v.$transicion;
+
+    .tarjeta-caja:hover & {
+        opacity: 1;
+        filter: drop-shadow(0 0 8px v.$dorado-glow);
+    }
+}
+
+.tarjeta-caja-info { text-align: center; }
+
+.tarjeta-caja-nombre {
+    font-size: 1rem;
+    font-weight: 700;
+    color: v.$texto;
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+}
+
+.tarjeta-caja-precio {
+    color: v.$dorado;
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.btn-abrir-caja {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid v.$borde-dorado;
+    color: v.$dorado;
+    padding: 10px;
+    border-radius: v.$radio;
+    font-weight: 700;
+    font-size: 0.87rem;
+    letter-spacing: 0.5px;
+    transition: v.$transicion;
+
+    &:hover {
+        background: v.$grad-dorado;
+        color: v.$negro;
+        border-color: transparent;
+        box-shadow: 0 4px 16px v.$dorado-glow;
+    }
+}

@@ -1,0 +1,73 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import useSesion from '../hooks/useSesion.js';
+import './Registrarse.scss';
+
+const Registrarse = () => {
+	const { datosSesion, actualizarDato, crearCuenta } = useSesion();
+
+	const enviarFormulario = (e) => {
+		e.preventDefault();
+		crearCuenta();
+	};
+
+	return (
+		<div className="sesion-contenedor">
+			<div className="sesion-card">
+				<h1 className="sesion-titulo">Crear cuenta</h1>
+				<p className="sesion-subtitulo">Únete a KLYX y empieza a ganar skins</p>
+
+				<form className="sesion-form" onSubmit={enviarFormulario}>
+					<div className="grupo-input">
+						<label htmlFor="nombre">Nombre de usuario</label>
+						<input
+							id="nombre"
+							name="nombre"
+							type="text"
+							placeholder="TuNombre"
+							value={datosSesion.nombre}
+							onChange={actualizarDato}
+							required
+						/>
+					</div>
+
+					<div className="grupo-input">
+						<label htmlFor="email">Correo electrónico</label>
+						<input
+							id="email"
+							name="email"
+							type="email"
+							placeholder="tu@correo.com"
+							value={datosSesion.email}
+							onChange={actualizarDato}
+							required
+						/>
+					</div>
+
+					<div className="grupo-input">
+						<label htmlFor="password">Contraseña</label>
+						<input
+							id="password"
+							name="password"
+							type="password"
+							placeholder="Mínimo 8 caracteres"
+							value={datosSesion.password}
+							onChange={actualizarDato}
+							required
+						/>
+					</div>
+
+					<button type="submit" className="btn-sesion">
+						Crear cuenta
+					</button>
+				</form>
+
+				<div className="sesion-pie">
+					<p>¿Ya tienes cuenta? <Link to="/inicio-sesion">Inicia sesión.</Link></p>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default Registrarse;

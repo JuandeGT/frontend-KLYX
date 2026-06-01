@@ -1,0 +1,33 @@
+@use '../styles/variables' as v;
+
+.cargando-overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    min-height: 260px;
+    width: 100%;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid v.$borde-hover;
+    border-top-color: v.$dorado;
+    border-radius: 50%;
+    animation: girarSpinner 0.75s linear infinite;
+    box-shadow: 0 0 12px v.$dorado-glow;
+}
+
+@keyframes girarSpinner {
+    to { transform: rotate(360deg); }
+}
+
+.cargando-texto {
+    font-size: 0.82rem;
+    color: v.$texto-muted;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}

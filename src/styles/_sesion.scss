@@ -1,0 +1,131 @@
+// Estilos compartidos entre InicioSesion.jsx y Registrarse.jsx
+@use './variables' as v;
+
+.sesion-contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 62px);
+    padding: 2rem;
+    background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(201,162,39,0.04) 0%, transparent 70%),
+        v.$negro;
+}
+
+.sesion-card {
+    background: linear-gradient(160deg, #111111 0%, #0a0a0a 100%);
+    border: 1px solid v.$borde-hover;
+    border-radius: v.$radio-lg;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,39,0.05);
+    position: relative;
+
+    // Línea dorada decorativa en la parte superior de la card
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 10%; right: 10%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, v.$borde-dorado, transparent);
+        border-radius: 1px;
+    }
+}
+
+.sesion-titulo {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: v.$texto;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+
+.sesion-subtitulo {
+    color: v.$texto-muted;
+    font-size: 0.88rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.sesion-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.grupo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+        font-size: 0.82rem;
+        color: v.$texto-muted;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+
+    input {
+        background-color: v.$negro-input;
+        border: 1px solid v.$borde-hover;
+        border-radius: v.$radio;
+        color: v.$texto;
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        font-family: v.$fuente;
+        transition: v.$transicion;
+        outline: none;
+
+        &::placeholder {
+            color: v.$texto-oscuro;
+        }
+
+        &:focus {
+            border-color: v.$dorado;
+            background-color: #151515;
+            box-shadow: 0 0 0 3px v.$dorado-glow;
+        }
+    }
+}
+
+.btn-sesion {
+    background: v.$grad-dorado;
+    color: v.$negro;
+    border: none;
+    border-radius: v.$radio;
+    padding: 13px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+    transition: v.$transicion;
+    box-shadow: 0 4px 16px v.$dorado-glow;
+
+    &:hover {
+        box-shadow: 0 6px 24px v.$dorado-glow;
+        transform: translateY(-2px);
+        color: v.$negro;
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.sesion-pie {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: v.$texto-muted;
+    font-size: 0.88rem;
+
+    a {
+        color: v.$dorado;
+        font-weight: 600;
+
+        &:hover {
+            color: v.$dorado-hover;
+            text-decoration: underline;
+        }
+    }
+}

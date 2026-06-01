@@ -1,0 +1,111 @@
+@use '../styles/variables' as v;
+
+.pie-pagina {
+    background-color: v.$negro-nav;
+    border-top: 1px solid v.$borde;
+    margin-top: auto;
+}
+
+.pie-contenido {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3.5rem 3rem 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: start;
+}
+
+.pie-marca {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pie-logo {
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: v.$dorado;
+    text-shadow: 0 0 16px v.$dorado-glow;
+    text-transform: uppercase;
+}
+
+.pie-slogan {
+    color: v.$texto-muted;
+    font-size: 0.85rem;
+    max-width: 260px;
+    line-height: 1.5;
+}
+
+.pie-links {
+    display: flex;
+    gap: 3rem;
+}
+
+.pie-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h4 {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: v.$texto-muted;
+        margin-bottom: 4px;
+    }
+
+    a {
+        color: v.$texto-muted;
+        font-size: 0.88rem;
+        transition: v.$transicion;
+
+        &:hover {
+            color: v.$dorado;
+        }
+    }
+}
+
+.pie-inferior {
+    border-top: 1px solid v.$borde;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    max-width: 100%;
+
+    p {
+        font-size: 0.78rem;
+        color: v.$texto-oscuro;
+    }
+
+    strong {
+        color: v.$dorado;
+        letter-spacing: 2px;
+    }
+
+    .pie-aviso {
+        color: v.$texto-oscuro;
+        font-style: italic;
+    }
+}
+
+@media (max-width: 768px) {
+    .pie-contenido {
+        grid-template-columns: 1fr;
+        padding: 2.5rem 1.5rem 2rem;
+    }
+
+    .pie-links {
+        gap: 2rem;
+    }
+
+    .pie-inferior {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.2rem 1.5rem;
+    }
+}

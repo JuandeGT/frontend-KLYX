@@ -1,0 +1,634 @@
+@use '../styles/variables' as v;
+
+.inicio-contenedor {
+    display: flex;
+    flex-direction: column;
+}
+
+// =====================
+// HERO
+// =====================
+.hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - 62px);
+    padding: 3rem 8% 4rem;
+    overflow: hidden;
+    // Sin background propio — el hero-3d-bg con z-index:0 cubre el fondo
+
+    // Línea dorada tenue en la parte superior
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(201,162,39,0.45), transparent);
+        z-index: 3;
+    }
+}
+
+// Canvas 3D como fondo absoluto — cubre todo el hero
+// z-index: 0 dentro del hero pero el canvas tiene position:absolute;inset:0 para
+// que se establezca como su propio stacking context y sea visible sobre el background
+.hero-3d-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: v.$negro;  // fondo negro visible mientras carga Three.js
+}
+
+// Gradiente que oscurece el lado izquierdo para legibilidad del texto sobre el 3D
+.hero-gradiente-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to right,
+        rgba(8,8,8,0.95) 0%,
+        rgba(8,8,8,0.82) 30%,
+        rgba(8,8,8,0.45) 55%,
+        rgba(8,8,8,0.08) 75%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+.hero-texto {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+}
+
+.hero-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: v.$dorado;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding: 6px 14px;
+    border: 1px solid v.$borde-dorado;
+    border-radius: 20px;
+    background-color: v.$dorado-tenue;
+}
+
+.hero-titulo {
+    font-size: clamp(2.8rem, 5.5vw, 4.4rem);
+    font-weight: 900;
+    line-height: 1.02;
+    color: v.$texto;
+    margin-bottom: 1.5rem;
+    letter-spacing: -2px;
+}
+
+.hero-titulo-dorado {
+    background: v.$grad-dorado;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px v.$dorado-glow);
+}
+
+.hero-subtitulo {
+    color: v.$texto-muted;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    max-width: 460px;
+}
+
+.hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-cta-principal {
+    background: v.$grad-dorado;
+    color: v.$negro;
+    padding: 14px 34px;
+    border-radius: v.$radio;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    transition: v.$transicion;
+    display: inline-block;
+    box-shadow: 0 4px 18px v.$dorado-glow;
+
+    &:hover {
+        box-shadow: 0 6px 28px v.$dorado-glow;
+        transform: translateY(-3px);
+        color: v.$negro;
+    }
+}
+
+.btn-cta-secundario {
+    color: v.$texto-suave;
+    border: 1px solid v.$borde-hover;
+    padding: 14px 34px;
+    border-radius: v.$radio;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: v.$transicion;
+    display: inline-block;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+        border-color: v.$dorado;
+        color: v.$dorado;
+        background-color: v.$dorado-tenue;
+    }
+}
+
+
+.hero-3d-placeholder {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(201,162,39,0.07) 0%, transparent 68%);
+    animation: pulsar 4.5s ease-in-out infinite;
+
+    // Anillo exterior
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1px solid v.$borde-dorado;
+        animation: rotarAnillo 12s linear infinite;
+    }
+
+    // Anillo interior punteado
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 20px;
+        border-radius: 50%;
+        border: 1px dashed rgba(201,162,39,0.15);
+    }
+
+    span {
+        font-size: 5.5rem;
+        color: v.$dorado;
+        opacity: 0.45;
+        filter: drop-shadow(0 0 24px v.$dorado-glow);
+        animation: flotarIcono 3s ease-in-out infinite;
+    }
+}
+
+@keyframes pulsar {
+    0%, 100% { box-shadow: 0 0 40px rgba(201,162,39,0.06); }
+    50%       { box-shadow: 0 0 80px rgba(201,162,39,0.14); }
+}
+@keyframes rotarAnillo {
+    to { transform: rotate(360deg); }
+}
+@keyframes flotarIcono {
+    0%, 100% { transform: translateY(0);    }
+    50%       { transform: translateY(-12px); }
+}
+
+// =====================
+// STATS BANDA
+// =====================
+.stats-banda {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: v.$negro-card;
+    border-top: 1px solid v.$borde;
+    border-bottom: 1px solid v.$borde;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 2rem 1rem;
+    position: relative;
+
+    // Separador vertical entre stats
+    & + .stat {
+        border-left: 1px solid v.$borde;
+    }
+
+    strong {
+        font-size: 2rem;
+        font-weight: 900;
+        color: v.$dorado;
+        line-height: 1;
+    }
+
+    span {
+        font-size: 0.68rem;
+        color: v.$texto-muted;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: 4px;
+        text-align: center;
+    }
+}
+
+// =====================
+// CAJAS DESTACADAS
+// =====================
+.destacadas {
+    padding: 4rem 8%;
+}
+
+.destacadas-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+
+    h2 {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: v.$texto;
+        letter-spacing: -0.5px;
+    }
+}
+
+.ver-todas-link {
+    color: v.$texto-muted;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: v.$transicion;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+        color: v.$dorado;
+        gap: 8px;
+    }
+}
+
+.destacadas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.tarjeta-destacada {
+    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro-panel 100%);
+    border: 1px solid v.$borde;
+    border-radius: v.$radio-lg;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    transition: v.$transicion-suave;
+    overflow: hidden;
+
+    // Brillo interior en hover
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: v.$radio-lg;
+        background: radial-gradient(circle at 50% 0%, rgba(201,162,39,0.06) 0%, transparent 60%);
+        opacity: 0;
+        transition: v.$transicion-suave;
+    }
+
+    &:hover {
+        border-color: v.$borde-dorado;
+        box-shadow: 0 0 30px v.$dorado-glow, 0 8px 32px rgba(0,0,0,0.5);
+        transform: translateY(-6px);
+
+        &::after {
+            opacity: 1;
+        }
+    }
+
+    h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: v.$texto;
+        letter-spacing: -0.2px;
+    }
+}
+
+.tarjeta-imagen {
+    width: 110px;
+    height: 110px;
+    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
+    border: 1px solid v.$borde-hover;
+    border-radius: v.$radio-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: v.$transicion;
+
+    .tarjeta-destacada:hover & {
+        border-color: v.$borde-dorado;
+        box-shadow: 0 0 20px v.$dorado-glow;
+    }
+}
+
+.icono-caja {
+    font-size: 3.5rem;
+    color: v.$dorado;
+    opacity: 0.6;
+    transition: v.$transicion;
+
+    .tarjeta-destacada:hover & {
+        opacity: 0.9;
+        filter: drop-shadow(0 0 8px v.$dorado-glow);
+    }
+}
+
+.tarjeta-precio {
+    color: v.$dorado;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.badge-vip {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: v.$grad-dorado;
+    color: v.$negro;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.btn-ver-caja {
+    width: 100%;
+    text-align: center;
+    display: block;
+    border: 1px solid v.$borde-dorado;
+    color: v.$dorado;
+    padding: 10px;
+    border-radius: v.$radio;
+    font-weight: 600;
+    font-size: 0.87rem;
+    transition: v.$transicion;
+
+    &:hover {
+        background: v.$grad-dorado;
+        color: v.$negro;
+        border-color: transparent;
+    }
+}
+
+// =====================
+// SELECCIÓN SEMANAL
+// =====================
+.seleccion-semanal {
+    padding: 4rem 8%;
+    background-color: v.$negro-card;
+    border-top: 1px solid v.$borde;
+}
+
+.seleccion-semanal-subtitulo {
+    color: v.$texto-muted;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.badge-semanal {
+    background-color: v.$dorado-tenue;
+    color: v.$dorado;
+    border: 1px solid v.$borde-dorado;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation: pulsarBadge 2.5s ease-in-out infinite;
+}
+
+@keyframes pulsarBadge {
+    0%, 100% { box-shadow: 0 0 0 0 v.$dorado-tenue; }
+    50%       { box-shadow: 0 0 0 6px transparent; }
+}
+
+.semanal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tarjeta-objeto {
+    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro 100%);
+    border-radius: v.$radio-lg;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: v.$transicion-suave;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+
+    &:hover {
+        transform: translateY(-4px);
+    }
+
+    &.rareza-legendario {
+        border-left-color: #e53935;
+        &:hover { box-shadow: -3px 0 20px rgba(229,57,53,0.25), 0 8px 24px rgba(0,0,0,0.4); }
+    }
+    &.rareza-raro {
+        border-left-color: #8e24aa;
+        &:hover { box-shadow: -3px 0 20px rgba(142,36,170,0.25), 0 8px 24px rgba(0,0,0,0.4); }
+    }
+    &.rareza-especial {
+        border-left-color: #1565c0;
+        &:hover { box-shadow: -3px 0 20px rgba(21,101,192,0.25), 0 8px 24px rgba(0,0,0,0.4); }
+    }
+}
+
+.objeto-imagen {
+    width: 80px;
+    height: 80px;
+    background-color: v.$negro-hover;
+    border: 1px solid v.$borde-hover;
+    border-radius: v.$radio;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icono-objeto {
+    font-size: 2.5rem;
+}
+
+.objeto-info { flex: 1; }
+
+.objeto-tipo {
+    font-size: 0.7rem;
+    color: v.$texto-muted;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+
+.objeto-nombre {
+    font-size: 1rem;
+    font-weight: 700;
+    color: v.$texto;
+    letter-spacing: -0.2px;
+}
+
+.objeto-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid v.$borde;
+}
+
+.objeto-precio {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: v.$dorado;
+}
+
+.btn-comprar {
+    background: v.$grad-dorado;
+    color: v.$negro;
+    border: none;
+    padding: 8px 18px;
+    border-radius: v.$radio;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.3px;
+    transition: v.$transicion;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px v.$dorado-glow;
+
+    &:hover {
+        box-shadow: 0 4px 18px v.$dorado-glow;
+        transform: translateY(-1px);
+        color: v.$negro;
+    }
+}
+
+// =====================
+// CÓMO FUNCIONA
+// =====================
+.como-funciona {
+    padding: 4rem 8%;
+    border-top: 1px solid v.$borde;
+
+    h2 {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: v.$texto;
+        text-align: center;
+        margin-bottom: 3.5rem;
+        letter-spacing: -0.5px;
+    }
+}
+
+.pasos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+
+    // Línea dorada tenue que conecta los tres pasos
+    &::before {
+        content: '';
+        position: absolute;
+        top: 28px;
+        left: 20%;
+        right: 20%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, v.$borde-dorado, transparent);
+        pointer-events: none;
+    }
+}
+
+.paso {
+    text-align: center;
+    position: relative;
+
+    h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: v.$texto;
+        margin-bottom: 8px;
+    }
+
+    p {
+        color: v.$texto-muted;
+        font-size: 0.88rem;
+        line-height: 1.65;
+    }
+}
+
+.paso-numero {
+    // Círculo con borde dorado — fondo sólido para tapar la línea conectora
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid v.$borde-dorado;
+    background-color: v.$negro-card;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.2rem;
+    position: relative;
+    z-index: 1;
+
+    // El número en dorado sólido (sin gradient-text que choca con background-clip)
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: v.$dorado;
+    letter-spacing: -0.5px;
+    box-shadow: 0 0 16px v.$dorado-glow;
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@media (max-width: 900px) {
+    .hero {
+        flex-direction: column;
+        padding: 4rem 6% 5rem;
+        min-height: auto;
+        text-align: center;
+    }
+
+    .hero-subtitulo { max-width: 100%; }
+    .hero-ctas { justify-content: center; }
+    .hero-3d-contenedor { max-width: 100%; }
+    .hero-3d-placeholder { width: 220px; height: 220px; }
+    .pasos-grid::before { display: none; }
+}
+
+@media (max-width: 600px) {
+    .stats-banda, .destacadas, .como-funciona, .seleccion-semanal {
+        padding-left: 6%;
+        padding-right: 6%;
+    }
+}

@@ -1,0 +1,7 @@
+// @use es la sintaxis moderna de Sass que reemplaza al @import obsoleto.
+@use '../styles/variables' as v;
+
+#contenido {
+    flex: 1;
+    width: 100%;
+}

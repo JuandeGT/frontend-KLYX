@@ -1,0 +1,59 @@
+// =============================================
+// KLYX — Sistema de diseño global
+// Paleta: Dark Premium / Dorado
+// =============================================
+
+// ——— Fondos ———
+$negro:           #080808;
+$negro-card:      #0f0f0f;
+$negro-nav:       #060606;
+$negro-hover:     #141414;
+$negro-input:     #111111;
+$negro-panel:     #0c0c0c;
+
+// ——— Acento: Dorado ———
+$dorado:          #c9a227;
+$dorado-hover:    #e0b830;
+$dorado-claro:    #f0d060;
+$dorado-glow:     rgba(201, 162, 39, 0.28);
+$dorado-tenue:    rgba(201, 162, 39, 0.08);
+$dorado-medio:    rgba(201, 162, 39, 0.18);
+
+// ——— Textos ———
+$texto:           #ebebeb;
+$texto-suave:     #c0c0c0;
+$texto-muted:     #6a6a6a;
+$texto-oscuro:    #333333;
+
+// ——— Bordes ———
+$borde:           #161616;
+$borde-hover:     #252525;
+$borde-dorado:    rgba(201, 162, 39, 0.35);
+
+// ——— Estados ———
+$error-color:     #c94040;
+$exito-color:     #3fa35f;
+
+// ——— Sombras ———
+$sombra-sm:       0 2px 8px rgba(0, 0, 0, 0.4);
+$sombra-md:       0 4px 20px rgba(0, 0, 0, 0.55);
+$sombra-lg:       0 8px 40px rgba(0, 0, 0, 0.65);
+
+// ——— Formas ———
+$radio:           6px;
+$radio-md:        10px;
+$radio-lg:        14px;
+$radio-xl:        20px;
+
+// ——— Transiciones ———
+$transicion:      all 0.22s ease;
+$transicion-suave: all 0.35s ease;
+
+// ——— Gradientes ———
+$grad-dorado: linear-gradient(135deg, $dorado 0%, $dorado-claro 100%);
+$grad-hero:
+    radial-gradient(ellipse 70% 60% at 65% 45%, rgba(201,162,39,0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 30% 70%, rgba(201,162,39,0.03) 0%, transparent 60%);
+
+// ——— Tipografía ———
+$fuente:          'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;

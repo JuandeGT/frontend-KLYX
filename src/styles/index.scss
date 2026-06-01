@@ -1,0 +1,106 @@
+@use './variables' as v;
+
+// Carga Inter desde Google Fonts — librería externa no presente en la referencia base.
+// Se usa para una tipografía más premium y legible que Segoe UI.
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Scrollbar personalizada para el tema oscuro
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: v.$negro;
+}
+::-webkit-scrollbar-thumb {
+    background-color: v.$borde-hover;
+    border-radius: 10px;
+
+    &:hover {
+        background-color: v.$texto-oscuro;
+    }
+}
+
+// Selección de texto
+::selection {
+    background-color: v.$dorado-medio;
+    color: v.$dorado-claro;
+}
+
+body {
+    background-color: v.$negro;
+    color: v.$texto;
+    font-family: v.$fuente;
+    font-size: 16px;
+    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: 0.01em;
+}
+
+a {
+    color: v.$dorado;
+    text-decoration: none;
+    transition: v.$transicion;
+
+    &:hover {
+        color: v.$dorado-hover;
+    }
+}
+
+button {
+    font-family: v.$fuente;
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+// Focus visible accesible
+:focus-visible {
+    outline: 2px solid v.$dorado;
+    outline-offset: 3px;
+    border-radius: v.$radio;
+}
+
+// Remove focus outline for mouse users
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+// Clase utilitaria: spinner dorado global
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 2px solid v.$borde-hover;
+    border-top-color: v.$dorado;
+    border-radius: 50%;
+    animation: girar 0.75s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}

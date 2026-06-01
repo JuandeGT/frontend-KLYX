@@ -1,0 +1,475 @@
+@use '../styles/variables' as v;
+
+// =====================
+// PANEL PRINCIPAL
+// =====================
+.panel-admin {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2.5rem 2rem;
+}
+
+.panel-admin-cabecera {
+	margin-bottom: 2rem;
+	h1 {
+		font-size: 1.8rem;
+		font-weight: 800;
+		color: v.$texto;
+		letter-spacing: -0.5px;
+		margin-bottom: 4px;
+	}
+	p { color: v.$texto-muted; font-size: 0.9rem; }
+}
+
+.panel-admin-tabs {
+	display: flex;
+	gap: 4px;
+	border-bottom: 1px solid v.$borde;
+	margin-bottom: 2rem;
+}
+
+.admin-tab {
+	background: transparent;
+	border: none;
+	color: v.$texto-muted;
+	font-size: 0.88rem;
+	font-weight: 600;
+	padding: 10px 20px;
+	cursor: pointer;
+	transition: v.$transicion;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+
+	&:hover { color: v.$texto; }
+
+	&.activo {
+		color: v.$dorado;
+		border-bottom-color: v.$dorado;
+	}
+}
+
+.admin-acceso-denegado {
+	text-align: center;
+	padding: 4rem;
+	color: v.$error-color;
+	font-size: 1.1rem;
+}
+
+// =====================
+// SECCIÓN GENÉRICA
+// =====================
+.admin-seccion { }
+
+.admin-seccion-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+
+	h2 {
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: v.$texto;
+	}
+}
+
+.admin-count {
+	font-size: 0.8rem;
+	color: v.$texto-muted;
+	background: v.$negro-hover;
+	border: 1px solid v.$borde-hover;
+	padding: 4px 12px;
+	border-radius: 20px;
+}
+
+.btn-admin-nuevo {
+	background: v.$grad-dorado;
+	color: v.$negro;
+	border: none;
+	padding: 8px 18px;
+	border-radius: v.$radio;
+	font-weight: 700;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: v.$transicion;
+	&:hover { box-shadow: 0 0 14px v.$dorado-glow; transform: translateY(-1px); }
+}
+
+// =====================
+// FORMULARIO INLINE
+// =====================
+.admin-form-inline {
+	background: v.$negro-card;
+	border: 1px solid v.$borde-dorado;
+	border-radius: v.$radio-lg;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+
+	h3 {
+		font-size: 1rem;
+		font-weight: 700;
+		color: v.$dorado;
+		margin-bottom: 1.2rem;
+	}
+}
+
+.admin-form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.campo-form {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+
+	&.campo-full { grid-column: 1 / -1; }
+
+	label {
+		font-size: 0.8rem;
+		color: v.$texto-muted;
+		font-weight: 500;
+	}
+
+	input, select, textarea {
+		background: v.$negro-input;
+		border: 1px solid v.$borde-hover;
+		border-radius: v.$radio;
+		color: v.$texto;
+		padding: 10px 12px;
+		font-size: 0.9rem;
+		font-family: v.$fuente;
+		outline: none;
+		transition: v.$transicion;
+
+		&:focus {
+			border-color: v.$dorado;
+			box-shadow: 0 0 0 2px v.$dorado-glow;
+		}
+
+		option { background: v.$negro-card; }
+	}
+
+	textarea { resize: vertical; min-height: 70px; }
+}
+
+.admin-form-acciones {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.2rem;
+	justify-content: flex-end;
+}
+
+.btn-admin-cancelar {
+	background: transparent;
+	border: 1px solid v.$borde-hover;
+	color: v.$texto-muted;
+	padding: 9px 18px;
+	border-radius: v.$radio;
+	font-weight: 600;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: v.$transicion;
+	&:hover { border-color: v.$error-color; color: v.$error-color; }
+}
+
+.btn-admin-guardar {
+	background: v.$grad-dorado;
+	border: none;
+	color: v.$negro;
+	padding: 9px 22px;
+	border-radius: v.$radio;
+	font-weight: 700;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: v.$transicion;
+	&:hover:not(:disabled) { box-shadow: 0 0 14px v.$dorado-glow; }
+	&:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// =====================
+// TABLA
+// =====================
+.admin-tabla-wrapper {
+	overflow-x: auto;
+	border-radius: v.$radio-lg;
+	border: 1px solid v.$borde;
+}
+
+.admin-tabla {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.88rem;
+
+	thead {
+		background: v.$negro-card;
+		th {
+			padding: 12px 16px;
+			text-align: left;
+			font-size: 0.72rem;
+			font-weight: 700;
+			letter-spacing: 1.5px;
+			text-transform: uppercase;
+			color: v.$texto-muted;
+			border-bottom: 1px solid v.$borde;
+			white-space: nowrap;
+		}
+	}
+
+	tbody tr {
+		border-bottom: 1px solid v.$borde;
+		transition: background-color 0.15s;
+		&:hover { background-color: v.$negro-hover; }
+		&:last-child { border-bottom: none; }
+	}
+
+	td { padding: 12px 16px; color: v.$texto; vertical-align: middle; }
+
+	&.admin-tabla-compact td, &.admin-tabla-compact th {
+		padding: 8px 12px;
+	}
+}
+
+.td-nombre { font-weight: 600; }
+.td-muted  { color: v.$texto-muted; font-size: 0.82rem; }
+.td-id     { font-family: monospace; font-size: 0.78rem; }
+.td-kc     { color: v.$dorado; font-weight: 600; }
+
+.td-acciones {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.btn-accion {
+	border: none;
+	padding: 5px 12px;
+	border-radius: 4px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: v.$transicion;
+	&:hover { transform: translateY(-1px); }
+}
+
+.btn-editar   { background: rgba(201,162,39,0.12); color: v.$dorado; border: 1px solid v.$borde-dorado; &:hover { background: v.$dorado; color: v.$negro; } }
+.btn-historial { background: rgba(100,180,255,0.1); color: #7ec8ff; border: 1px solid rgba(100,180,255,0.3); &:hover { background: rgba(100,180,255,0.2); } }
+.btn-eliminar { background: rgba(201,64,64,0.1); color: v.$error-color; border: 1px solid rgba(201,64,64,0.3); &:hover { background: v.$error-color; color: #fff; } }
+
+// ── Badges ──
+.badge-vip-mini {
+	background: v.$grad-dorado;
+	color: v.$negro;
+	font-size: 0.62rem;
+	font-weight: 900;
+	letter-spacing: 1px;
+	padding: 2px 7px;
+	border-radius: 3px;
+	text-transform: uppercase;
+}
+
+.badge-normal { color: v.$texto-oscuro; }
+
+.badge-rol {
+	font-size: 0.72rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	border-radius: 20px;
+	letter-spacing: 0.5px;
+
+	&.rol-admin  { background: rgba(156,39,176,0.12); color: #cc90e8; border: 1px solid rgba(156,39,176,0.4); }
+	&.rol-usuario { background: v.$negro-hover; color: v.$texto-muted; border: 1px solid v.$borde; }
+}
+
+.badge-tipo {
+	background: v.$negro-hover;
+	color: v.$texto-muted;
+	font-size: 0.72rem;
+	padding: 2px 8px;
+	border-radius: 4px;
+	text-transform: capitalize;
+}
+
+// ── Paginación ──
+.admin-paginacion {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	justify-content: center;
+	margin-top: 1.5rem;
+
+	span { color: v.$texto-muted; font-size: 0.85rem; }
+
+	button {
+		background: v.$negro-card;
+		border: 1px solid v.$borde-hover;
+		color: v.$texto-muted;
+		padding: 7px 16px;
+		border-radius: v.$radio;
+		font-size: 0.82rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: v.$transicion;
+		&:hover:not(:disabled) { border-color: v.$dorado; color: v.$dorado; }
+		&:disabled { opacity: 0.35; cursor: not-allowed; }
+	}
+}
+
+// =====================
+// MODAL
+// =====================
+.admin-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0,0,0,0.75);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 200;
+	padding: 2rem;
+}
+
+.admin-modal {
+	background: v.$negro-card;
+	border: 1px solid v.$borde-hover;
+	border-radius: v.$radio-lg;
+	width: 100%;
+	max-width: 600px;
+	max-height: 80vh;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+	animation: slideUp 0.2s ease;
+
+	&.admin-modal-lg { max-width: 800px; }
+}
+
+@keyframes slideUp {
+	from { transform: translateY(20px); opacity: 0; }
+	to   { transform: translateY(0);    opacity: 1; }
+}
+
+.admin-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.2rem 1.5rem;
+	border-bottom: 1px solid v.$borde;
+
+	h3 { font-size: 1rem; font-weight: 700; color: v.$texto; }
+}
+
+.admin-modal-cerrar {
+	background: transparent;
+	border: none;
+	color: v.$texto-muted;
+	font-size: 1.1rem;
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: v.$radio;
+	transition: v.$transicion;
+	&:hover { color: v.$texto; background: v.$negro-hover; }
+}
+
+.admin-modal-tabs {
+	display: flex;
+	border-bottom: 1px solid v.$borde;
+	padding: 0 1.5rem;
+
+	button {
+		background: transparent;
+		border: none;
+		color: v.$texto-muted;
+		font-size: 0.85rem;
+		font-weight: 600;
+		padding: 10px 16px;
+		cursor: pointer;
+		border-bottom: 2px solid transparent;
+		margin-bottom: -1px;
+		transition: v.$transicion;
+		&:hover { color: v.$texto; }
+		&.activo { color: v.$dorado; border-bottom-color: v.$dorado; }
+	}
+}
+
+.admin-modal-cuerpo {
+	overflow-y: auto;
+	padding: 1.5rem;
+	flex: 1;
+}
+
+.admin-vacio {
+	text-align: center;
+	color: v.$texto-muted;
+	padding: 2rem;
+	font-size: 0.9rem;
+}
+
+// ── Historial filas ──
+.historial-fila {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	padding: 10px 0;
+	border-bottom: 1px solid v.$borde;
+	font-size: 0.85rem;
+	flex-wrap: wrap;
+
+	&:last-child { border-bottom: none; }
+}
+
+.historial-objeto { color: v.$dorado; font-weight: 600; }
+.historial-fecha  { color: v.$texto-muted; font-size: 0.78rem; margin-left: auto; }
+.historial-desc   { color: v.$texto-muted; flex: 1; min-width: 140px; }
+
+.historial-tipo {
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 2px 8px;
+	border-radius: 3px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	&.tipo-recarga       { background: rgba(76,175,80,0.12); color: #4caf50; }
+	&.tipo-apertura_caja { background: rgba(201,162,39,0.12); color: v.$dorado; }
+	&.tipo-intercambio   { background: rgba(100,180,255,0.12); color: #7ec8ff; }
+	&.tipo-compra_vip    { background: rgba(156,39,176,0.12); color: #cc90e8; }
+	&.tipo-compra_directa { background: rgba(255,150,50,0.12); color: #ffa030; }
+}
+
+.positivo { color: #4caf50; font-weight: 700; }
+.negativo { color: v.$error-color; font-weight: 700; }
+
+// ── Añadir objeto a caja ──
+.admin-añadir-objeto {
+	margin-top: 1.5rem;
+	border-top: 1px solid v.$borde;
+	padding-top: 1.2rem;
+
+	h4 { font-size: 0.9rem; font-weight: 700; color: v.$texto; margin-bottom: 1rem; }
+}
+
+.admin-añadir-fila {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+	flex-wrap: wrap;
+
+	select, input {
+		background: v.$negro-input;
+		border: 1px solid v.$borde-hover;
+		border-radius: v.$radio;
+		color: v.$texto;
+		padding: 9px 12px;
+		font-size: 0.88rem;
+		font-family: v.$fuente;
+		outline: none;
+		transition: v.$transicion;
+		&:focus { border-color: v.$dorado; }
+		option { background: v.$negro-card; }
+	}
+
+	select { flex: 1; min-width: 200px; }
+	input  { width: 140px; }
+}

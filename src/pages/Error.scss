@@ -1,0 +1,79 @@
+// @use es la sintaxis moderna de Sass que reemplaza al @import obsoleto.
+@use '../styles/variables' as v;
+
+.error-contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+    text-align: center;
+}
+
+.error-card {
+    background-color: v.$negro-card;
+    padding: 50px;
+    border-radius: v.$radio-lg;
+    border: 1px solid v.$borde-hover;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    width: 100%;
+    animation: flotar 3s ease-in-out infinite;
+}
+
+.error-codigo {
+    font-size: 8rem;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1;
+    color: v.$dorado;
+    text-shadow:
+        0 0 20px rgba(212, 175, 55, 0.6),
+        0 0 40px rgba(212, 175, 55, 0.3);
+}
+
+.error-titulo {
+    font-size: 1.8rem;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: v.$texto;
+}
+
+.error-descripcion {
+    color: v.$texto-muted;
+    font-size: 1.1rem;
+    margin-bottom: 35px;
+    line-height: 1.5;
+}
+
+.btn-error-inicio {
+    background-color: v.$dorado;
+    color: v.$negro;
+    border: none;
+    padding: 14px 36px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: v.$transicion;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px v.$dorado-glow;
+
+    &:hover {
+        background-color: v.$dorado-hover;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+    }
+}
+
+@keyframes flotar {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+    .error-codigo { font-size: 5rem; }
+    .error-card   { padding: 30px 20px; }
+}

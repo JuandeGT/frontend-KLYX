@@ -1,0 +1,96 @@
+// @use es la sintaxis moderna de Sass que reemplaza al @import obsoleto.
+@use '../styles/variables' as v;
+
+.notificaciones-contenedor {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.alerta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: v.$radio;
+    min-width: 280px;
+    max-width: 380px;
+    position: relative;
+    overflow: hidden;
+    background-color: v.$negro-card;
+    border: 1px solid v.$borde-hover;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    animation: deslizarEntrada 0.3s ease forwards;
+    pointer-events: all;
+
+    &-exito {
+        border-left: 4px solid v.$dorado;
+
+        .alerta-icono {
+            color: v.$dorado;
+        }
+
+        .alerta-barra {
+            background-color: v.$dorado;
+        }
+    }
+
+    &-error {
+        border-left: 4px solid v.$error-color;
+
+        .alerta-icono {
+            color: v.$error-color;
+        }
+
+        .alerta-barra {
+            background-color: v.$error-color;
+        }
+    }
+}
+
+.alerta-icono {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.alerta-contenido {
+    flex: 1;
+}
+
+.alerta-mensaje {
+    color: v.$texto;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.alerta-barra {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    animation: reducir linear forwards;
+    transform-origin: left;
+}
+
+@keyframes deslizarEntrada {
+    from {
+        transform: translateX(110%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes reducir {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+}

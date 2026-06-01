@@ -1,0 +1,206 @@
+@use '../styles/variables' as v;
+
+.perfil-contenedor {
+	max-width: 640px;
+	margin: 3rem auto;
+	padding: 0 2rem;
+}
+
+.perfil-card {
+	background-color: v.$negro-card;
+	border: 1px solid v.$borde-hover;
+	border-radius: v.$radio-lg;
+	padding: 2.5rem;
+	box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.perfil-avatar-fila {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+	margin-bottom: 2rem;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid v.$borde;
+}
+
+.perfil-avatar {
+	width: 72px;
+	height: 72px;
+	background: linear-gradient(135deg, v.$dorado, v.$dorado-hover);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+
+	span {
+		font-size: 2rem;
+		font-weight: 800;
+		color: v.$negro;
+	}
+}
+
+.perfil-nombre {
+	font-size: 1.5rem;
+	font-weight: 800;
+	color: v.$texto;
+	margin-bottom: 4px;
+}
+
+.perfil-email {
+	color: v.$texto-muted;
+	font-size: 0.9rem;
+}
+
+.perfil-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+.perfil-stat {
+	background-color: v.$negro-hover;
+	border: 1px solid v.$borde;
+	border-radius: v.$radio;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.stat-valor {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: v.$dorado;
+
+	&.vip-activo {
+		color: #ce93d8;
+	}
+}
+
+.stat-etiqueta {
+	font-size: 0.75rem;
+	color: v.$texto-muted;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.btn-editar-perfil {
+	width: 100%;
+	background-color: transparent;
+	border: 1px solid v.$dorado;
+	color: v.$dorado;
+	padding: 12px;
+	border-radius: v.$radio;
+	font-weight: 600;
+	font-size: 0.95rem;
+	letter-spacing: 0.5px;
+	transition: v.$transicion;
+
+	&:hover {
+		background-color: v.$dorado;
+		color: v.$negro;
+		box-shadow: 0 0 14px v.$dorado-glow;
+	}
+}
+
+.perfil-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	border-top: 1px solid v.$borde;
+	padding-top: 1.5rem;
+}
+
+.perfil-form-titulo {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: v.$texto;
+	margin: 0 0 0.5rem 0;
+}
+
+// Reutiliza el patrón de grupo-input del _sesion.scss
+.grupo-input {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+
+	label {
+		font-size: 0.85rem;
+		color: v.$texto-muted;
+		font-weight: 500;
+	}
+
+	input {
+		background-color: v.$negro-input;
+		border: 1px solid v.$borde-hover;
+		border-radius: v.$radio;
+		color: v.$texto;
+		padding: 12px 14px;
+		font-size: 0.95rem;
+		font-family: inherit;
+		transition: v.$transicion;
+		outline: none;
+
+		&::placeholder {
+			color: v.$texto-oscuro;
+		}
+
+		&:focus {
+			border-color: v.$dorado;
+			background-color: v.$negro-hover;
+			box-shadow: 0 0 0 3px v.$dorado-glow;
+		}
+	}
+}
+
+.campo-opcional {
+	font-size: 0.75rem;
+	color: v.$texto-oscuro;
+	font-weight: 400;
+}
+
+.perfil-acciones {
+	display: flex;
+	gap: 1rem;
+	margin-top: 0.5rem;
+}
+
+.btn-perfil-cancelar {
+	flex: 1;
+	background-color: transparent;
+	border: 1px solid v.$borde-hover;
+	color: v.$texto-muted;
+	padding: 12px;
+	border-radius: v.$radio;
+	font-weight: 600;
+	transition: v.$transicion;
+
+	&:hover {
+		border-color: v.$error-color;
+		color: v.$error-color;
+	}
+}
+
+.btn-perfil-guardar {
+	flex: 2;
+	background-color: v.$dorado;
+	border: none;
+	color: v.$negro;
+	padding: 12px;
+	border-radius: v.$radio;
+	font-weight: 700;
+	font-size: 0.95rem;
+	transition: v.$transicion;
+
+	&:hover:not(:disabled) {
+		background-color: v.$dorado-hover;
+		box-shadow: 0 4px 16px v.$dorado-glow;
+	}
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
