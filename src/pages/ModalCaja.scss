@@ -1,0 +1,359 @@
+@use '../styles/variables' as v;
+
+// ─── Overlay ─────────────────────────────────────────────────────────────────
+.modal-caja-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+// ─── Contenedor principal ─────────────────────────────────────────────────────
+.modal-caja {
+    position: relative;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro-panel 100%);
+    border: 1px solid v.$borde-dorado;
+    border-radius: v.$radio-xl;
+    max-width: 820px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 0 60px v.$dorado-glow, v.$sombra-lg;
+    animation: modalEntrada 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+
+    // Cuando está en modo premio pasa a columna única centrada
+    &.modal-caja-premio {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+}
+
+@keyframes modalEntrada {
+    from { transform: scale(0.88); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+// ─── Botón cerrar ─────────────────────────────────────────────────────────────
+.modal-caja-cerrar {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: v.$texto-muted;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+    transition: v.$transicion;
+
+    &:hover { color: v.$texto; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLUMNA IZQUIERDA
+// ═══════════════════════════════════════════════════════════════════════════════
+.modal-caja-izq {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2.5rem 1.5rem;
+    background: linear-gradient(180deg, v.$negro-hover 0%, v.$negro-card 100%);
+    border-right: 1px solid v.$borde;
+    text-align: center;
+}
+
+.modal-caja-imagen {
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
+    border: 1px solid v.$borde-dorado;
+    border-radius: v.$radio-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 28px v.$dorado-glow;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: v.$radio-lg;
+    }
+}
+
+.modal-caja-icono { font-size: 5rem; opacity: 0.7; }
+
+.badge-vip-modal {
+    background: v.$grad-dorado;
+    color: v.$negro;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.modal-caja-nombre {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: v.$texto;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+}
+
+.modal-caja-precio {
+    color: v.$dorado;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLUMNA DERECHA
+// ═══════════════════════════════════════════════════════════════════════════════
+.modal-caja-der {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem 1.75rem 2rem;
+    overflow: hidden;
+}
+
+.btn-abrir-modal {
+    width: 100%;
+    background: v.$grad-dorado;
+    color: v.$negro;
+    border: none;
+    border-radius: v.$radio;
+    padding: 13px;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: v.$transicion;
+    flex-shrink: 0;
+    box-shadow: 0 4px 18px v.$dorado-glow;
+
+    &:hover:not(:disabled) {
+        filter: brightness(1.12);
+        box-shadow: 0 6px 26px v.$dorado-glow;
+        transform: translateY(-2px);
+    }
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+}
+
+.modal-caja-contenido {
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-right: 4px;
+
+    // Scrollbar fina dorada
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+        background: v.$borde-dorado;
+        border-radius: 2px;
+    }
+}
+
+.modal-vacio {
+    color: v.$texto-muted;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+// ─── Grupo de objetos (cuchillos / pegatinas) ─────────────────────────────────
+.modal-grupo { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.modal-grupo-titulo {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: v.$dorado;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid v.$borde;
+}
+
+.modal-lista { display: flex; flex-direction: column; gap: 2px; }
+
+.modal-objeto-fila {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 7px 10px;
+    border-radius: v.$radio;
+    transition: v.$transicion;
+
+    &:hover { background: v.$negro-hover; }
+}
+
+.modal-objeto-img {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: v.$negro-hover;
+    border: 1px solid v.$borde;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img { width: 100%; height: 100%; object-fit: contain; }
+}
+
+.modal-objeto-icono { font-size: 1.2rem; }
+
+.modal-objeto-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.modal-objeto-nombre {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: v.$texto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-objeto-precio {
+    font-size: 0.75rem;
+    color: v.$texto-muted;
+}
+
+.modal-objeto-prob {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: v.$dorado;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PANTALLA DE PREMIO
+// ═══════════════════════════════════════════════════════════════════════════════
+.premio-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    gap: 0.75rem;
+    animation: modalEntrada 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.premio-etiqueta {
+    color: v.$dorado;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.premio-imagen {
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
+    border: 1px solid v.$borde-dorado;
+    border-radius: v.$radio-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 32px v.$dorado-glow;
+    margin: 0.5rem 0;
+
+    img { width: 100%; height: 100%; object-fit: contain; border-radius: v.$radio-lg; }
+}
+
+.premio-icono { font-size: 4rem; }
+
+.premio-nombre {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: v.$texto;
+    letter-spacing: -0.3px;
+}
+
+.premio-tipo {
+    display: inline-block;
+    background: v.$dorado-tenue;
+    color: v.$dorado;
+    border: 1px solid v.$borde-dorado;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 12px;
+}
+
+.premio-precio {
+    color: v.$dorado;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.btn-premio-cerrar {
+    margin-top: 0.5rem;
+    width: 100%;
+    background: v.$grad-dorado;
+    color: v.$negro;
+    border: none;
+    border-radius: v.$radio;
+    padding: 13px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: v.$transicion;
+    box-shadow: 0 4px 18px v.$dorado-glow;
+
+    &:hover { filter: brightness(1.12); transform: translateY(-2px); }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 600px) {
+    .modal-caja {
+        grid-template-columns: 1fr;
+        max-height: 95vh;
+
+        &.modal-caja-premio { max-width: 100%; }
+    }
+
+    .modal-caja-izq {
+        border-right: none;
+        border-bottom: 1px solid v.$borde;
+        padding: 1.5rem 1rem;
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        gap: 1rem;
+    }
+
+    .modal-caja-imagen { width: 80px; height: 80px; flex-shrink: 0; }
+
+    .modal-caja-der { padding: 1.25rem 1rem; }
+}

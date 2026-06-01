@@ -78,6 +78,25 @@ const useAdmin = () => {
 		return res;
 	};
 
+	// Toggle de oferta semanal — PUT /api/admin/objetos/{id}/oferta
+	// No lleva body. El backend activa si estaba desactivado y viceversa.
+	// Devuelve el objeto actualizado con en_oferta: true/false.
+	// Si ya hay 3 activos devuelve 422 y se notifica el error (sin lanzar).
+	const toggleOferta = async (id) => {
+		try {
+			setCargando(true);
+			const res = await api.put(`/admin/objetos/${id}/oferta`);
+			notificar(res.data.message);
+			return res.data.data; // objeto actualizado
+		} catch (error) {
+			const msg = error.response?.data?.message || 'Error al cambiar la oferta.';
+			notificar(msg, 'error');
+			return null;
+		} finally {
+			setCargando(false);
+		}
+	};
+
 	// ════════════════════════════════════════════════════════════════════════
 	// CAJAS
 	// ════════════════════════════════════════════════════════════════════════
@@ -125,7 +144,7 @@ const useAdmin = () => {
 		getUsuarios, getUsuario, actualizarUsuario, eliminarUsuario,
 		getHistorialCajasUsuario, getHistorialTransaccionesUsuario,
 		// Objetos
-		getObjetos, crearObjeto, actualizarObjeto, eliminarObjeto,
+		getObjetos, crearObjeto, actualizarObjeto, eliminarObjeto, toggleOferta,
 		// Cajas
 		getCajas, crearCaja, actualizarCaja, eliminarCaja,
 		añadirObjetoACaja, quitarObjetoDeCaja,

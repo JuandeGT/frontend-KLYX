@@ -4,6 +4,7 @@ import useSesion from '../hooks/useSesion.js';
 import useNotificacion from '../hooks/useNotificacion.js';
 import api from '../utils/api.js';
 import { formatearKC } from '../utils/formatear.js';
+import ModalCaja from './ModalCaja.jsx';
 import './Inicio.scss';
 
 // CuchilloVisor usa Three.js (@react-three/fiber) — no está en la referencia base.
@@ -57,20 +58,24 @@ const Inicio = () => {
 	// Datos reales del backend
 	const [cajas, setCajas] = useState([]);
 	const [objetos, setObjetos] = useState([]);
+	// caja seleccionada para el modal de detalles — null = cerrado
+	const [cajaSeleccionada, setCajaSeleccionada] = useState(null);
 
-	// Carga en paralelo cajas y objetos al montar el componente.
+	// Carga en paralelo cajas y la oferta semanal real al montar el componente.
 	// Ambos endpoints son públicos (no requieren autenticación).
+	// La oferta semanal usa GET /api/oferta-semanal, que devuelve solo los
+	// objetos que el admin ha marcado como en_oferta:true (máximo 3).
 	useEffect(() => {
 		const cargarDatos = async () => {
 			try {
-				const [resCajas, resObjetos] = await Promise.all([
+				const [resCajas, resOferta] = await Promise.all([
 					api.get('/cajas'),
-					api.get('/objetos'),
+					api.get('/oferta-semanal'),
 				]);
 				// Solo mostramos las primeras 3 cajas en el destacado
 				setCajas((resCajas.data.data ?? []).slice(0, 3));
-				// Mostramos los primeros 6 objetos en la selección semanal
-				setObjetos((resObjetos.data.data ?? []).slice(0, 6));
+				// La oferta semanal ya filtra por en_oferta:true en el backend
+				setObjetos(resOferta.data.data ?? []);
 			} catch {
 				// Si el backend está dormido (Render free tier), la landing
 				// simplemente no muestra las secciones de datos, sin romper nada.
@@ -145,11 +150,23 @@ const Inicio = () => {
 								<h3>{caja.nombre}</h3>
 								<p className="tarjeta-precio">{formatearKC(caja.precio)}</p>
 
-								<Link to="/cajas" className="btn-ver-caja">Ver caja</Link>
+								<button
+									className="btn-ver-caja"
+									onClick={() => setCajaSeleccionada(caja)}
+								>
+									Ver detalles
+								</button>
 							</div>
 						))}
 					</div>
 				</section>
+			)}
+
+			{cajaSeleccionada && (
+				<ModalCaja
+					caja={cajaSeleccionada}
+					onCerrar={() => setCajaSeleccionada(null)}
+				/>
 			)}
 
 			{/* ——— SELECCIÓN SEMANAL — datos reales de GET /api/objetos ——— */}

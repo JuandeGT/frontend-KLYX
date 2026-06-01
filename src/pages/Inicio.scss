@@ -375,12 +375,14 @@
     width: 100%;
     text-align: center;
     display: block;
+    background: transparent;
     border: 1px solid v.$borde-dorado;
     color: v.$dorado;
     padding: 10px;
     border-radius: v.$radio;
     font-weight: 600;
     font-size: 0.87rem;
+    cursor: pointer;
     transition: v.$transicion;
 
     &:hover {

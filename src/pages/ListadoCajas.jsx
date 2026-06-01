@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api.js';
+import { formatearKC } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
+import ModalCaja from './ModalCaja.jsx';
 import './ListadoCajas.scss';
 
 const ListadoCajas = () => {
 	const [cajas, setCajas] = useState([]);
 	const [cargando, setCargando] = useState(true);
 	const [error, setError] = useState(false);
+	// caja seleccionada para el modal — null = cerrado
+	const [cajaSeleccionada, setCajaSeleccionada] = useState(null);
 
 	useEffect(() => {
 		const cargarCajas = async () => {
@@ -43,38 +47,45 @@ const ListadoCajas = () => {
 			{!error && cajas.length > 0 && (
 				<div className="cajas-grid">
 					{cajas.map((caja) => (
-						<TarjetaCaja key={caja.id} caja={caja} />
+						<TarjetaCaja
+							key={caja.id}
+							caja={caja}
+							onVerDetalles={() => setCajaSeleccionada(caja)}
+						/>
 					))}
 				</div>
+			)}
+
+			{cajaSeleccionada && (
+				<ModalCaja
+					caja={cajaSeleccionada}
+					onCerrar={() => setCajaSeleccionada(null)}
+				/>
 			)}
 		</div>
 	);
 };
 
-const TarjetaCaja = ({ caja }) => {
-	return (
-		<div className="tarjeta-caja">
-			{caja.vip && <span className="badge-vip">VIP</span>}
+const TarjetaCaja = ({ caja, onVerDetalles }) => (
+	<div className="tarjeta-caja">
+		{caja.vip && <span className="badge-vip">VIP</span>}
 
-			{/* Fase 3: aquí irá la imagen/modelo 3D de la caja */}
-			<div className="tarjeta-caja-imagen">
-				{caja.imagen
-					? <img src={caja.imagen} alt={caja.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-					: <span className="icono-caja">⬡</span>
-				}
-			</div>
-
-			<div className="tarjeta-caja-info">
-				<h3 className="tarjeta-caja-nombre">{caja.nombre}</h3>
-				<p className="tarjeta-caja-precio">{caja.precio} KC</p>
-			</div>
-
-			<button className="btn-abrir-caja">
-				{/* Fase 2: llamará a POST /api/cajas/{id}/abrir con el token Bearer */}
-				Abrir caja
-			</button>
+		<div className="tarjeta-caja-imagen">
+			{caja.imagen
+				? <img src={caja.imagen} alt={caja.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+				: <span className="icono-caja">⬡</span>
+			}
 		</div>
-	);
-};
+
+		<div className="tarjeta-caja-info">
+			<h3 className="tarjeta-caja-nombre">{caja.nombre}</h3>
+			<p className="tarjeta-caja-precio">{formatearKC(caja.precio)}</p>
+		</div>
+
+		<button className="btn-abrir-caja" onClick={onVerDetalles}>
+			Ver detalles
+		</button>
+	</div>
+);
 
 export default ListadoCajas;
