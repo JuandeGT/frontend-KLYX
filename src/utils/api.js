@@ -2,12 +2,15 @@
 // No aparece en la referencia base (que usaba Supabase).
 import axios from 'axios';
 
-// VITE_API_URL es una variable de entorno de Vite (import.meta.env).
-// En local usa http://localhost:8000/api (definida en .env.local).
-// En producción (Render) usa la URL del backend desplegado.
-// Las variables de Vite DEBEN empezar por VITE_ para estar disponibles en el cliente.
+// VITE_API_URL contiene la URL BASE del backend SIN /api al final.
+//   · En Vercel:  VITE_API_URL=https://klyx-backend-e63p.onrender.com
+//   · En local:   VITE_API_URL=https://klyx-backend-e63p.onrender.com  (mismo backend)
+// El código añade /api automáticamente para que el env var sea siempre solo el dominio.
+const BASE = (import.meta.env.VITE_API_URL ?? 'https://klyx-backend-e63p.onrender.com')
+	.replace(/\/$/, ''); // elimina barra final si la hubiera
+
 const api = axios.create({
-	baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api',
+	baseURL: `${BASE}/api`,
 	headers: {
 		'Accept': 'application/json',
 		'Content-Type': 'application/json',
