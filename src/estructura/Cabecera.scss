@@ -213,35 +213,6 @@
     50%       { transform: translateX(-50%) translateY(-2px); }
 }
 
-// Nombre del usuario
-.usuario-nombre {
-    color: v.$texto-suave;
-    font-size: 0.83rem;
-    font-weight: 600;
-    transition: v.$transicion;
-    text-decoration: none;
-
-    &:hover { color: v.$dorado; }
-}
-
-// Nombre VIP: dorado con shimmer
-.usuario-nombre-vip {
-    color: v.$dorado;
-    background: linear-gradient(90deg, v.$dorado 0%, v.$dorado-claro 50%, v.$dorado 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: nombreVipShimmer 3s linear infinite;
-
-    &:hover { filter: brightness(1.2); }
-}
-
-@keyframes nombreVipShimmer {
-    0%   { background-position: 0%   center; }
-    100% { background-position: 200% center; }
-}
-
 // Botón salir
 .btn-logout {
     background: transparent;

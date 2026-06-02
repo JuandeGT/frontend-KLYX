@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useSesion from '../hooks/useSesion.js';
+import useNotificacion from '../hooks/useNotificacion.js';
 import './Registrarse.scss';
 
 const Registrarse = () => {
 	const { datosSesion, actualizarDato, crearCuenta } = useSesion();
+	const { notificar } = useNotificacion();
+	const [confirmarPassword, setConfirmarPassword] = useState('');
+
+	// Coinciden las contraseñas (solo cuando el campo tiene contenido)
+	const noCoinciden = confirmarPassword.length > 0 && datosSesion.password !== confirmarPassword;
 
 	const enviarFormulario = (e) => {
 		e.preventDefault();
+		if (datosSesion.password !== confirmarPassword) {
+			notificar('Las contraseñas no coinciden.', 'error');
+			return;
+		}
 		crearCuenta();
 	};
 
@@ -57,7 +67,26 @@ const Registrarse = () => {
 						/>
 					</div>
 
-					<button type="submit" className="btn-sesion">
+					<div className="grupo-input">
+						<label htmlFor="confirmarPassword">
+							Repetir contraseña
+							{noCoinciden && (
+								<span className="campo-error-inline"> — No coinciden</span>
+							)}
+						</label>
+						<input
+							id="confirmarPassword"
+							name="confirmarPassword"
+							type="password"
+							placeholder="Repite tu contraseña"
+							value={confirmarPassword}
+							onChange={(e) => setConfirmarPassword(e.target.value)}
+							className={noCoinciden ? 'input-error' : ''}
+							required
+						/>
+					</div>
+
+					<button type="submit" className="btn-sesion" disabled={noCoinciden}>
 						Crear cuenta
 					</button>
 				</form>

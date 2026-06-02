@@ -6,7 +6,7 @@
 // - @react-three/drei  : helpers de alto nivel (useGLTF, Center)
 // - three (Color)      : clase de color de Three.js, usada para fijar el fondo de la escena
 // ============================================================
-import React, { useRef, Suspense } from 'react';
+import React, { useRef, Suspense, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 // Color es una clase de Three.js para representar colores. No está en la referencia base.
@@ -16,7 +16,8 @@ import { Color } from 'three';
 const MODEL_PATH = '/models/KarambitRainbow.glb';
 
 // ——— Componente interno: carga y anima el karambit ———
-const Cuchillo = () => {
+// En móvil (< 768px) se centra el modelo; en escritorio se desplaza a la derecha.
+const Cuchillo = ({ isMobile }) => {
 	const { scene } = useGLTF(MODEL_PATH);
 	const grupoRef = useRef();
 
@@ -28,8 +29,7 @@ const Cuchillo = () => {
 	});
 
 	return (
-		// Center: centra el modelo en su posición local, luego se desplaza a la derecha.
-		<Center position={[1.2, 0.15, 0]}>
+		<Center position={isMobile ? [0, 0, 0] : [1.2, 0.15, 0]}>
 			<group
 				ref={grupoRef}
 				scale={[2.5, 2.5, 2.5]}
@@ -43,6 +43,15 @@ const Cuchillo = () => {
 
 // ——— Componente exportado: Canvas full-hero ———
 const CuchilloVisor = () => {
+	// useEffect + useState para detectar si es móvil y reaccionar a resize.
+	// No está en la referencia base: necesario para adaptar la posición 3D al viewport.
+	const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+	useEffect(() => {
+		const fn = () => setIsMobile(window.innerWidth < 768);
+		window.addEventListener('resize', fn, { passive: true });
+		return () => window.removeEventListener('resize', fn);
+	}, []);
+
 	return (
 		<Canvas
 			gl={{ antialias: true }}
@@ -90,7 +99,7 @@ const CuchilloVisor = () => {
 			/>
 
 			<Suspense fallback={null}>
-				<Cuchillo />
+				<Cuchillo isMobile={isMobile} />
 			</Suspense>
 		</Canvas>
 	);

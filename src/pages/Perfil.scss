@@ -1,4 +1,4 @@
-@use '../styles/variables' as v;
+﻿@use '../styles/variables' as v;
 
 .perfil-contenedor {
 	max-width: 640px;
@@ -9,354 +9,80 @@
 	gap: 1.5rem;
 }
 
-// =============================================
-// PANEL VIP
-// =============================================
-.vip-card {
+// ─── Tarjeta Wallet ───────────────────────────────────────────────────────────
+.wallet-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
     background: v.$negro-card;
-    border: 1px solid rgba(156, 39, 176, 0.3);
-    border-radius: 20px;
-    padding: 1.75rem 2rem;
+    border: 1px solid v.$borde-dorado;
+    border-radius: 16px;
+    padding: 1.4rem 1.75rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 28px rgba(201,162,39,0.1);
     position: relative;
     overflow: hidden;
 
-    // Fondo con tinte morado sutil
     &::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: radial-gradient(ellipse at top right, rgba(156,39,176,0.08) 0%, transparent 65%);
+        background: radial-gradient(ellipse at 0% 50%, rgba(201,162,39,0.07) 0%, transparent 60%);
         pointer-events: none;
     }
 
-    // Cuando VIP está activo — tinte dorado
-    &.vip-card-activo {
-        border-color: v.$borde-dorado;
-        &::before {
-            background: radial-gradient(ellipse at top right, rgba(201,162,39,0.1) 0%, transparent 65%);
-        }
+    &:hover {
+        border-color: v.$dorado;
+        box-shadow: 0 0 40px rgba(201,162,39,0.22), 0 8px 30px rgba(0,0,0,0.5);
+        transform: translateY(-2px);
     }
 }
 
-.vip-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.25rem;
-}
+.wallet-card-info { flex: 1; }
 
-.vip-header-texto { flex: 1; }
-
-.vip-titulo {
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: v.$texto;
-    letter-spacing: -0.3px;
+.wallet-card-etiqueta {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: v.$texto-muted;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
     margin-bottom: 4px;
 }
 
-.vip-subtitulo {
-    font-size: 0.82rem;
-    color: v.$texto-muted;
-    line-height: 1.45;
-}
-
-.vip-badge-grande {
-    background: v.$grad-dorado;
-    color: v.$negro;
-    font-size: 0.7rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-    padding: 5px 14px;
-    border-radius: 100px;
-    text-transform: uppercase;
-    flex-shrink: 0;
-    box-shadow: 0 2px 12px v.$dorado-glow;
-}
-
-// Lista de beneficios
-.vip-beneficios {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    margin-bottom: 1.5rem;
-}
-
-.vip-beneficio {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.85rem;
-    color: v.$texto-suave;
-}
-
-.vip-check {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: rgba(156, 39, 176, 0.15);
-    border: 1px solid rgba(156, 39, 176, 0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    color: #cc90e8;
-    flex-shrink: 0;
-
-    .vip-card-activo & {
-        background: v.$dorado-tenue;
-        border-color: v.$borde-dorado;
-        color: v.$dorado;
-    }
-}
-
-// Zona de precio + botón
-.vip-compra {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.vip-precio {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-}
-
-.vip-precio-kc {
-    font-size: 1.4rem;
+.wallet-card-saldo {
+    font-size: 1.6rem;
     font-weight: 900;
     color: v.$dorado;
     letter-spacing: -0.5px;
+    margin-bottom: 4px;
+    line-height: 1.1;
 }
 
-.vip-precio-periodo {
-    font-size: 0.78rem;
+.wallet-card-plan {
+    font-size: 0.8rem;
     color: v.$texto-muted;
 }
 
-.btn-comprar-vip {
-    flex: 1;
-    min-width: 200px;
-    background: linear-gradient(135deg, #8e24aa 0%, #ce93d8 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 13px 20px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: v.$transicion;
-    box-shadow: 0 4px 18px rgba(142, 36, 170, 0.35);
+.wallet-card-accion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: v.$texto-suave;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 
-    &:hover:not(:disabled) {
-        filter: brightness(1.1);
-        box-shadow: 0 6px 24px rgba(142, 36, 170, 0.5);
-        transform: translateY(-1px);
-    }
-
-    &:disabled {
-        background: v.$negro-hover;
-        color: v.$texto-muted;
-        box-shadow: none;
-        cursor: not-allowed;
-        transform: none;
-    }
+    .wallet-card:hover & { color: v.$dorado; }
 }
 
-// =============================================
-// PANEL DE RECARGA
-// =============================================
-.recarga-card {
-	background: v.$negro-card;
-	border: 1px solid v.$borde-dorado;
-	border-radius: 20px;
-	padding: 1.75rem 2rem 2rem;
-	box-shadow: 0 0 40px v.$dorado-glow, v.$sombra-lg;
-}
+.wallet-card-flecha {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
 
-// Aviso de prueba — banner amarillo tenue
-.recarga-aviso-prueba {
-	display: flex;
-	align-items: flex-start;
-	gap: 0.6rem;
-	background: rgba(201, 162, 39, 0.07);
-	border: 1px solid rgba(201, 162, 39, 0.2);
-	border-radius: 10px;
-	padding: 0.7rem 1rem;
-	margin-bottom: 1.5rem;
-	font-size: 0.82rem;
-	color: v.$texto-suave;
-	line-height: 1.5;
-
-	strong { color: v.$dorado; font-weight: 700; }
-}
-
-.recarga-aviso-icono { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-
-.recarga-header { margin-bottom: 1.25rem; }
-
-.recarga-titulo {
-	font-size: 1.15rem;
-	font-weight: 800;
-	color: v.$texto;
-	letter-spacing: -0.3px;
-	margin-bottom: 4px;
-}
-
-.recarga-subtitulo {
-	font-size: 0.82rem;
-	color: v.$texto-muted;
-}
-
-// Grid de paquetes — 3 columnas
-.recarga-paquetes {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 0.6rem;
-	margin-bottom: 1.25rem;
-}
-
-.recarga-paquete {
-	position: relative;
-	background: v.$negro-panel;
-	border: 1px solid v.$borde-hover;
-	border-radius: 12px;
-	padding: 0.9rem 0.5rem 0.75rem;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 4px;
-
-	&:hover:not(:disabled) {
-		border-color: rgba(201, 162, 39, 0.4);
-		background: rgba(201, 162, 39, 0.06);
-	}
-
-	// Estado seleccionado
-	&.activo {
-		border-color: v.$dorado;
-		background: rgba(201, 162, 39, 0.1);
-		box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.2), 0 4px 16px v.$dorado-glow;
-	}
-
-	&.popular { border-color: rgba(201, 162, 39, 0.35); }
-
-	&:disabled { opacity: 0.5; cursor: not-allowed; }
-}
-
-// Badge "Más popular" dentro del paquete
-.recarga-badge-popular {
-	position: absolute;
-	top: -10px;
-	left: 50%;
-	transform: translateX(-50%);
-	background: v.$grad-dorado;
-	color: v.$negro;
-	font-size: 0.58rem;
-	font-weight: 900;
-	letter-spacing: 0.5px;
-	padding: 3px 9px;
-	border-radius: 100px;
-	white-space: nowrap;
-}
-
-.recarga-paquete-kc {
-	font-size: 0.9rem;
-	font-weight: 800;
-	color: v.$dorado;
-	letter-spacing: -0.2px;
-}
-
-// Separador "o"
-.recarga-separador {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	margin-bottom: 0.9rem;
-	color: v.$texto-oscuro;
-	font-size: 0.75rem;
-
-	&::before, &::after {
-		content: '';
-		flex: 1;
-		height: 1px;
-		background: v.$borde;
-	}
-}
-
-// Input personalizado
-.recarga-custom {
-	position: relative;
-	margin-bottom: 1.1rem;
-}
-
-.recarga-input {
-	width: 100%;
-	background: v.$negro-input;
-	border: 1px solid v.$borde-hover;
-	border-radius: 10px;
-	color: v.$texto;
-	padding: 12px 48px 12px 14px;
-	font-size: 0.95rem;
-	font-family: inherit;
-	outline: none;
-	transition: v.$transicion;
-
-	&::placeholder { color: v.$texto-oscuro; }
-
-	&:focus {
-		border-color: rgba(201, 162, 39, 0.5);
-		background: v.$negro-hover;
-		box-shadow: 0 0 0 3px v.$dorado-glow;
-	}
-
-	&:disabled { opacity: 0.5; }
-}
-
-.recarga-input-sufijo {
-	position: absolute;
-	right: 14px;
-	top: 50%;
-	transform: translateY(-50%);
-	font-size: 0.78rem;
-	font-weight: 700;
-	color: v.$texto-muted;
-	pointer-events: none;
-}
-
-// Botón de confirmar
-.recarga-btn-confirmar {
-	width: 100%;
-	background: v.$grad-dorado;
-	color: v.$negro;
-	border: none;
-	border-radius: 12px;
-	padding: 13px;
-	font-weight: 800;
-	font-size: 0.95rem;
-	cursor: pointer;
-	transition: v.$transicion;
-	letter-spacing: 0.2px;
-	box-shadow: 0 4px 18px v.$dorado-glow;
-
-	&:hover:not(:disabled) {
-		filter: brightness(1.08);
-		box-shadow: 0 6px 26px v.$dorado-glow;
-		transform: translateY(-1px);
-	}
-
-	&:disabled {
-		background: v.$negro-hover;
-		color: v.$texto-muted;
-		box-shadow: none;
-		cursor: not-allowed;
-		transform: none;
-	}
+    .wallet-card:hover & { transform: translateX(4px); }
 }
 
 .perfil-card {
@@ -473,7 +199,7 @@
 	margin: 0 0 0.5rem 0;
 }
 
-// Reutiliza el patrón de grupo-input del _sesion.scss
+// Reutiliza el patrÃ³n de grupo-input del _sesion.scss
 .grupo-input {
 	display: flex;
 	flex-direction: column;
@@ -558,53 +284,116 @@
 	}
 }
 
-// ── Zona de peligro ──────────────────────────────────────────────────────────
+// â”€â”€ Zona de peligro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Zona de peligro ─────────────────────────────────────────────────────────
 .zona-peligro {
-    background: rgba(192, 57, 43, 0.06);
-    border: 1px solid rgba(192, 57, 43, 0.25);
-    border-radius: 16px;
-    padding: 1.5rem 1.75rem;
+    background: v.$negro-card;
+    border: 1px solid rgba(192, 57, 43, 0.18);
+    border-left: 3px solid #c0392b;
+    border-radius: 14px;
+    padding: 1.6rem 1.75rem 1.5rem;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-
-    h3 {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: #e74c3c;
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-    }
-
-    p {
-        color: v.$texto-muted;
-        font-size: 0.83rem;
-        line-height: 1.55;
-        max-width: 380px;
-    }
+    flex-direction: column;
+    gap: 1.1rem;
 }
 
-.zona-peligro-texto { flex: 1; }
+.zona-peligro-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.zona-peligro-icono {
+    font-size: 1.6rem;
+    line-height: 1;
+    filter: grayscale(0.2);
+    flex-shrink: 0;
+}
+
+.zona-peligro-titulo {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e05555;
+    letter-spacing: -0.2px;
+    margin-bottom: 2px;
+}
+
+.zona-peligro-aviso {
+    font-size: 0.75rem;
+    color: v.$texto-muted;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+.zona-peligro-lista {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px 1.5rem;
+    padding: 0.9rem 1rem;
+    background: rgba(192, 57, 43, 0.04);
+    border-radius: 8px;
+    border: 1px solid rgba(192, 57, 43, 0.1);
+
+    li {
+        font-size: 0.8rem;
+        color: v.$texto-muted;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        &::before {
+            content: '×';
+            color: #c0392b;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+}
 
 .btn-borrar-cuenta {
     background: transparent;
-    border: 1px solid rgba(192, 57, 43, 0.5);
-    color: #e74c3c;
-    padding: 10px 22px;
-    border-radius: 100px;
+    border: 1px solid rgba(192, 57, 43, 0.35);
+    color: #c0392b;
+    padding: 11px 1rem;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.83rem;
+    font-size: 0.82rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+    transition: all 0.22s ease;
+    width: 100%;
+    letter-spacing: 0.2px;
+    position: relative;
+    overflow: hidden;
+
+    // Relleno rojo que entra de izquierda a derecha en el hover
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: #c0392b;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 0;
+    }
+
+    span {
+        position: relative;
+        z-index: 1;
+        transition: color 0.22s ease;
+    }
 
     &:hover {
-        background: #c0392b;
         border-color: #c0392b;
         color: #fff;
-        box-shadow: 0 4px 16px rgba(192, 57, 43, 0.4);
+        box-shadow: 0 4px 20px rgba(192, 57, 43, 0.3);
+
+        &::before { transform: translateX(0); }
     }
 }
+

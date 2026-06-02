@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// useLocation: hook de react-router para leer el state de navegación.
+// Se usa para pre-rellenar el formulario cuando se llega desde el Vault con un objeto ya seleccionado.
+import { useNavigate, useLocation } from 'react-router-dom';
 import useIntercambios from '../hooks/useIntercambios.js';
 import useSesion from '../hooks/useSesion.js';
 import useNotificacion from '../hooks/useNotificacion.js';
@@ -13,36 +15,51 @@ const CrearIntercambio = () => {
 	const { usuario } = useSesion();
 	const { notificar } = useNotificacion();
 	const navegar = useNavigate();
+	const location = useLocation();
 
 	const [inventario, setInventario] = useState([]);
 	const [cargandoInv, setCargandoInv] = useState(true);
+	// Objetos del catálogo global (todos los objetos del juego) para el select de "pide"
+	const [objetosMercado, setObjetosMercado] = useState([]);
+	const [cargandoMercado, setCargandoMercado] = useState(true);
 
-	// Formulario
-	const [objetoOfrecidoId, setObjetoOfrecidoId] = useState('');
+	// Formulario — puede llegar pre-rellenado desde el Vault via location.state
+	const estadoNavegacion = location.state ?? {};
+	const [objetoOfrecidoId, setObjetoOfrecidoId] = useState(String(estadoNavegacion.objetoId ?? ''));
 	const [monedasOfrecidas, setMonedasOfrecidas] = useState(0);
 	const [objetoSolicitadoId, setObjetoSolicitadoId] = useState('');
 	const [monedasSolicitadas, setMonedasSolicitadas] = useState(0);
 
-	// Tipo de oferta: 'venta' (item→KC), 'compra' (KC→item), 'trueque' (item→item + KC ajuste)
-	const [tipo, setTipo] = useState('venta');
+	// Tipo de oferta — si viene del Vault siempre empieza en 'venta'
+	const [tipo, setTipo] = useState(estadoNavegacion.tipo ?? 'venta');
 	const [enviando, setEnviando] = useState(false);
 	const [confirmar, setConfirmar] = useState(false);
-	// Datos listos para enviar — se guardan al validar, se usan al confirmar
 	const [datosPendientes, setDatosPendientes] = useState(null);
 
-	// Cargar inventario propio para seleccionar qué ofrecer
+	// Cargar inventario propio y catálogo global en paralelo
 	useEffect(() => {
-		const cargar = async () => {
+		const cargarInventario = async () => {
 			try {
 				const res = await api.get('/mi-inventario');
-				setInventario(res.data.data);
+				setInventario(res.data.data ?? []);
 			} catch {
 				notificar('No se pudo cargar tu inventario.', 'error');
 			} finally {
 				setCargandoInv(false);
 			}
 		};
-		cargar();
+		const cargarMercado = async () => {
+			try {
+				const res = await api.get('/objetos');
+				setObjetosMercado(res.data.data ?? []);
+			} catch {
+				// Silencioso: si falla el catálogo el select quedará vacío
+			} finally {
+				setCargandoMercado(false);
+			}
+		};
+		cargarInventario();
+		cargarMercado();
 	}, []);
 
 	const resetForm = () => {
@@ -192,12 +209,12 @@ const CrearIntercambio = () => {
 								<InputKC valor={monedasOfrecidas} onChange={setMonedasOfrecidas} />
 							</SeccionForm>
 
-							<SeccionForm titulo="ID del objeto que solicitas">
-								<InputTexto
-									placeholder="Ej: 12 (copia el ID del vault del otro jugador)"
+							<SeccionForm titulo="Objeto que solicitas a cambio">
+								<SelectObjetosMercado
+									objetos={objetosMercado}
+									cargando={cargandoMercado}
 									valor={objetoSolicitadoId}
 									onChange={setObjetoSolicitadoId}
-									tipo="number"
 								/>
 							</SeccionForm>
 
@@ -214,12 +231,12 @@ const CrearIntercambio = () => {
 								<InputKC valor={monedasOfrecidas} onChange={setMonedasOfrecidas} />
 							</SeccionForm>
 
-							<SeccionForm titulo="ID del objeto que deseas comprar">
-								<InputTexto
-									placeholder="Ej: 12 (ID del objeto visible en el mercado)"
+							<SeccionForm titulo="Objeto que deseas comprar">
+								<SelectObjetosMercado
+									objetos={objetosMercado}
+									cargando={cargandoMercado}
 									valor={objetoSolicitadoId}
 									onChange={setObjetoSolicitadoId}
-									tipo="number"
 								/>
 							</SeccionForm>
 						</>
@@ -250,6 +267,20 @@ const CrearIntercambio = () => {
 
 // ——— Sub-componentes del formulario ———
 
+// Orden: cuchillos primero, pegatinas después, resto al final; dentro de cada grupo A-Z
+const ordenarObjetos = (lista) => {
+	const prioridad = (tipo = '') => {
+		const t = tipo.toLowerCase();
+		if (t.includes('cuchillo')) return 0;
+		if (t.includes('pegatina')) return 1;
+		return 2;
+	};
+	return [...lista].sort((a, b) => {
+		const diff = prioridad(a.tipo) - prioridad(b.tipo);
+		return diff !== 0 ? diff : a.nombre.localeCompare(b.nombre, 'es');
+	});
+};
+
 const SeccionForm = ({ titulo, children }) => (
 	<div className="seccion-form">
 		<label className="seccion-label">{titulo}</label>
@@ -271,9 +302,33 @@ const SelectObjeto = ({ inventario, cargando, valor, onChange }) => {
 			required
 		>
 			<option value="">— Selecciona un objeto —</option>
-			{inventario.map((obj) => (
+			{ordenarObjetos(inventario).map((obj) => (
 				<option key={obj.id} value={obj.id}>
 					{obj.nombre} ({obj.tipo}) — {obj.precio} KC
+				</option>
+			))}
+		</select>
+	);
+};
+
+// Select con todos los objetos del catálogo global (para "pide" en trueque y compra)
+const SelectObjetosMercado = ({ objetos, cargando, valor, onChange }) => {
+	if (cargando) return <p className="cargando-texto">Cargando catálogo...</p>;
+	if (objetos.length === 0) return (
+		<p className="crear-aviso">No hay objetos disponibles en el catálogo.</p>
+	);
+
+	return (
+		<select
+			className="crear-select"
+			value={valor}
+			onChange={(e) => onChange(e.target.value)}
+			required
+		>
+			<option value="">— Selecciona un objeto —</option>
+			{ordenarObjetos(objetos).map((obj) => (
+				<option key={obj.id} value={obj.id}>
+					{obj.nombre} ({obj.tipo}) — {formatearKC(obj.precio)}
 				</option>
 			))}
 		</select>

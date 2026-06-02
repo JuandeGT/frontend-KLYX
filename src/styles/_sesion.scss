@@ -5,7 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 62px);
+    min-height: calc(100vh - 60px);
     padding: 2rem;
     background:
         radial-gradient(ellipse 60% 50% at 50% 40%, rgba(201,162,39,0.04) 0%, transparent 70%),
@@ -21,6 +21,9 @@
     max-width: 420px;
     box-shadow: 0 12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,39,0.05);
     position: relative;
+
+    // Ajusta min-height al nuevo nav de 60px
+    // (el valor anterior era 62px del nav antiguo)
 
     // Línea dorada decorativa en la parte superior de la card
     &::before {
@@ -89,6 +92,19 @@
     }
 }
 
+// Input con error (contraseñas no coinciden)
+.input-error {
+    border-color: v.$error-color !important;
+    box-shadow: 0 0 0 3px rgba(201, 64, 64, 0.15) !important;
+}
+
+// Texto de error inline junto a la label
+.campo-error-inline {
+    color: v.$error-color;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
 .btn-sesion {
     background: v.$grad-dorado;
     color: v.$negro;
@@ -101,15 +117,23 @@
     margin-top: 0.5rem;
     transition: v.$transicion;
     box-shadow: 0 4px 16px v.$dorado-glow;
+    cursor: pointer;
 
-    &:hover {
+    &:hover:not(:disabled) {
         box-shadow: 0 6px 24px v.$dorado-glow;
         transform: translateY(-2px);
         color: v.$negro;
     }
 
-    &:active {
+    &:active:not(:disabled) {
         transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
     }
 }
 

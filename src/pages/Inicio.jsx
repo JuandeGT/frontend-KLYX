@@ -70,8 +70,20 @@ const BtnComprarDirecto = ({ objetoId, nombreObjeto, precioObjeto }) => {
 	);
 };
 
+// ─── CTAs del hero — cambian según si el usuario tiene sesión ─────────────────
+const HeroCtas = ({ sesionIniciada }) => (
+	<div className="hero-ctas">
+		<Link to="/cajas" className="btn-cta-principal">Explorar cajas</Link>
+		{sesionIniciada
+			? <Link to="/vault" className="btn-cta-secundario">Mi Vault →</Link>
+			: <Link to="/registrarse" className="btn-cta-secundario">Crear cuenta gratis</Link>
+		}
+	</div>
+);
+
 // ─── Página de inicio ─────────────────────────────────────────────────────────
 const Inicio = () => {
+	const { sesionIniciada } = useSesion();
 	// Datos reales del backend
 	const [cajas, setCajas] = useState([]);
 	const [objetos, setObjetos] = useState([]);
@@ -135,10 +147,7 @@ const Inicio = () => {
 						Deposita saldo real, conviértelo en Klyx Coins y abre cajas con
 						skins exclusivos. Transparencia total en cada apertura.
 					</p>
-					<div className="hero-ctas">
-						<Link to="/cajas" className="btn-cta-principal">Explorar cajas</Link>
-						<Link to="/registrarse" className="btn-cta-secundario">Crear cuenta gratis</Link>
-					</div>
+					<HeroCtas sesionIniciada={sesionIniciada} />
 				</div>
 
 			</section>

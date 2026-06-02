@@ -54,9 +54,9 @@ const Cabecera = () => {
 									</Link>
 								)}
 
-								<span className={`badge-kc${esVip ? ' badge-kc-vip' : ''}`}>
+								<Link to="/tienda" className={`badge-kc${esVip ? ' badge-kc-vip' : ''}`}>
 									{formatearKC(usuario.saldo ?? 0)}
-								</span>
+								</Link>
 
 								<div className="cabecera-usuario">
 									{/* Avatar con inicial — corona si es VIP */}
@@ -65,10 +65,6 @@ const Cabecera = () => {
 										<span className="avatar-inicial">
 											{usuario.nombre?.charAt(0)?.toUpperCase() ?? '?'}
 										</span>
-									</Link>
-
-									<Link to="/perfil" className={`usuario-nombre${esVip ? ' usuario-nombre-vip' : ''}`}>
-										{usuario.nombre}
 									</Link>
 
 									<button className="btn-logout" onClick={() => setConfirmarSalir(true)}>

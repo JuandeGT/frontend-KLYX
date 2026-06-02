@@ -10,6 +10,7 @@ import Perfil from '../pages/Perfil.jsx';
 import Intercambios from '../pages/Intercambios.jsx';
 import CrearIntercambio from '../pages/CrearIntercambio.jsx';
 import PanelAdmin from '../pages/PanelAdmin.jsx';
+import Tienda from '../pages/Tienda.jsx';
 import Cargando from '../pages/Cargando.jsx';
 import Error from '../pages/Error.jsx';
 
@@ -45,6 +46,7 @@ const Rutas = () => {
 			{/* Rutas protegidas (cualquier usuario autenticado) */}
 			<Route path="/vault"             element={<RutaProtegida element={<Vault />} />} />
 			<Route path="/perfil"            element={<RutaProtegida element={<Perfil />} />} />
+			<Route path="/tienda"            element={<RutaProtegida element={<Tienda />} />} />
 			<Route path="/crear-intercambio" element={<RutaProtegida element={<CrearIntercambio />} />} />
 
 			{/* Panel de administración — solo rol Admin */}
