@@ -187,7 +187,6 @@ const CrearIntercambio = () => {
 								<InputKC
 									valor={monedasSolicitadas}
 									onChange={setMonedasSolicitadas}
-									max={usuario?.saldo}
 								/>
 							</SeccionForm>
 						</>

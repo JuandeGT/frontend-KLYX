@@ -37,7 +37,6 @@ const Tienda = () => {
 const VIP_PRECIO_KC = 1000;
 const VIP_BENEFICIOS = [
 	'Acceso a cajas exclusivas VIP',
-	'Probabilidades mejoradas en cajas estándar',
 	'Badge VIP en tu perfil',
 	'Soporte prioritario',
 ];

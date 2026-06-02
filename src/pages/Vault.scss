@@ -69,6 +69,8 @@
 	border-radius: v.$radio-lg;
 	overflow: hidden;
 	transition: v.$transicion;
+	display: flex;
+	flex-direction: column;
 
 	&:hover {
 		border-color: v.$dorado;
@@ -103,6 +105,10 @@
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
+	flex: 1;
+
+	// Empuja el botón Vender al fondo de la tarjeta siempre
+	.btn-vender-vault { margin-top: auto; }
 }
 
 .objeto-tipo-badge {

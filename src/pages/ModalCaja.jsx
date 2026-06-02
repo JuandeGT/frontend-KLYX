@@ -97,9 +97,7 @@ const ModalCaja = ({ caja, onCerrar }) => {
 				className={`modal-caja${premio ? ' modal-caja-premio' : ''}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<button className="modal-caja-cerrar" onClick={onCerrar} aria-label="Cerrar">✕</button>
-
-				{/* ════════════════════════════════════════════════════════════
+{/* ════════════════════════════════════════════════════════════
 				    PANTALLA DE PREMIO
 				════════════════════════════════════════════════════════════ */}
 				{premio ? (
