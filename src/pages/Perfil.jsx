@@ -9,7 +9,7 @@ import './Perfil.scss';
 
 
 const Perfil = () => {
-	const { usuario, obtenerPerfil, borrarCuenta } = useSesion();
+	const { usuario, obtenerPerfil, borrarCuenta, cerrarSesion } = useSesion();
 	const { notificar } = useNotificacion();
 
 	const formularioVacio = { nombre: '', email: '', password: '' };
@@ -63,12 +63,21 @@ const Perfil = () => {
 		}
 	};
 
-	const [confirmarBorrar, setConfirmarBorrar] = useState(false);
+	const [confirmarBorrar,  setConfirmarBorrar]  = useState(false);
+	const [confirmarSalir,   setConfirmarSalir]   = useState(false);
 
 	if (!usuario) return null;
 
 	return (
 		<div className="perfil-contenedor">
+			{confirmarSalir && (
+				<Confirmacion
+					mensaje="¿Quieres cerrar la sesión?"
+					onConfirmar={() => { setConfirmarSalir(false); cerrarSesion(); }}
+					onCancelar={() => setConfirmarSalir(false)}
+				/>
+			)}
+
 			{confirmarBorrar && (
 				<Confirmacion
 					mensaje="Esta acción es irreversible. Se eliminarán tu cuenta, inventario y saldo."
@@ -165,9 +174,14 @@ const Perfil = () => {
 						</div>
 					</form>
 				) : (
-					<button className="btn-editar-perfil" onClick={abrirEdicion}>
-						Editar perfil
-					</button>
+					<div className="perfil-acciones-fila">
+						<button className="btn-editar-perfil" onClick={abrirEdicion}>
+							Editar perfil
+						</button>
+						<button className="btn-cerrar-sesion-perfil" onClick={() => setConfirmarSalir(true)}>
+							Cerrar sesión
+						</button>
+					</div>
 				)}
 			</div>
 

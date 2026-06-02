@@ -173,9 +173,17 @@ const TarjetaOferta = ({ oferta, modo, onAceptar, onRechazar, onCancelar }) => {
 					<p className="oferta-lado-etiqueta">Ofrece</p>
 					{oferta.objeto_ofrecido && (
 						<div className="oferta-objeto">
-							<span className="objeto-tipo-mini">{oferta.objeto_ofrecido.tipo}</span>
-							<strong>{oferta.objeto_ofrecido.nombre}</strong>
-							<span className="objeto-val">{formatearKC(oferta.objeto_ofrecido.precio)}</span>
+							<div className="oferta-objeto-img">
+								{oferta.objeto_ofrecido.imagen
+									? <img src={oferta.objeto_ofrecido.imagen} alt={oferta.objeto_ofrecido.nombre} />
+									: <span className="oferta-objeto-icono">🔪</span>
+								}
+							</div>
+							<div className="oferta-objeto-info">
+								<span className="objeto-tipo-mini">{oferta.objeto_ofrecido.tipo}</span>
+								<strong>{oferta.objeto_ofrecido.nombre}</strong>
+								<span className="objeto-val">{formatearKC(oferta.objeto_ofrecido.precio)}</span>
+							</div>
 						</div>
 					)}
 					{oferta.monedas_ofrecidas > 0 && (
@@ -193,9 +201,17 @@ const TarjetaOferta = ({ oferta, modo, onAceptar, onRechazar, onCancelar }) => {
 					<p className="oferta-lado-etiqueta">Pide</p>
 					{oferta.objeto_solicitado && (
 						<div className="oferta-objeto">
-							<span className="objeto-tipo-mini">{oferta.objeto_solicitado.tipo}</span>
-							<strong>{oferta.objeto_solicitado.nombre}</strong>
-							<span className="objeto-val">{formatearKC(oferta.objeto_solicitado.precio)}</span>
+							<div className="oferta-objeto-img">
+								{oferta.objeto_solicitado.imagen
+									? <img src={oferta.objeto_solicitado.imagen} alt={oferta.objeto_solicitado.nombre} />
+									: <span className="oferta-objeto-icono">🔪</span>
+								}
+							</div>
+							<div className="oferta-objeto-info">
+								<span className="objeto-tipo-mini">{oferta.objeto_solicitado.tipo}</span>
+								<strong>{oferta.objeto_solicitado.nombre}</strong>
+								<span className="objeto-val">{formatearKC(oferta.objeto_solicitado.precio)}</span>
+							</div>
 						</div>
 					)}
 					{oferta.monedas_solicitadas > 0 && (
