@@ -138,6 +138,21 @@ const useAdmin = () => {
 		return res;
 	};
 
+	// ════════════════════════════════════════════════════════════════════════
+	// ESTADÍSTICAS GLOBALES
+	// ════════════════════════════════════════════════════════════════════════
+	const getEstadisticas = () =>
+		ejecutar(() => api.get('/admin/estadisticas'));
+
+	// ════════════════════════════════════════════════════════════════════════
+	// INTERCAMBIOS (vista admin — todos los usuarios)
+	// ════════════════════════════════════════════════════════════════════════
+	// estado: '' | 'pendiente' | 'aceptado' | 'rechazado' | 'cancelado'
+	const getIntercambiosAdmin = (page = 1, estado = '') =>
+		ejecutar(() =>
+			api.get(`/admin/intercambios?page=${page}${estado ? `&estado=${estado}` : ''}`)
+		);
+
 	return {
 		cargando,
 		// Usuarios
@@ -148,6 +163,10 @@ const useAdmin = () => {
 		// Cajas
 		getCajas, crearCaja, actualizarCaja, eliminarCaja,
 		añadirObjetoACaja, quitarObjetoDeCaja,
+		// Dashboard y estadísticas
+		getEstadisticas,
+		// Intercambios admin
+		getIntercambiosAdmin,
 	};
 };
 

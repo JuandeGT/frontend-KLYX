@@ -5,6 +5,7 @@ import useNotificacion from '../hooks/useNotificacion.js';
 import api from '../utils/api.js';
 import { formatearKC } from '../utils/formatear.js';
 import ModalCaja from './ModalCaja.jsx';
+import Confirmacion from '../estructura/Confirmacion.jsx';
 import './Inicio.scss';
 
 // CuchilloVisor usa Three.js (@react-three/fiber) — no está en la referencia base.
@@ -23,16 +24,22 @@ const descripcionARareza = (descripcion = '') => {
 
 // ─── Botón de compra directa ──────────────────────────────────────────────────
 // Llama a POST /api/objetos/{id}/comprar-directo con el Bearer token de Sanctum.
-const BtnComprarDirecto = ({ objetoId }) => {
+const BtnComprarDirecto = ({ objetoId, nombreObjeto, precioObjeto }) => {
 	const { sesionIniciada, obtenerPerfil } = useSesion();
 	const { notificar } = useNotificacion();
-	const [comprando, setComprando] = useState(false);
+	const [comprando,  setComprando]  = useState(false);
+	const [confirmar,  setConfirmar]  = useState(false);
 
-	const comprar = async () => {
+	const pedirConfirmacion = () => {
 		if (!sesionIniciada) {
 			notificar('Inicia sesión para comprar.', 'error');
 			return;
 		}
+		setConfirmar(true);
+	};
+
+	const comprar = async () => {
+		setConfirmar(false);
 		setComprando(true);
 		try {
 			await api.post(`/objetos/${objetoId}/comprar-directo`);
@@ -47,9 +54,19 @@ const BtnComprarDirecto = ({ objetoId }) => {
 	};
 
 	return (
-		<button className="btn-comprar" onClick={comprar} disabled={comprando}>
-			{comprando ? '...' : 'Comprar ahora'}
-		</button>
+		<>
+			{confirmar && (
+				<Confirmacion
+					mensaje={`Vas a comprar "${nombreObjeto}".`}
+					detalle={`Coste: ${formatearKC(precioObjeto)}`}
+					onConfirmar={comprar}
+					onCancelar={() => setConfirmar(false)}
+				/>
+			)}
+			<button className="btn-comprar" onClick={pedirConfirmacion} disabled={comprando}>
+				{comprando ? '...' : 'Comprar ahora'}
+			</button>
+		</>
 	);
 };
 
@@ -72,8 +89,15 @@ const Inicio = () => {
 					api.get('/cajas'),
 					api.get('/oferta-semanal'),
 				]);
-				// Solo mostramos las primeras 3 cajas en el destacado
-				setCajas((resCajas.data.data ?? []).slice(0, 3));
+				// Las 3 primeras cajas ordenadas: Sangrienta (izq) · Dioses (centro) · Elite (der)
+				const ordenNombres = ['sangrienta', 'dioses', 'elite'];
+				const todasCajas = resCajas.data.data ?? [];
+				const cajasOrdenadas = [...todasCajas].sort((a, b) => {
+					const ai = ordenNombres.findIndex(k => a.nombre?.toLowerCase().includes(k));
+					const bi = ordenNombres.findIndex(k => b.nombre?.toLowerCase().includes(k));
+					return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+				}).slice(0, 3);
+				setCajas(cajasOrdenadas);
 				// La oferta semanal ya filtra por en_oferta:true en el backend
 				setObjetos(resOferta.data.data ?? []);
 			} catch {
@@ -119,13 +143,8 @@ const Inicio = () => {
 
 			</section>
 
-			{/* ——— STATS ——— */}
-			<section className="stats-banda">
-				<div className="stat"><strong>+10.000</strong><span>Usuarios activos</span></div>
-				<div className="stat"><strong>+500</strong><span>Skins disponibles</span></div>
-				<div className="stat"><strong>100%</strong><span>Probabilidades reales</span></div>
-				<div className="stat"><strong>24/7</strong><span>Soporte disponible</span></div>
-			</section>
+			{/* ——— FEED DE ACTIVIDAD EN VIVO ——— */}
+			<FeedActividad />
 
 			{/* ——— CAJAS DESTACADAS — datos reales de GET /api/cajas ——— */}
 			{cajas.length > 0 && (
@@ -142,7 +161,7 @@ const Inicio = () => {
 
 								<div className="tarjeta-imagen">
 									{caja.imagen
-										? <img src={caja.imagen} alt={caja.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
+										? <img src={caja.imagen} alt={caja.nombre} />
 										: <span className="icono-caja">⬡</span>
 									}
 								</div>
@@ -200,7 +219,11 @@ const Inicio = () => {
 
 								<div className="objeto-footer">
 									<span className="objeto-precio">{formatearKC(objeto.precio)}</span>
-									<BtnComprarDirecto objetoId={objeto.id} />
+									<BtnComprarDirecto
+										objetoId={objeto.id}
+										nombreObjeto={objeto.nombre}
+										precioObjeto={objeto.precio}
+									/>
 								</div>
 							</div>
 						))}
@@ -231,6 +254,74 @@ const Inicio = () => {
 			</section>
 
 		</div>
+	);
+};
+
+// ─── Feed de actividad en vivo ────────────────────────────────────────────────
+// GET /api/historial-objetos — público, devuelve los últimos objetos ganados.
+// Se refresca automáticamente cada 30 segundos para mostrar actividad reciente.
+const FeedActividad = () => {
+	const [items, setItems] = useState([]);
+
+	const cargar = async () => {
+		try {
+			const res = await api.get('/historial-objetos');
+			setItems(res.data.data ?? []);
+		} catch {
+			// Sección no crítica — si falla simplemente no se muestra
+		}
+	};
+
+	useEffect(() => {
+		cargar();
+		// setInterval es un hook externo — se explica por qué se usa:
+		// necesitamos polling para mostrar actividad reciente sin WebSockets.
+		const intervalo = setInterval(cargar, 30000);
+		return () => clearInterval(intervalo);
+	}, []);
+
+	if (items.length === 0) return null;
+
+	return (
+		<section className="feed-actividad">
+			{/* Cabecera: badge EN VIVO + título */}
+			<div className="feed-encabezado">
+				<span className="feed-dot" aria-hidden="true" />
+				<span className="feed-label">En vivo</span>
+				<span className="feed-titulo-hint">Últimas ganancias</span>
+			</div>
+
+			{/* Lista horizontal — cards verticales con imagen */}
+			<div className="feed-lista">
+				{items.map((item, i) => {
+					// Extrae imagen y nombre del objeto — soporta string o { nombre, imagen }
+					const nombre = typeof item.objeto === 'string'
+						? item.objeto
+						: (item.objeto?.nombre ?? '—');
+					const imagen = item.imagen
+						?? (typeof item.objeto === 'object' ? item.objeto?.imagen : null);
+					const usuario = typeof item.usuario === 'string'
+						? item.usuario
+						: (item.usuario?.nombre ?? '—');
+					const tiempo = typeof item.tiempo === 'string' ? item.tiempo : '';
+	
+					return (
+						<div className="feed-card" key={i}>
+							{/* Imagen ocupa casi toda la carta */}
+							<div className="feed-card-img">
+								{imagen
+									? <img src={imagen} alt={nombre} />
+									: <span className="feed-card-icono">🔪</span>
+								}
+							</div>
+
+							{/* Nombre en overlay al fondo de la carta */}
+							<p className="feed-card-nombre">{nombre}</p>
+						</div>
+					);
+				})}
+			</div>
+		</section>
 	);
 };
 

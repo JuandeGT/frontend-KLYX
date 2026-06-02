@@ -1,94 +1,299 @@
 @use '../styles/variables' as v;
 
+// ─── Barra principal ──────────────────────────────────────────────────────────
 #cabecera {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    z-index: 200;
+
+    background: rgba(5, 5, 5, 0.72);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 0 3rem;
-    height: 62px;
-    background-color: rgba(6, 6, 6, 0.88);
-    // backdrop-filter es CSS moderno para efecto de vidrio esmerilado.
-    // No aparece en la referencia base pero es clave para la estética premium.
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid v.$borde;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+
+    // Línea inferior: degradado dorado simétrico desde el centro
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent       0%,
+            rgba(201,162,39,0.04) 10%,
+            rgba(201,162,39,0.32) 35%,
+            rgba(201,162,39,0.55) 50%,
+            rgba(201,162,39,0.32) 65%,
+            rgba(201,162,39,0.04) 90%,
+            transparent       100%
+        );
+    }
+
+    &.scrolled {
+        background: rgba(5, 5, 5, 0.92);
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.65);
+    }
 }
 
-// Logo
+// ─── Wrapper centrado con max-width ───────────────────────────────────────────
+.cabecera-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1320px;
+    padding: 0 2.5rem;
+    height: 100%;
+}
+
+// ─── Logo ─────────────────────────────────────────────────────────────────────
 .cabecera-logo a {
-    font-size: 1.5rem;
+    font-size: 1.18rem;
     font-weight: 900;
-    letter-spacing: 5px;
+    letter-spacing: 7px;
     color: v.$dorado;
     text-transform: uppercase;
-    text-shadow: 0 0 20px v.$dorado-glow;
+    text-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
     transition: v.$transicion;
 
     &:hover {
         color: v.$dorado-hover;
-        text-shadow: 0 0 30px v.$dorado-glow;
+        text-shadow: 0 0 32px rgba(201, 162, 39, 0.65);
     }
 }
 
-// Nav central
+// ─── Nav ──────────────────────────────────────────────────────────────────────
 .cabecera-nav {
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 4px;
 
     a {
+        position: relative;
         color: v.$texto-muted;
+        font-size: 0.84rem;
         font-weight: 500;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        padding: 6px 12px;
-        border-radius: v.$radio;
-        transition: v.$transicion;
+        letter-spacing: 0.2px;
+        padding: 6px 16px;
+        border-radius: 6px;
+        transition: color 0.2s ease, background 0.2s ease;
+        white-space: nowrap;
 
         &:hover {
             color: v.$texto;
-            background-color: v.$negro-hover;
+            background: rgba(255, 255, 255, 0.05);
         }
 
+        // Punto dorado debajo del link activo
         &.active {
-            color: v.$dorado;
-            background-color: v.$dorado-tenue;
+            color: v.$texto;
+            font-weight: 600;
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 2px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: v.$dorado;
+                box-shadow: 0 0 8px rgba(201, 162, 39, 0.8);
+            }
         }
     }
 }
 
-// Acciones derecha
+// ─── Acciones derecha ─────────────────────────────────────────────────────────
 .cabecera-acciones {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
+// Saldo KC — versión normal y VIP
 .badge-kc {
-    background-color: v.$dorado-tenue;
+    background: rgba(201, 162, 39, 0.09);
     color: v.$dorado;
-    border: 1px solid v.$borde-dorado;
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-size: 0.78rem;
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    padding: 4px 13px;
+    border-radius: 100px;
+    font-size: 0.76rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     transition: v.$transicion;
 }
 
-.btn-login {
-    color: v.$texto-muted;
-    border: 1px solid v.$borde-hover;
-    padding: 7px 16px;
-    border-radius: v.$radio;
-    font-size: 0.83rem;
-    font-weight: 600;
+// Versión VIP del saldo: brilla más
+.badge-kc-vip {
+    background: rgba(201, 162, 39, 0.15);
+    border-color: rgba(201, 162, 39, 0.5);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.2);
+    animation: kcVipPulse 3s ease-in-out infinite;
+}
+
+@keyframes kcVipPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(201,162,39,0.18); }
+    50%       { box-shadow: 0 0 20px rgba(201,162,39,0.38); }
+}
+
+// ─── Usuario ──────────────────────────────────────────────────────────────────
+.cabecera-usuario {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+// Avatar circular con inicial
+.usuario-avatar {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    text-decoration: none;
     transition: v.$transicion;
 
     &:hover {
-        border-color: v.$dorado;
+        border-color: rgba(201, 162, 39, 0.5);
+        background: rgba(201, 162, 39, 0.1);
+    }
+
+    .avatar-inicial {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: v.$texto-suave;
+        line-height: 1;
+        pointer-events: none;
+    }
+}
+
+// Avatar VIP: borde dorado animado
+.usuario-avatar-vip {
+    border-color: rgba(201, 162, 39, 0.6);
+    background: rgba(201, 162, 39, 0.1);
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.35);
+    animation: avatarVipGlow 3s ease-in-out infinite;
+
+    .avatar-inicial { color: v.$dorado; }
+}
+
+@keyframes avatarVipGlow {
+    0%, 100% { box-shadow: 0 0 0 0   rgba(201,162,39,0.35); }
+    50%       { box-shadow: 0 0 0 4px rgba(201,162,39,0.12); }
+}
+
+// Corona VIP encima del avatar (posición absoluta)
+.corona-vip {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 4px rgba(201,162,39,0.8));
+    animation: coronaFlote 2.8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes coronaFlote {
+    0%, 100% { transform: translateX(-50%) translateY(0);    }
+    50%       { transform: translateX(-50%) translateY(-2px); }
+}
+
+// Nombre del usuario
+.usuario-nombre {
+    color: v.$texto-suave;
+    font-size: 0.83rem;
+    font-weight: 600;
+    transition: v.$transicion;
+    text-decoration: none;
+
+    &:hover { color: v.$dorado; }
+}
+
+// Nombre VIP: dorado con shimmer
+.usuario-nombre-vip {
+    color: v.$dorado;
+    background: linear-gradient(90deg, v.$dorado 0%, v.$dorado-claro 50%, v.$dorado 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: nombreVipShimmer 3s linear infinite;
+
+    &:hover { filter: brightness(1.2); }
+}
+
+@keyframes nombreVipShimmer {
+    0%   { background-position: 0%   center; }
+    100% { background-position: 200% center; }
+}
+
+// Botón salir
+.btn-logout {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: v.$texto-muted;
+    padding: 5px 13px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: v.$transicion;
+
+    &:hover {
+        border-color: rgba(192, 57, 43, 0.5);
+        color: #e06060;
+        background: rgba(192, 57, 43, 0.07);
+    }
+}
+
+// ─── Badges extra ─────────────────────────────────────────────────────────────
+.badge-admin {
+    background: rgba(140, 60, 180, 0.1);
+    color: #cc90e8;
+    border: 1px solid rgba(140, 60, 180, 0.35);
+    padding: 4px 11px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: v.$transicion;
+
+    &:hover {
+        background: rgba(140, 60, 180, 0.22);
+        color: #e0aaff;
+    }
+}
+
+// Botones sin sesión
+.btn-login {
+    color: v.$texto-muted;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: v.$transicion;
+    text-decoration: none;
+
+    &:hover {
+        border-color: rgba(201, 162, 39, 0.4);
         color: v.$dorado;
     }
 }
@@ -97,78 +302,29 @@
     background: v.$grad-dorado;
     color: v.$negro;
     border: none;
-    padding: 7px 16px;
-    border-radius: v.$radio;
-    font-size: 0.83rem;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.82rem;
     font-weight: 700;
+    cursor: pointer;
     transition: v.$transicion;
+    text-decoration: none;
 
     &:hover {
-        box-shadow: 0 0 16px v.$dorado-glow;
+        filter: brightness(1.1);
+        box-shadow: 0 0 18px rgba(201, 162, 39, 0.4);
         transform: translateY(-1px);
         color: v.$negro;
     }
 }
 
-.badge-admin {
-    background-color: rgba(140, 60, 180, 0.12);
-    color: #cc90e8;
-    border: 1px solid rgba(140, 60, 180, 0.4);
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: v.$transicion;
-    text-decoration: none;
-
-    &:hover {
-        background-color: rgba(140, 60, 180, 0.25);
-        color: #e0aaff;
-    }
-}
-
-.cabecera-usuario {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.usuario-nombre {
-    color: v.$texto-suave;
-    font-size: 0.87rem;
-    font-weight: 600;
-    transition: v.$transicion;
-
-    &:hover {
-        color: v.$dorado;
-    }
-}
-
-.btn-logout {
-    background: transparent;
-    border: 1px solid v.$borde-hover;
-    color: v.$texto-muted;
-    padding: 5px 12px;
-    border-radius: v.$radio;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: v.$transicion;
-
-    &:hover {
-        border-color: v.$error-color;
-        color: v.$error-color;
-        background-color: rgba(201, 64, 64, 0.07);
-    }
-}
-
+// ─── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 768px) {
-    #cabecera {
-        padding: 0 1.2rem;
-    }
+    .cabecera-inner { padding: 0 1.25rem; }
+    .cabecera-nav   { display: none; }
+    .badge-kc       { display: none; }
+}
 
-    .cabecera-nav {
-        display: none;
-    }
+@media (max-width: 420px) {
+    .usuario-nombre { display: none; }
 }

@@ -1,52 +1,69 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // para navegar al vault
 import api from '../utils/api.js';
 import useSesion from '../hooks/useSesion.js';
 import useNotificacion from '../hooks/useNotificacion.js';
 import { formatearKC } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
+import Confirmacion from '../estructura/Confirmacion.jsx';
 import './ModalCaja.scss';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ModalCaja — muestra detalles de la caja + lista de contenido + botón abrir.
-// Después de abrir con éxito, cambia a la pantalla del premio.
-//
-// Props:
-//   caja     — objeto caja (id, nombre, precio, imagen, vip)
-//   onCerrar — callback para cerrar el modal
+// ModalCaja
+//   Vista normal:  columna izq (imagen caja) + columna der (botón + grid objetos)
+//   Vista premio:  flash blanco → reveal animado → objeto ganado + 2 botones
 // ─────────────────────────────────────────────────────────────────────────────
 const ModalCaja = ({ caja, onCerrar }) => {
+	const navigate = useNavigate();
 	const { sesionIniciada, obtenerPerfil } = useSesion();
 	const { notificar } = useNotificacion();
 
-	// detalle = null → cargando; detalle = {} → datos del GET /api/cajas/{id}
-	const [detalle, setDetalle] = useState(null);
-	const [abriendo, setAbriendo] = useState(false);
-	// premio !== null → muestra la pantalla de resultado
-	const [premio, setPremio] = useState(null);
+	const [detalle,   setDetalle]   = useState(null);
+	const [abriendo,  setAbriendo]  = useState(false);
+	const [premio,    setPremio]    = useState(null);
+	const [confirmar, setConfirmar] = useState(false);
+	// 'flash' → muestra el destello; 'mostrar' → muestra el objeto
+	const [faseAnimo, setFaseAnimo] = useState('idle');
 
-	// Al montar, carga el detalle de la caja para obtener objetos + probabilidades.
-	// Si la caja ya viene con el array "objetos" (panel admin), lo reutiliza.
 	useEffect(() => {
-		if (Array.isArray(caja.objetos)) {
-			setDetalle(caja);
-			return;
-		}
-		// GET /api/cajas/{id} — ruta pública, devuelve objetos con pivot.probabilidad
+		if (Array.isArray(caja.objetos)) { setDetalle(caja); return; }
 		api.get(`/cajas/${caja.id}`)
 			.then((res) => setDetalle(res.data.data ?? caja))
 			.catch(() => setDetalle(caja));
 	}, [caja.id]);
 
-	const abrirCaja = async () => {
+	// Cuando llega el premio: primero flash, luego revela el objeto
+	useEffect(() => {
+		if (!premio) return;
+		setFaseAnimo('flash');
+		const t = setTimeout(() => setFaseAnimo('mostrar'), 650);
+		return () => clearTimeout(t);
+	}, [premio]);
+
+	const pedirConfirmacion = () => {
 		if (!sesionIniciada) {
 			notificar('Inicia sesión para abrir cajas.', 'error');
 			return;
 		}
+		setConfirmar(true);
+	};
+
+	const abrirCaja = async () => {
+		setConfirmar(false);
 		setAbriendo(true);
 		try {
 			const res = await api.post(`/cajas/${caja.id}/abrir`);
-			await obtenerPerfil(); // refresca saldo KC en cabecera
-			setPremio(res.data.data);
+			await obtenerPerfil();
+
+			const obj = res.data?.data?.premio_obtenido ?? {};
+
+			setPremio({
+				id:     obj.id ?? null,
+				nombre: obj.nombre ?? obj.name ?? obj.titulo ?? '—',
+				tipo:   String(obj.tipo ?? obj.type ?? ''),
+				imagen: obj.imagen ?? obj.imagen_url ?? obj.img ?? obj.image ?? null,
+				precio: Number(obj.precio ?? obj.price ?? 0),
+			});
 		} catch (error) {
 			const msg = error.response?.data?.message || 'No se pudo abrir la caja.';
 			notificar(msg, 'error');
@@ -55,41 +72,86 @@ const ModalCaja = ({ caja, onCerrar }) => {
 		}
 	};
 
-	const objetos   = detalle?.objetos ?? [];
-	const cuchillos = objetos.filter((o) => o.tipo === 'cuchillo');
-	const pegatinas = objetos.filter((o) => o.tipo === 'pegatina');
+	const irAlVault = () => { onCerrar(); navigate('/vault'); };
+
+	const objetosOrdenados = [...(detalle?.objetos ?? [])].sort(
+		(a, b) => (b.pivot?.probabilidad ?? 0) - (a.pivot?.probabilidad ?? 0)
+	);
 
 	return (
-		<div className="modal-caja-overlay" onClick={onCerrar}>
+		<>
+		{confirmar && (
+			<Confirmacion
+				mensaje={`Vas a abrir la caja "${caja.nombre}".`}
+				detalle={`Coste: ${formatearKC(caja.precio)}`}
+				onConfirmar={abrirCaja}
+				onCancelar={() => setConfirmar(false)}
+			/>
+		)}
+		<div
+			className="modal-caja-overlay"
+			// Clic fuera: cierra solo si no hay premio o si ya se muestra
+			onClick={premio ? (faseAnimo === 'mostrar' ? onCerrar : undefined) : onCerrar}
+		>
 			<div
-				className={`modal-caja ${premio ? 'modal-caja-premio' : ''}`}
+				className={`modal-caja${premio ? ' modal-caja-premio' : ''}`}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<button className="modal-caja-cerrar" onClick={onCerrar} aria-label="Cerrar">✕</button>
 
-				{/* ── PANTALLA DE PREMIO ── */}
+				{/* ════════════════════════════════════════════════════════════
+				    PANTALLA DE PREMIO
+				════════════════════════════════════════════════════════════ */}
 				{premio ? (
-					<div className="premio-contenedor">
-						<p className="premio-etiqueta">¡Has conseguido!</p>
-						<div className="premio-imagen">
-							{premio.imagen
-								? <img src={premio.imagen} alt={premio.nombre} />
-								: <span className="premio-icono">🔪</span>
-							}
-						</div>
-						<h2 className="premio-nombre">{premio.nombre}</h2>
-						{premio.tipo && <span className="premio-tipo">{premio.tipo}</span>}
-						{premio.precio > 0 && (
-							<p className="premio-precio">{formatearKC(premio.precio)}</p>
-						)}
-						<button className="btn-premio-cerrar" onClick={onCerrar}>
-							Ver mi Vault
-						</button>
-					</div>
-				) : (
-					/* ── PANTALLA DE DETALLES ── */
 					<>
-						{/* Columna izquierda — imagen y datos de la caja */}
+						{/* Flash PANTALLA COMPLETA (position:fixed) — tapa todo el viewport
+						    mientras dura el destello, nada es visible detrás */}
+						{faseAnimo === 'flash' && <div className="premio-flash-fullscreen" />}
+
+						{/* Contenido del premio — invisible durante el flash, aparece después */}
+						<div className={`premio-contenedor${faseAnimo === 'mostrar' ? ' premio-visible' : ''}`}>
+
+							<p className="premio-etiqueta">¡Has conseguido!</p>
+
+							{/* Imagen con rayos y halo */}
+							<div className="premio-imagen-wrap">
+								<div className="premio-rayos" />
+								<div className="premio-imagen">
+									{premio.imagen
+										? <img src={premio.imagen} alt={premio.nombre} />
+										: <span className="premio-icono">🔪</span>
+									}
+								</div>
+							</div>
+
+							<h2 className="premio-nombre">{premio.nombre}</h2>
+
+							{premio.tipo && (
+								<span className="premio-tipo">{premio.tipo}</span>
+							)}
+
+							{premio.precio > 0 && (
+								<p className="premio-precio">{formatearKC(premio.precio)}</p>
+							)}
+
+							{/* Dos botones: ir al vault o seguir abriendo */}
+							<div className="premio-botones">
+								<button className="btn-premio-vault" onClick={irAlVault}>
+									Ver mi colección
+								</button>
+								<button className="btn-premio-mas" onClick={onCerrar}>
+									Abrir otra
+								</button>
+							</div>
+
+							<p className="premio-hint">o toca fuera para cerrar</p>
+						</div>
+					</>
+				) : (
+					/* ════════════════════════════════════════════════════════
+					   PANTALLA DE DETALLES (2 columnas)
+					════════════════════════════════════════════════════════ */
+					<>
 						<div className="modal-caja-izq">
 							<div className="modal-caja-imagen">
 								{caja.imagen
@@ -102,30 +164,37 @@ const ModalCaja = ({ caja, onCerrar }) => {
 							<p className="modal-caja-precio">{formatearKC(caja.precio)}</p>
 						</div>
 
-						{/* Columna derecha — botón de apertura + lista de objetos */}
 						<div className="modal-caja-der">
-							<button
-								className="btn-abrir-modal"
-								onClick={abrirCaja}
-								disabled={abriendo}
-							>
-								{abriendo ? 'Abriendo...' : '🎲 Abrir caja'}
-							</button>
+							<div className="modal-caja-boton">
+								<button
+									className="btn-abrir-modal"
+									onClick={pedirConfirmacion}
+									disabled={abriendo}
+								>
+									{abriendo ? 'Abriendo...' : '🎲 Abrir caja'}
+								</button>
+							</div>
+
+							<div className="modal-caja-lista-header">
+								<span>Contenido</span>
+								{detalle && objetosOrdenados.length > 0 && (
+									<span className="modal-caja-count">
+										{objetosOrdenados.length} objetos
+									</span>
+								)}
+							</div>
 
 							<div className="modal-caja-contenido">
 								{!detalle ? (
 									<Cargando />
-								) : objetos.length === 0 ? (
-									<p className="modal-vacio">Esta caja aún no tiene objetos configurados.</p>
+								) : objetosOrdenados.length === 0 ? (
+									<p className="modal-vacio">Sin objetos configurados.</p>
 								) : (
-									<>
-										{cuchillos.length > 0 && (
-											<GrupoObjetos titulo="Cuchillos" objetos={cuchillos} />
-										)}
-										{pegatinas.length > 0 && (
-											<GrupoObjetos titulo="Pegatinas" objetos={pegatinas} />
-										)}
-									</>
+									<div className="modal-objetos-grid">
+										{objetosOrdenados.map((o) => (
+											<MiniObjeto key={o.id} objeto={o} />
+										))}
+									</div>
 								)}
 							</div>
 						</div>
@@ -133,34 +202,30 @@ const ModalCaja = ({ caja, onCerrar }) => {
 				)}
 			</div>
 		</div>
+		</>
 	);
 };
 
-// ─── Sub-componentes ──────────────────────────────────────────────────────────
+const MiniObjeto = ({ objeto: o }) => {
+	// Extrae la probabilidad de forma segura — si el backend devuelve un objeto
+	// en vez de un número, String() lo convierte antes de renderizar
+	const prob = o.pivot?.probabilidad;
+	const probTexto = (prob !== null && prob !== undefined && typeof prob !== 'object')
+		? String(prob)
+		: '?';
 
-const GrupoObjetos = ({ titulo, objetos }) => (
-	<div className="modal-grupo">
-		<p className="modal-grupo-titulo">{titulo}</p>
-		<div className="modal-lista">
-			{objetos.map((o) => (
-				<div key={o.id} className="modal-objeto-fila">
-					<div className="modal-objeto-img">
-						{o.imagen
-							? <img src={o.imagen} alt={o.nombre} />
-							: <span className="modal-objeto-icono">🔪</span>
-						}
-					</div>
-					<div className="modal-objeto-info">
-						<span className="modal-objeto-nombre">{o.nombre}</span>
-						<span className="modal-objeto-precio">{formatearKC(o.precio)}</span>
-					</div>
-					<span className="modal-objeto-prob">
-						{o.pivot?.probabilidad ?? '?'}%
-					</span>
-				</div>
-			))}
+	return (
+		<div className="mini-objeto" title={`${o.nombre} — ${probTexto}%`}>
+			<div className="mini-objeto-img">
+				{o.imagen
+					? <img src={o.imagen} alt={o.nombre} />
+					: <span className="mini-objeto-icono">🔪</span>
+				}
+			</div>
+			<p className="mini-objeto-nombre">{o.nombre}</p>
+			<span className="mini-objeto-prob">{probTexto}%</span>
 		</div>
-	</div>
-);
+	);
+};
 
 export default ModalCaja;

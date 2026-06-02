@@ -4,6 +4,7 @@ import useIntercambios from '../hooks/useIntercambios.js';
 import useSesion from '../hooks/useSesion.js';
 import { formatearKC, formatearFecha } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
+import Confirmacion from '../estructura/Confirmacion.jsx';
 import './Intercambios.scss';
 
 // Etiquetas de estado en español con color
@@ -127,8 +128,32 @@ const Intercambios = () => {
 // ——— Tarjeta de oferta ———
 const TarjetaOferta = ({ oferta, modo, onAceptar, onRechazar, onCancelar }) => {
 	const estado = ESTADO_INFO[oferta.estado] ?? { etiqueta: oferta.estado, clase: '' };
+	// null = cerrado; 'aceptar' | 'rechazar' | 'cancelar' = acción pendiente
+	const [confirmar, setConfirmar] = useState(null);
+
+	const acciones = {
+		aceptar:  { mensaje: 'Vas a aceptar este intercambio.',                    detalle: 'Se transferirán los objetos y/o KC entre ambas partes.',  fn: onAceptar,  peligroso: false },
+		rechazar: { mensaje: 'Vas a rechazar esta oferta.',                         detalle: 'El emisor será notificado del rechazo.',                  fn: onRechazar, peligroso: false },
+		cancelar: { mensaje: 'Vas a cancelar tu oferta. Se retirará del mercado.',  detalle: 'Esta acción no se puede deshacer.',                       fn: onCancelar, peligroso: true  },
+	};
+
+	const ejecutar = () => {
+		const accion = acciones[confirmar];
+		setConfirmar(null);
+		accion?.fn?.();
+	};
 
 	return (
+		<>
+			{confirmar && (
+				<Confirmacion
+					mensaje={acciones[confirmar].mensaje}
+					detalle={acciones[confirmar].detalle}
+					onConfirmar={ejecutar}
+					onCancelar={() => setConfirmar(null)}
+					peligroso={acciones[confirmar].peligroso}
+				/>
+			)}
 		<div className={`tarjeta-oferta ${oferta.estado !== 'pendiente' ? 'oferta-inactiva' : ''}`}>
 			{/* Cabecera: emisor y fecha */}
 			<div className="oferta-meta">
@@ -186,23 +211,24 @@ const TarjetaOferta = ({ oferta, modo, onAceptar, onRechazar, onCancelar }) => {
 			{oferta.estado === 'pendiente' && (
 				<div className="oferta-acciones">
 					{(modo === 'mercado' || modo === 'recibida') && onAceptar && (
-						<button className="btn-aceptar" onClick={onAceptar}>
+						<button className="btn-aceptar" onClick={() => setConfirmar('aceptar')}>
 							Aceptar intercambio
 						</button>
 					)}
 					{modo === 'recibida' && onRechazar && (
-						<button className="btn-rechazar" onClick={onRechazar}>
+						<button className="btn-rechazar" onClick={() => setConfirmar('rechazar')}>
 							Rechazar
 						</button>
 					)}
 					{modo === 'enviada' && onCancelar && (
-						<button className="btn-cancelar-oferta" onClick={onCancelar}>
+						<button className="btn-cancelar-oferta" onClick={() => setConfirmar('cancelar')}>
 							Cancelar oferta
 						</button>
 					)}
 				</div>
 			)}
 		</div>
+		</>
 	);
 };
 

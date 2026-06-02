@@ -67,22 +67,20 @@ const ListadoCajas = () => {
 };
 
 const TarjetaCaja = ({ caja, onVerDetalles }) => (
-	<div className="tarjeta-caja">
+	<div className="tarjeta-caja" onClick={onVerDetalles}>
 		{caja.vip && <span className="badge-vip">VIP</span>}
 
 		<div className="tarjeta-caja-imagen">
 			{caja.imagen
-				? <img src={caja.imagen} alt={caja.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+				? <img src={caja.imagen} alt={caja.nombre} />
 				: <span className="icono-caja">⬡</span>
 			}
 		</div>
 
-		<div className="tarjeta-caja-info">
-			<h3 className="tarjeta-caja-nombre">{caja.nombre}</h3>
-			<p className="tarjeta-caja-precio">{formatearKC(caja.precio)}</p>
-		</div>
+		<h3 className="tarjeta-caja-nombre">{caja.nombre}</h3>
+		<p className="tarjeta-caja-precio">{formatearKC(caja.precio)}</p>
 
-		<button className="btn-abrir-caja" onClick={onVerDetalles}>
+		<button className="btn-abrir-caja" onClick={(e) => { e.stopPropagation(); onVerDetalles(); }}>
 			Ver detalles
 		</button>
 	</div>

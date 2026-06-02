@@ -441,6 +441,326 @@
 .positivo { color: #4caf50; font-weight: 700; }
 .negativo { color: v.$error-color; font-weight: 700; }
 
+// =====================
+// DASHBOARD
+// =====================
+
+// Grid de 4 KPI cards
+.dashboard-kpis {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+
+	@media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+	@media (max-width: 500px) { grid-template-columns: 1fr; }
+}
+
+.kpi-card {
+	background: v.$negro-card;
+	border: 1px solid v.$borde-hover;
+	border-radius: 16px;
+	padding: 1.4rem 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	transition: v.$transicion;
+
+	&:hover { border-color: v.$borde-dorado; }
+
+	&.kpi-dorado {
+		border-color: v.$borde-dorado;
+		background: linear-gradient(135deg, rgba(201,162,39,0.07) 0%, v.$negro-card 100%);
+		box-shadow: 0 0 24px v.$dorado-glow;
+	}
+}
+
+.kpi-valor {
+	font-size: 1.7rem;
+	font-weight: 900;
+	color: v.$texto;
+	letter-spacing: -0.8px;
+	line-height: 1;
+
+	.kpi-dorado & { color: v.$dorado; }
+}
+
+.kpi-titulo {
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: v.$texto-muted;
+	margin-top: 4px;
+}
+
+.kpi-sub {
+	font-size: 0.75rem;
+	color: v.$texto-oscuro;
+	margin-top: 2px;
+}
+
+// Fila de dos bloques
+.dashboard-fila2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+
+	@media (max-width: 700px) { grid-template-columns: 1fr; }
+}
+
+.dashboard-bloque {
+	background: v.$negro-card;
+	border: 1px solid v.$borde-hover;
+	border-radius: 14px;
+	padding: 1.25rem 1.5rem;
+}
+
+.dashboard-bloque-titulo {
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: v.$texto-muted;
+	margin-bottom: 1.1rem;
+}
+
+// Barras de progreso para intercambios
+.dashboard-barras { display: flex; flex-direction: column; gap: 0.7rem; }
+
+.barra-fila {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.barra-label {
+	font-size: 0.78rem;
+	color: v.$texto-suave;
+	width: 80px;
+	flex-shrink: 0;
+}
+
+.barra-track {
+	flex: 1;
+	height: 6px;
+	background: v.$negro-hover;
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.barra-fill {
+	height: 100%;
+	border-radius: 3px;
+	transition: width 0.6s ease;
+	min-width: 4px;
+
+	&.barra-exito   { background: v.$exito-color; }
+	&.barra-warning { background: v.$dorado; }
+	&.barra-muted   { background: v.$texto-oscuro; }
+	&.barra-error   { background: v.$error-color; }
+}
+
+.barra-valor {
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: v.$texto-muted;
+	width: 28px;
+	text-align: right;
+	flex-shrink: 0;
+}
+
+// Tabla compacta dentro del dashboard
+.dashboard-tabla {
+	margin: 0;
+	font-size: 0.82rem;
+	border: none;
+
+	thead th { background: transparent; padding: 6px 10px; }
+	td { padding: 7px 10px; }
+}
+
+// =====================
+// INTERCAMBIOS ADMIN
+// =====================
+.trade-filtros {
+	display: flex;
+	gap: 4px;
+	flex-wrap: wrap;
+	margin-bottom: 1.25rem;
+}
+
+.trade-filtro-btn {
+	background: transparent;
+	border: 1px solid v.$borde-hover;
+	color: v.$texto-muted;
+	font-size: 0.8rem;
+	font-weight: 600;
+	padding: 6px 14px;
+	border-radius: 100px;
+	cursor: pointer;
+	transition: v.$transicion;
+
+	&:hover { border-color: v.$dorado; color: v.$dorado; }
+
+	&.activo {
+		background: rgba(201,162,39,0.1);
+		border-color: v.$dorado;
+		color: v.$dorado;
+	}
+}
+
+.trade-objeto {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.82rem;
+}
+
+.trade-thumb {
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+	border-radius: 5px;
+	background: v.$negro-hover;
+	padding: 2px;
+	flex-shrink: 0;
+}
+
+.trade-estado {
+	font-size: 0.72rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	border-radius: 100px;
+	text-transform: capitalize;
+
+	&.trade-pendiente  { background: rgba(201,162,39,0.12); color: v.$dorado;    border: 1px solid rgba(201,162,39,0.3); }
+	&.trade-aceptado   { background: rgba(63,163,95,0.12);  color: v.$exito-color; border: 1px solid rgba(63,163,95,0.3); }
+	&.trade-rechazado  { background: rgba(201,64,64,0.12);  color: v.$error-color; border: 1px solid rgba(201,64,64,0.3); }
+	&.trade-cancelado  { background: v.$negro-hover;        color: v.$texto-muted; border: 1px solid v.$borde-hover; }
+}
+
+// =====================
+// OFERTA SEMANAL
+// =====================
+.admin-oferta-desc {
+    color: v.$texto-muted;
+    font-size: 0.88rem;
+    margin-bottom: 1.75rem;
+    line-height: 1.6;
+    max-width: 620px;
+}
+
+.count-lleno { color: v.$error-color !important; border-color: rgba(201,64,64,0.35) !important; }
+
+.oferta-subtitulo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: v.$texto-muted;
+    margin: 1.75rem 0 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid v.$borde;
+}
+
+// Grid de cuchillos activos
+.oferta-activos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+// Tarjeta de cuchillo en la oferta admin
+.oferta-tarjeta {
+    background: v.$negro-card;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: v.$transicion;
+
+    &:hover { border-color: v.$borde-hover; }
+
+    &.oferta-tarjeta-activa {
+        border-color: rgba(201, 162, 39, 0.3);
+        background: linear-gradient(135deg, rgba(201,162,39,0.06) 0%, v.$negro-card 100%);
+        box-shadow: 0 0 0 1px rgba(201,162,39,0.1), 0 4px 20px rgba(0,0,0,0.4);
+    }
+}
+
+.oferta-tarjeta-img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: v.$negro-hover;
+    padding: 5px;
+    flex-shrink: 0;
+    border: 1px solid v.$borde-hover;
+}
+
+.oferta-tarjeta-icono {
+    font-size: 1.8rem;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: v.$negro-hover;
+    border-radius: 10px;
+    flex-shrink: 0;
+    border: 1px solid v.$borde-hover;
+}
+
+.oferta-tarjeta-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.oferta-tarjeta-nombre {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: v.$texto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.oferta-tarjeta-precio {
+    font-size: 0.78rem;
+    color: v.$dorado;
+    font-weight: 700;
+}
+
+// Thumbnail en la tabla de inactivos
+.oferta-thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    background: v.$negro-hover;
+    border-radius: 8px;
+    padding: 3px;
+    border: 1px solid v.$borde-hover;
+    display: block;
+}
+
+.oferta-thumb-vacio {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: v.$negro-hover;
+    border-radius: 8px;
+    border: 1px solid v.$borde-hover;
+}
+
 // ── Añadir objeto a caja ──
 .admin-añadir-objeto {
 	margin-top: 1.5rem;

@@ -5,6 +5,7 @@ import useSesion from '../hooks/useSesion.js';
 import useNotificacion from '../hooks/useNotificacion.js';
 import { formatearKC } from '../utils/formatear.js';
 import api from '../utils/api.js';
+import Confirmacion from '../estructura/Confirmacion.jsx';
 import './CrearIntercambio.scss';
 
 const CrearIntercambio = () => {
@@ -25,6 +26,9 @@ const CrearIntercambio = () => {
 	// Tipo de oferta: 'venta' (item→KC), 'compra' (KC→item), 'trueque' (item→item + KC ajuste)
 	const [tipo, setTipo] = useState('venta');
 	const [enviando, setEnviando] = useState(false);
+	const [confirmar, setConfirmar] = useState(false);
+	// Datos listos para enviar — se guardan al validar, se usan al confirmar
+	const [datosPendientes, setDatosPendientes] = useState(null);
 
 	// Cargar inventario propio para seleccionar qué ofrecer
 	useEffect(() => {
@@ -53,7 +57,7 @@ const CrearIntercambio = () => {
 		resetForm();
 	};
 
-	const handleSubmit = async (e) => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
 
 		// Validaciones básicas en cliente
@@ -82,21 +86,37 @@ const CrearIntercambio = () => {
 			return;
 		}
 
-		const datos = {
+		// Validaciones superadas → guardamos los datos y pedimos confirmación
+		setDatosPendientes({
 			objeto_ofrecido_id:   objetoOfrecidoId   || null,
 			monedas_ofrecidas:    Number(monedasOfrecidas),
 			objeto_solicitado_id: objetoSolicitadoId || null,
 			monedas_solicitadas:  Number(monedasSolicitadas),
-		};
+		});
+		setConfirmar(true);
+	};
 
+	const publicarOferta = async () => {
+		setConfirmar(false);
+		if (!datosPendientes) return;
 		setEnviando(true);
-		const ok = await crearIntercambio(datos);
+		const ok = await crearIntercambio(datosPendientes);
 		setEnviando(false);
-
 		if (ok) navegar('/intercambios');
 	};
 
+	const etiquetaTipo = { venta: 'Venta (objeto → KC)', trueque: 'Trueque (objeto → objeto)', compra: 'Compra (KC → objeto)' };
+
 	return (
+		<>
+		{confirmar && (
+			<Confirmacion
+				mensaje={`Vas a publicar una oferta de tipo "${etiquetaTipo[tipo]}".`}
+				detalle="La oferta será visible para todos los usuarios del mercado."
+				onConfirmar={publicarOferta}
+				onCancelar={() => setConfirmar(false)}
+			/>
+		)}
 		<div className="crear-intercambio-contenedor">
 			<div className="crear-intercambio-card">
 				<h1 className="crear-titulo">Nueva oferta</h1>
@@ -224,6 +244,7 @@ const CrearIntercambio = () => {
 				</form>
 			</div>
 		</div>
+		</>
 	);
 };
 

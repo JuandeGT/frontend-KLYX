@@ -1,33 +1,73 @@
 @use '../styles/variables' as v;
 
-.cargando-overlay {
+.cargando-contenedor {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    gap: 18px;
-    min-height: 260px;
-    width: 100%;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 2.2rem;
 }
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 2px solid v.$borde-hover;
-    border-top-color: v.$dorado;
-    border-radius: 50%;
-    animation: girarSpinner 0.75s linear infinite;
-    box-shadow: 0 0 12px v.$dorado-glow;
+// ─── Letras KLYX en onda ──────────────────────────────────────────────────────
+.cargando-logo {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.08em;
+
+    span {
+        font-size: 3.8rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        color: rgba(201, 162, 39, 0.2);
+        animation: letraOnda 1.5s ease-in-out infinite;
+        display: inline-block;
+        line-height: 1;
+        user-select: none;
+    }
 }
 
-@keyframes girarSpinner {
-    to { transform: rotate(360deg); }
+@keyframes letraOnda {
+    0%, 100% {
+        color: rgba(201, 162, 39, 0.18);
+        transform: translateY(0) scale(1);
+        text-shadow: none;
+    }
+    45% {
+        color: v.$dorado-hover;
+        transform: translateY(-10px) scale(1.12);
+        text-shadow:
+            0 0 24px rgba(201, 162, 39, 0.75),
+            0 0 60px rgba(201, 162, 39, 0.3),
+            0 8px 20px rgba(0, 0, 0, 0.5);
+    }
 }
 
-.cargando-texto {
-    font-size: 0.82rem;
-    color: v.$texto-muted;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+// ─── Barra de progreso con luz que barre ─────────────────────────────────────
+.cargando-barra {
+    width: 110px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.cargando-barra-luz {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 45%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, transparent, v.$dorado, v.$dorado-claro, v.$dorado, transparent);
+    box-shadow: 0 0 10px rgba(201, 162, 39, 0.8);
+    animation: barraBarrer 1.5s ease-in-out infinite;
+}
+
+@keyframes barraBarrer {
+    0%   { transform: translateX(-120%); opacity: 0; }
+    15%  { opacity: 1; }
+    85%  { opacity: 1; }
+    100% { transform: translateX(280%); opacity: 0; }
 }

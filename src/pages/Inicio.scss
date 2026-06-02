@@ -9,10 +9,15 @@
 // HERO
 // =====================
 .hero {
-    position: relative;
+    // Sticky hero: se queda fijo mientras las secciones inferiores
+    // suben sobre él. top: 62px = altura de la Cabecera.
+    // z-index: 0 garantiza que las secciones (z-index: 1) lo cubran.
+    position: sticky;
+    top: 60px;
+    z-index: 0;
     display: flex;
     align-items: center;
-    min-height: calc(100vh - 62px);
+    height: calc(100vh - 60px);   // altura exacta = 1 viewport sin navbar
     padding: 3rem 8% 4rem;
     overflow: hidden;
     // Sin background propio — el hero-3d-bg con z-index:0 cubre el fondo
@@ -197,51 +202,170 @@
 }
 
 // =====================
-// STATS BANDA
+// FEED DE ACTIVIDAD
 // =====================
-.stats-banda {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+.feed-actividad {
+    position: relative;
+    z-index: 1;
     background-color: v.$negro-card;
     border-top: 1px solid v.$borde;
     border-bottom: 1px solid v.$borde;
+    padding: 1.1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    overflow: hidden;
 }
 
-.stat {
+// Badge "● EN VIVO" + título
+.feed-encabezado {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 4px;
-    padding: 2rem 1rem;
+    flex-shrink: 0;
+    padding-right: 1.75rem;
+    border-right: 1px solid v.$borde;
+}
+
+.feed-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3fa35f;
+    flex-shrink: 0;
+    animation: pulsarVerde 1.8s ease-in-out infinite;
+    margin-bottom: 2px;
+}
+
+@keyframes pulsarVerde {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(63, 163, 95, 0.5); }
+    50%       { box-shadow: 0 0 0 5px rgba(63, 163, 95, 0); }
+}
+
+.feed-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #3fa35f;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.feed-titulo-hint {
+    font-size: 0.72rem;
+    color: v.$texto-muted;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+// Lista horizontal scrollable — cards verticales
+.feed-lista {
+    display: flex;
+    align-items: stretch;
+    gap: 0.65rem;
+    overflow-x: auto;
+    flex: 1;
+    scrollbar-width: none;
+    padding: 0.15rem 0;
+    &::-webkit-scrollbar { display: none; }
+}
+
+// ─── Card de objeto — imagen + nombre en overlay ──────────────────────────────
+.feed-card {
     position: relative;
+    flex-shrink: 0;
+    width: 96px;
+    height: 124px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: v.$negro-hover;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    cursor: default;
+    transition: all 0.22s ease;
+    animation: entradaItem 0.4s ease both;
 
-    // Separador vertical entre stats
-    & + .stat {
-        border-left: 1px solid v.$borde;
+    &:hover {
+        border-color: rgba(201, 162, 39, 0.4);
+        box-shadow:
+            0 8px 24px rgba(0,0,0,0.5),
+            0 0 0 1px rgba(201,162,39,0.15);
+        transform: translateY(-4px) scale(1.03);
+    }
+}
+
+@keyframes entradaItem {
+    from { opacity: 0; transform: translateY(10px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+// Imagen — llena la carte (sin padding extra abajo — el overlay lo cubre)
+.feed-card-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px 36px; // espacio inferior reservado para el nombre
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+        transition: transform 0.22s ease, filter 0.22s ease;
     }
 
-    strong {
-        font-size: 2rem;
-        font-weight: 900;
-        color: v.$dorado;
-        line-height: 1;
+    .feed-card:hover & img {
+        transform: scale(1.1) translateY(-3px);
+        filter:
+            drop-shadow(0 8px 18px rgba(0,0,0,0.9))
+            drop-shadow(0 0 10px rgba(201,162,39,0.25));
     }
+}
 
-    span {
-        font-size: 0.68rem;
-        color: v.$texto-muted;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        margin-top: 4px;
-        text-align: center;
-    }
+.feed-card-icono { font-size: 2.5rem; opacity: 0.35; }
+
+// Nombre en overlay degradado en la parte inferior
+.feed-card-nombre {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 22px 6px 7px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.65) 55%,
+        transparent 100%
+    );
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .feed-actividad { padding: 0.85rem 1rem; gap: 1rem; }
+    .feed-encabezado { padding-right: 1rem; }
+    .feed-card { width: 82px; height: 106px; }
 }
 
 // =====================
 // CAJAS DESTACADAS
 // =====================
 .destacadas {
-    padding: 4rem 8%;
+    position: relative;
+    z-index: 1;          // sube por encima del hero sticky
+    background-color: v.$negro;   // fondo sólido para tapar el hero
+    padding: 5rem 6%;
 }
 
 .destacadas-cabecera {
@@ -249,12 +373,15 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2.5rem;
+    max-width: 1020px;
+    margin-left: auto;
+    margin-right: auto;
 
     h2 {
-        font-size: 1.7rem;
+        font-size: 1.8rem;
         font-weight: 800;
         color: v.$texto;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.6px;
     }
 }
 
@@ -267,128 +394,153 @@
     align-items: center;
     gap: 4px;
 
-    &:hover {
-        color: v.$dorado;
-        gap: 8px;
-    }
+    &:hover { color: v.$dorado; gap: 8px; }
 }
 
+// Grid centrado — máximo 3 columnas, centrado horizontalmente
 .destacadas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+    justify-content: center;
     gap: 1.5rem;
+    max-width: 1020px;
+    margin: 0 auto;
 }
 
+// ── Tarjeta de caja ──────────────────────────────────────────────────────────
+// Diseño tipo product card: imagen full-width arriba, info abajo
 .tarjeta-destacada {
-    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro-panel 100%);
-    border: 1px solid v.$borde;
-    border-radius: v.$radio-lg;
-    padding: 2rem 1.5rem;
+    background: v.$negro-card;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 24px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1rem;
     position: relative;
-    transition: v.$transicion-suave;
     overflow: hidden;
+    transition: all 0.32s ease;
+    cursor: pointer;
 
-    // Brillo interior en hover
+    // Shimmer dorado en la parte superior — solo decorativo
     &::after {
         content: '';
         position: absolute;
-        inset: 0;
-        border-radius: v.$radio-lg;
-        background: radial-gradient(circle at 50% 0%, rgba(201,162,39,0.06) 0%, transparent 60%);
+        top: 0; left: 0; right: 0;
+        height: 200px; // solo cubre la zona de imagen
+        background: radial-gradient(ellipse at 50% 20%, rgba(201,162,39,0.1) 0%, transparent 65%);
         opacity: 0;
-        transition: v.$transicion-suave;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
     }
 
     &:hover {
-        border-color: v.$borde-dorado;
-        box-shadow: 0 0 30px v.$dorado-glow, 0 8px 32px rgba(0,0,0,0.5);
-        transform: translateY(-6px);
+        border-color: rgba(201, 162, 39, 0.3);
+        box-shadow:
+            0 0 0 1px rgba(201, 162, 39, 0.12),
+            0 28px 70px rgba(0, 0, 0, 0.65);
+        transform: translateY(-8px);
 
-        &::after {
-            opacity: 1;
-        }
+        &::after { opacity: 1; }
     }
 
     h3 {
-        font-size: 1.05rem;
+        font-size: 1rem;
         font-weight: 700;
         color: v.$texto;
-        letter-spacing: -0.2px;
+        letter-spacing: -0.3px;
+        line-height: 1.3;
+        padding: 1.2rem 1.5rem 0.25rem;
     }
 }
 
+// Zona de imagen — full-width, el protagonista de la tarjeta
 .tarjeta-imagen {
-    width: 110px;
-    height: 110px;
-    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
-    border: 1px solid v.$borde-hover;
-    border-radius: v.$radio-md;
+    width: 100%;
+    height: 210px;
+    background:
+        radial-gradient(ellipse at 50% 80%, rgba(201,162,39,0.06) 0%, transparent 55%),
+        v.$negro-panel;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: v.$transicion;
+    padding: 1.75rem;
+    position: relative;
 
-    .tarjeta-destacada:hover & {
-        border-color: v.$borde-dorado;
-        box-shadow: 0 0 20px v.$dorado-glow;
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.8));
+        transition: all 0.35s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .tarjeta-destacada:hover & img {
+        transform: scale(1.08) translateY(-5px);
+        filter:
+            drop-shadow(0 16px 40px rgba(0, 0, 0, 0.85))
+            drop-shadow(0 0 24px rgba(201, 162, 39, 0.22));
     }
 }
 
 .icono-caja {
-    font-size: 3.5rem;
+    font-size: 4.5rem;
     color: v.$dorado;
-    opacity: 0.6;
+    opacity: 0.45;
     transition: v.$transicion;
+    position: relative;
+    z-index: 1;
 
-    .tarjeta-destacada:hover & {
-        opacity: 0.9;
-        filter: drop-shadow(0 0 8px v.$dorado-glow);
-    }
+    .tarjeta-destacada:hover & { opacity: 0.85; transform: scale(1.05); }
 }
 
 .tarjeta-precio {
     color: v.$dorado;
-    font-weight: 800;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
+    font-weight: 900;
+    font-size: 1.3rem;
+    letter-spacing: -0.4px;
+    padding: 0 1.5rem 1.1rem;
 }
 
 .badge-vip {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 14px;
+    right: 14px;
     background: v.$grad-dorado;
     color: v.$negro;
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     font-weight: 900;
     letter-spacing: 2px;
-    padding: 3px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 100px;
     text-transform: uppercase;
+    z-index: 2;
 }
 
 .btn-ver-caja {
-    width: 100%;
-    text-align: center;
     display: block;
+    text-align: center;
     background: transparent;
-    border: 1px solid v.$borde-dorado;
+    border: 1px solid rgba(201, 162, 39, 0.28);
     color: v.$dorado;
-    padding: 10px;
-    border-radius: v.$radio;
-    font-weight: 600;
-    font-size: 0.87rem;
+    padding: 11px 0;
+    margin: 0 1.5rem 1.5rem;
+    width: calc(100% - 3rem);
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 0.83rem;
     cursor: pointer;
     transition: v.$transicion;
+    position: relative;
+    z-index: 1;
 
     &:hover {
         background: v.$grad-dorado;
         color: v.$negro;
         border-color: transparent;
+        box-shadow: 0 4px 20px rgba(201, 162, 39, 0.38);
     }
 }
 
@@ -396,9 +548,11 @@
 // SELECCIÓN SEMANAL
 // =====================
 .seleccion-semanal {
-    padding: 4rem 8%;
-    background-color: v.$negro-card;
-    border-top: 1px solid v.$borde;
+    position: relative;
+    z-index: 1;          // sube por encima del hero sticky
+    padding: 5rem 8%;
+    background-color: v.$negro;
+    border-top: 1px solid rgba(255,255,255,0.04);
 }
 
 .seleccion-semanal-subtitulo {
@@ -411,89 +565,100 @@
     background-color: v.$dorado-tenue;
     color: v.$dorado;
     border: 1px solid v.$borde-dorado;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.72rem;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     white-space: nowrap;
-    animation: pulsarBadge 2.5s ease-in-out infinite;
 }
 
-@keyframes pulsarBadge {
-    0%, 100% { box-shadow: 0 0 0 0 v.$dorado-tenue; }
-    50%       { box-shadow: 0 0 0 6px transparent; }
-}
-
+// Grid centrado — max 3 cuchillos, justificado al centro
 .semanal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(290px, 380px));
+    justify-content: center;
     gap: 1.5rem;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
+// Tarjeta de objeto — diseño vertical con imagen a ancho completo
+// SIN colores de borde por rareza — todos los cards son iguales
 .tarjeta-objeto {
-    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro 100%);
-    border-radius: v.$radio-lg;
-    padding: 1.5rem;
+    background: v.$negro-card;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    position: relative;
     overflow: hidden;
     transition: v.$transicion-suave;
-    border: 1px solid transparent;
-    border-left: 3px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
 
     &:hover {
-        transform: translateY(-4px);
+        transform: translateY(-5px);
+        border-color: rgba(201, 162, 39, 0.25);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
 
-    &.rareza-legendario {
-        border-left-color: #e53935;
-        &:hover { box-shadow: -3px 0 20px rgba(229,57,53,0.25), 0 8px 24px rgba(0,0,0,0.4); }
-    }
-    &.rareza-raro {
-        border-left-color: #8e24aa;
-        &:hover { box-shadow: -3px 0 20px rgba(142,36,170,0.25), 0 8px 24px rgba(0,0,0,0.4); }
-    }
+    // Todas las variantes de rareza tienen el mismo estilo — sin borde de color
+    &.rareza-legendario,
+    &.rareza-raro,
     &.rareza-especial {
-        border-left-color: #1565c0;
-        &:hover { box-shadow: -3px 0 20px rgba(21,101,192,0.25), 0 8px 24px rgba(0,0,0,0.4); }
+        border-left: 1px solid rgba(255,255,255,0.06);
+        &:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
     }
 }
 
+// Imagen a ancho completo, prominente
 .objeto-imagen {
-    width: 80px;
-    height: 80px;
-    background-color: v.$negro-hover;
-    border: 1px solid v.$borde-hover;
-    border-radius: v.$radio;
+    width: 100%;
+    height: 190px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, v.$negro 100%);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+
+    img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6));
+        transition: v.$transicion-suave;
+    }
+
+    .tarjeta-objeto:hover & img {
+        filter: drop-shadow(0 8px 24px rgba(201,162,39,0.2));
+        transform: scale(1.04);
+    }
 }
 
-.icono-objeto {
-    font-size: 2.5rem;
-}
+.icono-objeto { font-size: 4rem; opacity: 0.5; }
 
-.objeto-info { flex: 1; }
+.objeto-info {
+    flex: 1;
+    padding: 1.1rem 1.4rem 0.5rem;
+}
 
 .objeto-tipo {
-    font-size: 0.7rem;
+    font-size: 0.66rem;
     color: v.$texto-muted;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 4px;
+    letter-spacing: 2.5px;
+    margin-bottom: 5px;
+    font-weight: 500;
 }
 
 .objeto-nombre {
     font-size: 1rem;
     font-weight: 700;
     color: v.$texto;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.3px;
+    line-height: 1.35;
 }
 
 .objeto-footer {
@@ -501,41 +666,45 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-top: auto;
-    padding-top: 0.75rem;
-    border-top: 1px solid v.$borde;
+    padding: 0.8rem 1.4rem 1.4rem;
 }
 
 .objeto-precio {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 800;
     color: v.$dorado;
+    letter-spacing: -0.3px;
 }
 
 .btn-comprar {
     background: v.$grad-dorado;
     color: v.$negro;
     border: none;
-    padding: 8px 18px;
-    border-radius: v.$radio;
+    padding: 9px 22px;
+    border-radius: 100px;
     font-weight: 700;
     font-size: 0.82rem;
-    letter-spacing: 0.3px;
     transition: v.$transicion;
     white-space: nowrap;
-    box-shadow: 0 2px 10px v.$dorado-glow;
+    cursor: pointer;
 
     &:hover {
-        box-shadow: 0 4px 18px v.$dorado-glow;
+        filter: brightness(1.1);
         transform: translateY(-1px);
+        box-shadow: 0 4px 18px v.$dorado-glow;
         color: v.$negro;
     }
+
+    &:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 }
 
 // =====================
 // CÓMO FUNCIONA
 // =====================
 .como-funciona {
+    position: relative;
+    z-index: 1;          // sube por encima del hero sticky
+    background-color: v.$negro;   // fondo sólido para tapar el hero
     padding: 4rem 8%;
     border-top: 1px solid v.$borde;
 

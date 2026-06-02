@@ -1,57 +1,92 @@
-import React from 'react';
-// NavLink es un componente de react-router-dom que añade automáticamente la clase
-// "active" al enlace que coincide con la ruta actual. No aparece en la referencia base
-// pero es necesario para resaltar la sección activa en la navbar.
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import useSesion from '../hooks/useSesion.js';
 import { formatearKC } from '../utils/formatear.js';
+import Confirmacion from './Confirmacion.jsx';
 import './Cabecera.scss';
 
 const Cabecera = () => {
 	const { sesionIniciada, usuario, administrador, cerrarSesion } = useSesion();
+	const [confirmarSalir, setConfirmarSalir] = useState(false);
+	const [scrolled, setScrolled] = useState(false);
+
+	useEffect(() => {
+		const onScroll = () => setScrolled(window.scrollY > 10);
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => window.removeEventListener('scroll', onScroll);
+	}, []);
+
+	const esVip = !!usuario?.suscripcion;
 
 	return (
-		<header id="cabecera">
-			<div className="cabecera-logo">
-				<Link to="/">KLYX</Link>
-			</div>
+		<>
+			{confirmarSalir && (
+				<Confirmacion
+					mensaje="¿Quieres cerrar la sesión?"
+					onConfirmar={() => { setConfirmarSalir(false); cerrarSesion(); }}
+					onCancelar={() => setConfirmarSalir(false)}
+				/>
+			)}
 
-			<nav className="cabecera-nav">
-				<NavLink to="/" end>Inicio</NavLink>
-				<NavLink to="/cajas">Cajas</NavLink>
-				<NavLink to="/intercambios">Mercado</NavLink>
-				{sesionIniciada && <NavLink to="/vault">Vault</NavLink>}
-			</nav>
+			<header id="cabecera" className={scrolled ? 'scrolled' : ''}>
+				<div className="cabecera-inner">
 
-			<div className="cabecera-acciones">
-				{sesionIniciada && usuario ? (
-					<>
-						{administrador && (
-							<Link to="/panel-admin" className="badge-admin">⚙ Admin</Link>
+					{/* Logo */}
+					<div className="cabecera-logo">
+						<Link to="/">KLYX</Link>
+					</div>
+
+					{/* Nav central */}
+					<nav className="cabecera-nav">
+						<NavLink to="/" end>Inicio</NavLink>
+						<NavLink to="/cajas">Cajas</NavLink>
+						<NavLink to="/intercambios">Mercado</NavLink>
+						{sesionIniciada && <NavLink to="/vault">Vault</NavLink>}
+					</nav>
+
+					{/* Acciones derecha */}
+					<div className="cabecera-acciones">
+						{sesionIniciada && usuario ? (
+							<>
+								{administrador && (
+									<Link to="/panel-admin" className="badge-admin">
+										⚙ Admin
+									</Link>
+								)}
+
+								<span className={`badge-kc${esVip ? ' badge-kc-vip' : ''}`}>
+									{formatearKC(usuario.saldo ?? 0)}
+								</span>
+
+								<div className="cabecera-usuario">
+									{/* Avatar con inicial — corona si es VIP */}
+									<Link to="/perfil" className={`usuario-avatar${esVip ? ' usuario-avatar-vip' : ''}`}>
+										{esVip && <span className="corona-vip">♛</span>}
+										<span className="avatar-inicial">
+											{usuario.nombre?.charAt(0)?.toUpperCase() ?? '?'}
+										</span>
+									</Link>
+
+									<Link to="/perfil" className={`usuario-nombre${esVip ? ' usuario-nombre-vip' : ''}`}>
+										{usuario.nombre}
+									</Link>
+
+									<button className="btn-logout" onClick={() => setConfirmarSalir(true)}>
+										Salir
+									</button>
+								</div>
+							</>
+						) : (
+							<>
+								<Link to="/inicio-sesion" className="btn-login">Iniciar sesión</Link>
+								<Link to="/registrarse" className="btn-registro">Registrarse</Link>
+							</>
 						)}
-						{/* Muestra el saldo real del usuario en Klyx Coins */}
-						<span className="badge-kc">{formatearKC(usuario.saldo ?? 0)}</span>
+					</div>
 
-						<div className="cabecera-usuario">
-							{/* Nombre clickable que lleva al perfil del usuario */}
-							<Link to="/perfil" className="usuario-nombre">{usuario.nombre}</Link>
-							<button className="btn-logout" onClick={cerrarSesion}>
-								Salir
-							</button>
-						</div>
-					</>
-				) : (
-					<>
-						<Link to="/inicio-sesion" className="btn-login">
-							Iniciar sesión
-						</Link>
-						<Link to="/registrarse" className="btn-registro">
-							Registrarse
-						</Link>
-					</>
-				)}
-			</div>
-		</header>
+				</div>
+			</header>
+		</>
 	);
 };
 

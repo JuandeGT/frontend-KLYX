@@ -81,6 +81,23 @@ const ProveedorSesion = ({ children }) => {
 		}
 	};
 
+	// ——— BORRAR CUENTA ———
+	// DELETE /api/cuenta — elimina la cuenta del usuario autenticado y limpia la sesión local.
+	const borrarCuenta = async () => {
+		try {
+			await api.delete('/cuenta');
+		} catch {
+			// Si el servidor falla igualmente limpiamos la sesión local
+		} finally {
+			localStorage.removeItem('klyx_token');
+			setUsuario(null);
+			setSesionIniciada(false);
+			setAdministrador(false);
+			navegar('/');
+			notificar('Cuenta eliminada correctamente.');
+		}
+	};
+
 	// ——— OBTENER PERFIL ———
 	// Llama a GET /api/perfil para hidratar el estado con los datos actualizados del usuario.
 	// Se usa al montar el componente para restaurar la sesión si hay token en localStorage.
@@ -124,6 +141,7 @@ const ProveedorSesion = ({ children }) => {
 		crearCuenta,
 		iniciarSesion,
 		cerrarSesion,
+		borrarCuenta,
 		actualizarDato,
 		datosSesion,
 		sesionIniciada,

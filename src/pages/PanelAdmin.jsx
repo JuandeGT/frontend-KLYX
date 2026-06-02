@@ -11,17 +11,19 @@ import './PanelAdmin.scss';
 // ─────────────────────────────────────────────────────────────────────────────
 const PanelAdmin = () => {
 	const { administrador } = useSesion();
-	const [seccion, setSeccion] = useState('usuarios');
+	const [seccion, setSeccion] = useState('dashboard');
 
 	if (!administrador) {
 		return <div className="admin-acceso-denegado">Acceso denegado.</div>;
 	}
 
 	const TABS = [
-		{ id: 'usuarios', etiqueta: 'Usuarios'       },
-		{ id: 'oferta',   etiqueta: 'Oferta Semanal' },
-		{ id: 'objetos',  etiqueta: 'Objetos'         },
-		{ id: 'cajas',    etiqueta: 'Cajas'           },
+		{ id: 'dashboard',    etiqueta: 'Dashboard'      },
+		{ id: 'usuarios',     etiqueta: 'Usuarios'       },
+		{ id: 'intercambios', etiqueta: 'Intercambios'   },
+		{ id: 'oferta',       etiqueta: 'Oferta Semanal' },
+		{ id: 'objetos',      etiqueta: 'Objetos'        },
+		{ id: 'cajas',        etiqueta: 'Cajas'          },
 	];
 
 	return (
@@ -44,10 +46,12 @@ const PanelAdmin = () => {
 			</div>
 
 			<div className="panel-admin-contenido">
-				{seccion === 'usuarios' && <SeccionUsuarios />}
-				{seccion === 'oferta'   && <SeccionOfertaSemanal />}
-				{seccion === 'objetos'  && <SeccionObjetos />}
-				{seccion === 'cajas'    && <SeccionCajas />}
+				{seccion === 'dashboard'    && <SeccionDashboard />}
+				{seccion === 'usuarios'     && <SeccionUsuarios />}
+				{seccion === 'intercambios' && <SeccionIntercambiosAdmin />}
+				{seccion === 'oferta'       && <SeccionOfertaSemanal />}
+				{seccion === 'objetos'      && <SeccionObjetos />}
+				{seccion === 'cajas'        && <SeccionCajas />}
 			</div>
 		</div>
 	);
@@ -682,6 +686,242 @@ const TarjetaOfertaAdmin = ({ objeto, onToggle, activo }) => (
 		</button>
 	</div>
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECCIÓN DASHBOARD — estadísticas globales de la plataforma
+// Datos de GET /api/admin/estadisticas
+// ─────────────────────────────────────────────────────────────────────────────
+const SeccionDashboard = () => {
+	const admin = useAdmin();
+	const [stats, setStats] = useState(null);
+
+	useEffect(() => {
+		admin.getEstadisticas().then((data) => { if (data) setStats(data); });
+	}, []);
+
+	if (!stats) return <Cargando />;
+
+	const { usuarios, economia, cajas, intercambios, transacciones, objetos } = stats;
+	const totalTrades = intercambios.total || 1; // evita div/0 en barras
+
+	return (
+		<div className="dashboard">
+
+			{/* ── KPIs principales ── */}
+			<div className="dashboard-kpis">
+				<div className="kpi-card">
+					<span className="kpi-valor">{usuarios.total}</span>
+					<span className="kpi-titulo">Usuarios</span>
+					<span className="kpi-sub">{usuarios.vip_activos} VIP · {usuarios.con_saldo} con saldo</span>
+				</div>
+				<div className="kpi-card kpi-dorado">
+					<span className="kpi-valor">{formatearKC(economia.kc_en_circulacion)}</span>
+					<span className="kpi-titulo">KC en circulación</span>
+					<span className="kpi-sub">Media {formatearKC(economia.kc_media_usuario)} / usuario</span>
+				</div>
+				<div className="kpi-card">
+					<span className="kpi-valor">{cajas.total_aperturas}</span>
+					<span className="kpi-titulo">Cajas abiertas</span>
+					<span className="kpi-sub">{objetos.total} objetos · {objetos.en_oferta} en oferta</span>
+				</div>
+				<div className="kpi-card">
+					<span className="kpi-valor">{intercambios.total}</span>
+					<span className="kpi-titulo">Intercambios</span>
+					<span className="kpi-sub">{intercambios.pendientes} pendientes</span>
+				</div>
+			</div>
+
+			{/* ── Fila central ── */}
+			<div className="dashboard-fila2">
+
+				{/* Estado de intercambios con barras visuales */}
+				<div className="dashboard-bloque">
+					<h3 className="dashboard-bloque-titulo">Intercambios por estado</h3>
+					<div className="dashboard-barras">
+						{[
+							{ label: 'Aceptados',  valor: intercambios.aceptados,  clase: 'barra-exito'   },
+							{ label: 'Pendientes', valor: intercambios.pendientes, clase: 'barra-warning' },
+							{ label: 'Cancelados', valor: intercambios.cancelados, clase: 'barra-muted'   },
+							{ label: 'Rechazados', valor: intercambios.rechazados, clase: 'barra-error'   },
+						].map(({ label, valor, clase }) => (
+							<div key={label} className="barra-fila">
+								<span className="barra-label">{label}</span>
+								<div className="barra-track">
+									<div
+										className={`barra-fill ${clase}`}
+										style={{ width: `${Math.round((valor / totalTrades) * 100)}%` }}
+									/>
+								</div>
+								<span className="barra-valor">{valor}</span>
+							</div>
+						))}
+					</div>
+				</div>
+
+				{/* Transacciones por tipo */}
+				<div className="dashboard-bloque dashboard-bloque-tabla">
+					<h3 className="dashboard-bloque-titulo">Transacciones por tipo</h3>
+					<table className="admin-tabla admin-tabla-compact dashboard-tabla">
+						<thead>
+							<tr>
+								<th>Tipo</th>
+								<th>Nº</th>
+								<th>KC movidos</th>
+							</tr>
+						</thead>
+						<tbody>
+							{transacciones.map((t) => (
+								<tr key={t.tipo}>
+									<td>
+										<span className={`historial-tipo tipo-${t.tipo}`}>
+											{t.tipo.replace(/_/g, ' ')}
+										</span>
+									</td>
+									<td>{t.total}</td>
+									<td className={t.suma_kc >= 0 ? 'positivo' : 'negativo'}>
+										{t.suma_kc >= 0 ? '+' : ''}{formatearKC(Math.abs(t.suma_kc))}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECCIÓN INTERCAMBIOS ADMIN — todos los trades de la plataforma
+// GET /api/admin/intercambios?estado=&page=
+// ─────────────────────────────────────────────────────────────────────────────
+const ESTADOS_TRADE = [
+	{ value: '',           label: 'Todos'      },
+	{ value: 'pendiente',  label: 'Pendientes' },
+	{ value: 'aceptado',   label: 'Aceptados'  },
+	{ value: 'rechazado',  label: 'Rechazados' },
+	{ value: 'cancelado',  label: 'Cancelados' },
+];
+
+const SeccionIntercambiosAdmin = () => {
+	const admin = useAdmin();
+	const [intercambios, setIntercambios] = useState([]);
+	const [paginacion, setPaginacion]     = useState(null);
+	const [pagina, setPagina]             = useState(1);
+	const [estado, setEstado]             = useState('');
+
+	const cargar = async (p, e) => {
+		const data = await admin.getIntercambiosAdmin(p, e);
+		if (data) {
+			setIntercambios(data.data ?? data);
+			setPaginacion(data);
+		}
+	};
+
+	// Al cambiar el filtro, vuelve a página 1
+	const cambiarEstado = (e) => { setEstado(e); setPagina(1); cargar(1, e); };
+	const cambiarPagina = (p) => { setPagina(p); cargar(p, estado); };
+
+	useEffect(() => { cargar(pagina, estado); }, []);
+
+	return (
+		<div className="admin-seccion">
+			<div className="admin-seccion-header">
+				<h2>Intercambios</h2>
+				<span className="admin-count">{paginacion?.total ?? intercambios.length} total</span>
+			</div>
+
+			{/* Filtros de estado */}
+			<div className="trade-filtros">
+				{ESTADOS_TRADE.map(({ value, label }) => (
+					<button
+						key={value}
+						className={`trade-filtro-btn ${estado === value ? 'activo' : ''}`}
+						onClick={() => cambiarEstado(value)}
+					>
+						{label}
+					</button>
+				))}
+			</div>
+
+			{admin.cargando && intercambios.length === 0 ? <Cargando /> : (
+				<>
+					<div className="admin-tabla-wrapper">
+						<table className="admin-tabla">
+							<thead>
+								<tr>
+									<th>Emisor → Receptor</th>
+									<th>Ofrece</th>
+									<th>Solicita</th>
+									<th>Estado</th>
+									<th>Fecha</th>
+								</tr>
+							</thead>
+							<tbody>
+								{intercambios.length === 0 ? (
+									<tr><td colSpan={5} className="admin-vacio">Sin intercambios.</td></tr>
+								) : intercambios.map((t) => (
+									<tr key={t.id}>
+										<td>
+											<span className="td-nombre">{t.emisor?.nombre ?? '—'}</span>
+											{t.receptor && (
+												<span className="td-muted"> → {t.receptor.nombre}</span>
+											)}
+										</td>
+										<td>
+											{t.objeto_ofrecido && (
+												<div className="trade-objeto">
+													{t.objeto_ofrecido.imagen && (
+														<img src={t.objeto_ofrecido.imagen} alt="" className="trade-thumb" />
+													)}
+													<span>{t.objeto_ofrecido.nombre}</span>
+												</div>
+											)}
+											{t.monedas_ofrecidas > 0 && (
+												<span className="td-kc">{formatearKC(t.monedas_ofrecidas)}</span>
+											)}
+											{!t.objeto_ofrecido && !t.monedas_ofrecidas && '—'}
+										</td>
+										<td>
+											{t.objeto_solicitado && (
+												<div className="trade-objeto">
+													{t.objeto_solicitado.imagen && (
+														<img src={t.objeto_solicitado.imagen} alt="" className="trade-thumb" />
+													)}
+													<span>{t.objeto_solicitado.nombre}</span>
+												</div>
+											)}
+											{t.monedas_solicitadas > 0 && (
+												<span className="td-kc">{formatearKC(t.monedas_solicitadas)}</span>
+											)}
+											{!t.objeto_solicitado && !t.monedas_solicitadas && '—'}
+										</td>
+										<td>
+											<span className={`trade-estado trade-${t.estado}`}>{t.estado}</span>
+										</td>
+										<td className="td-muted">{formatearFecha(t.created_at)}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+
+					{paginacion?.last_page > 1 && (
+						<div className="admin-paginacion">
+							<button disabled={pagina <= 1} onClick={() => cambiarPagina(pagina - 1)}>
+								← Anterior
+							</button>
+							<span>Página {paginacion.current_page} de {paginacion.last_page}</span>
+							<button disabled={pagina >= paginacion.last_page} onClick={() => cambiarPagina(pagina + 1)}>
+								Siguiente →
+							</button>
+						</div>
+					)}
+				</>
+			)}
+		</div>
+	);
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: campo de formulario reutilizable

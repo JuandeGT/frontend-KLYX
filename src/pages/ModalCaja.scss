@@ -4,130 +4,184 @@
 .modal-caja-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 1.25rem;
 }
 
-// ─── Contenedor principal ─────────────────────────────────────────────────────
+// ─── Contenedor principal (2 columnas) ───────────────────────────────────────
 .modal-caja {
     position: relative;
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 0;
-    background: linear-gradient(160deg, v.$negro-card 0%, v.$negro-panel 100%);
-    border: 1px solid v.$borde-dorado;
-    border-radius: v.$radio-xl;
-    max-width: 820px;
+    grid-template-columns: 230px 1fr;
+    background: v.$negro-card;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 24px;
+    max-width: 960px;       // más ancho para que el grid de mini cards tenga espacio
     width: 100%;
-    max-height: 90vh;
+    max-height: 88vh;
     overflow: hidden;
-    box-shadow: 0 0 60px v.$dorado-glow, v.$sombra-lg;
-    animation: modalEntrada 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+    box-shadow:
+        0 0 0 1px rgba(201, 162, 39, 0.12),
+        0 40px 80px rgba(0, 0, 0, 0.75);
+    animation: modalEntrar 0.32s cubic-bezier(0.34, 1.3, 0.64, 1) both;
 
-    // Cuando está en modo premio pasa a columna única centrada
     &.modal-caja-premio {
         grid-template-columns: 1fr;
-        max-width: 400px;
+        max-width: 520px;
+        overflow: hidden;
     }
 }
 
-@keyframes modalEntrada {
-    from { transform: scale(0.88); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+@keyframes modalEntrar {
+    from { transform: scale(0.88) translateY(12px); opacity: 0; }
+    to   { transform: scale(1)    translateY(0);    opacity: 1; }
 }
 
-// ─── Botón cerrar ─────────────────────────────────────────────────────────────
+// Botón cerrar
 .modal-caja-cerrar {
     position: absolute;
-    top: 14px;
+    top: 16px;
     right: 16px;
-    background: transparent;
-    border: none;
-    color: v.$texto-muted;
-    font-size: 1.1rem;
-    cursor: pointer;
     z-index: 10;
-    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: v.$texto-muted;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     transition: v.$transicion;
 
-    &:hover { color: v.$texto; }
+    &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: v.$texto;
+        border-color: rgba(255, 255, 255, 0.15);
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COLUMNA IZQUIERDA
+// COLUMNA IZQUIERDA — imagen prominente
 // ═══════════════════════════════════════════════════════════════════════════════
 .modal-caja-izq {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.1rem;
     padding: 2.5rem 1.5rem;
-    background: linear-gradient(180deg, v.$negro-hover 0%, v.$negro-card 100%);
-    border-right: 1px solid v.$borde;
+    // Fondo levemente diferente para separar visualmente las columnas
+    background: linear-gradient(180deg, rgba(255,255,255,0.025) 0%, transparent 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
+    // Altura total del modal
+    min-height: 0;
 }
 
+// Contenedor de la imagen — con glow pulsante y sin borde cuadrado
 .modal-caja-imagen {
     width: 160px;
     height: 160px;
-    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
-    border: 1px solid v.$borde-dorado;
-    border-radius: v.$radio-lg;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 28px v.$dorado-glow;
+    flex-shrink: 0;
+
+    // Halo pulsante detrás de la imagen
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -20px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201, 162, 39, 0.20) 0%, transparent 70%);
+        animation: haloGlow 3.5s ease-in-out infinite;
+        pointer-events: none;
+    }
 
     img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        border-radius: v.$radio-lg;
+        position: relative;
+        z-index: 1;
+        // Sombra profunda bajo la imagen para sensación de profundidad
+        filter:
+            drop-shadow(0 12px 28px rgba(0, 0, 0, 0.8))
+            drop-shadow(0 0 18px rgba(201, 162, 39, 0.15));
+        transition: v.$transicion-suave;
+
+        .modal-caja-izq:hover & {
+            filter:
+                drop-shadow(0 16px 36px rgba(0, 0, 0, 0.85))
+                drop-shadow(0 0 28px rgba(201, 162, 39, 0.25));
+            transform: translateY(-3px) scale(1.03);
+        }
     }
 }
 
-.modal-caja-icono { font-size: 5rem; opacity: 0.7; }
+.modal-caja-icono {
+    font-size: 5rem;
+    opacity: 0.45;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes haloGlow {
+    0%, 100% { opacity: 0.6; transform: scale(0.96); }
+    50%       { opacity: 1;   transform: scale(1.04); }
+}
 
 .badge-vip-modal {
     background: v.$grad-dorado;
     color: v.$negro;
     font-size: 0.6rem;
     font-weight: 900;
-    letter-spacing: 2px;
-    padding: 3px 10px;
-    border-radius: 4px;
+    letter-spacing: 2.5px;
+    padding: 4px 12px;
+    border-radius: 100px;
     text-transform: uppercase;
 }
 
 .modal-caja-nombre {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: v.$texto;
-    letter-spacing: -0.3px;
-    line-height: 1.3;
+    letter-spacing: -0.4px;
+    line-height: 1.25;
+    max-width: 180px;
 }
 
 .modal-caja-precio {
+    font-size: 1.3rem;
+    font-weight: 900;
     color: v.$dorado;
-    font-weight: 800;
-    font-size: 1.1rem;
+    letter-spacing: -0.5px;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COLUMNA DERECHA
+// COLUMNA DERECHA — botón + lista con scroll parcial
 // ═══════════════════════════════════════════════════════════════════════════════
 .modal-caja-der {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    padding: 2rem 1.75rem 2rem;
+    min-height: 0; // crítico para que overflow funcione en flex children
     overflow: hidden;
+}
+
+// Zona del botón principal — fija en la parte superior
+.modal-caja-boton {
+    padding: 1.5rem 1.5rem 1.25rem;
+    flex-shrink: 0;
 }
 
 .btn-abrir-modal {
@@ -135,225 +189,418 @@
     background: v.$grad-dorado;
     color: v.$negro;
     border: none;
-    border-radius: v.$radio;
-    padding: 13px;
-    font-weight: 800;
+    border-radius: 14px;
+    padding: 15px;
+    font-weight: 900;
     font-size: 1rem;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     cursor: pointer;
     transition: v.$transicion;
-    flex-shrink: 0;
-    box-shadow: 0 4px 18px v.$dorado-glow;
+    box-shadow: 0 4px 20px rgba(201, 162, 39, 0.35);
 
     &:hover:not(:disabled) {
-        filter: brightness(1.12);
-        box-shadow: 0 6px 26px v.$dorado-glow;
+        filter: brightness(1.08);
+        box-shadow: 0 6px 28px rgba(201, 162, 39, 0.5);
         transform: translateY(-2px);
     }
+
+    &:active:not(:disabled) { transform: translateY(0); }
 
     &:disabled {
         opacity: 0.55;
         cursor: not-allowed;
+        box-shadow: none;
     }
 }
 
-.modal-caja-contenido {
-    overflow-y: auto;
-    flex: 1;
+// Cabecera con título + contador
+.modal-caja-lista-header {
+    padding: 0 1.5rem 0.75rem;
+    flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-right: 4px;
+    align-items: center;
+    justify-content: space-between;
 
-    // Scrollbar fina dorada
+    span:first-child {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        color: v.$texto-muted;
+    }
+}
+
+.modal-caja-count {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: v.$texto-oscuro;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 2px 9px;
+}
+
+// ÁREA SCROLL — altura fija para ver ~2 filas del grid + hint de scroll
+.modal-caja-contenido {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    max-height: 340px;
+    padding: 0 1.25rem 1.25rem;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201, 162, 39, 0.25) transparent;
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
-        background: v.$borde-dorado;
+        background: rgba(201, 162, 39, 0.22);
         border-radius: 2px;
+        &:hover { background: rgba(201, 162, 39, 0.45); }
     }
+
+    // Fade inferior — indica que hay más objetos al hacer scroll
+    mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
 }
 
 .modal-vacio {
-    color: v.$texto-muted;
-    font-size: 0.9rem;
     text-align: center;
+    color: v.$texto-muted;
+    font-size: 0.88rem;
     padding: 2rem 0;
 }
 
-// ─── Grupo de objetos (cuchillos / pegatinas) ─────────────────────────────────
-.modal-grupo { display: flex; flex-direction: column; gap: 0.5rem; }
-
-.modal-grupo-titulo {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: v.$dorado;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid v.$borde;
+// ─── Grid de mini cards ───────────────────────────────────────────────────────
+// Sin separación por tipo — todos juntos, ordenados por probabilidad desc
+.modal-objetos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
 }
 
-.modal-lista { display: flex; flex-direction: column; gap: 2px; }
-
-.modal-objeto-fila {
+.mini-objeto {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    padding: 7px 10px;
-    border-radius: v.$radio;
-    transition: v.$transicion;
+    gap: 5px;
+    padding: 10px 6px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.18s ease;
+    cursor: default;
+    text-align: center;
 
-    &:hover { background: v.$negro-hover; }
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(201, 162, 39, 0.2);
+    }
 }
 
-.modal-objeto-img {
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-    background: v.$negro-hover;
-    border: 1px solid v.$borde;
-    border-radius: 6px;
+.mini-objeto-img {
+    width: 54px;
+    height: 54px;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-
-    img { width: 100%; height: 100%; object-fit: contain; }
-}
-
-.modal-objeto-icono { font-size: 1.2rem; }
-
-.modal-objeto-info {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-}
-
-.modal-objeto-nombre {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: v.$texto;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.modal-objeto-precio {
-    font-size: 0.75rem;
-    color: v.$texto-muted;
-}
-
-.modal-objeto-prob {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: v.$dorado;
-    white-space: nowrap;
     flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+    }
+}
+
+.mini-objeto-icono { font-size: 1.6rem; opacity: 0.5; }
+
+.mini-objeto-nombre {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: v.$texto-suave;
+    line-height: 1.3;
+    // Máximo 2 líneas, luego puntos suspensivos
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    width: 100%;
+    word-break: break-word;
+}
+
+// Probabilidad — badge pequeño dorado
+.mini-objeto-prob {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: v.$dorado;
+    background: rgba(201, 162, 39, 0.1);
+    border-radius: 20px;
+    padding: 1px 7px;
+    letter-spacing: 0.2px;
+    margin-top: auto;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// PANTALLA DE PREMIO
+// PANTALLA DE PREMIO — secuencia: flash blanco → reveal → botones
 // ═══════════════════════════════════════════════════════════════════════════════
+
+// 1. Flash PANTALLA COMPLETA — cubre todo el viewport, nada es visible debajo
+.premio-flash-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255,255,255,1)    0%,
+        rgba(255,255,255,0.98) 20%,
+        rgba(255,255,255,0.85) 45%,
+        rgba(255,255,255,0.3)  70%,
+        rgba(255,255,255,0)    100%
+    );
+    animation: flashPantallaCompleta 0.7s ease-out forwards;
+}
+
+@keyframes flashPantallaCompleta {
+    0%   { opacity: 0; transform: scale(0.05); }
+    15%  { opacity: 1; transform: scale(0.7); }
+    45%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.2); }
+}
+
+// 2. Contenedor del premio — invisible durante el flash
 .premio-contenedor {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2.5rem 2rem;
     text-align: center;
+    padding: 2.5rem 2rem 2rem;
     gap: 0.75rem;
-    animation: modalEntrada 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.82) translateY(22px);
+
+    &.premio-visible {
+        visibility: visible;
+        animation: revelarPremio 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
 }
 
+@keyframes revelarPremio {
+    from { opacity: 0; transform: scale(0.75) translateY(24px); }
+    70%  { opacity: 1; transform: scale(1.04) translateY(-4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+// Etiqueta pequeña arriba
 .premio-etiqueta {
-    color: v.$dorado;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 4px;
     text-transform: uppercase;
+    letter-spacing: 4px;
+    color: v.$dorado;
+    animation: fadeSlideUp 0.4s ease 0.55s both;
 }
 
-.premio-imagen {
-    width: 150px;
-    height: 150px;
-    background: radial-gradient(circle, v.$negro-hover 0%, v.$negro 100%);
-    border: 1px solid v.$borde-dorado;
-    border-radius: v.$radio-lg;
+// 3. Wrap de imagen + rayos giratorios
+.premio-imagen-wrap {
+    position: relative;
+    width: 240px;
+    height: 240px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 32px v.$dorado-glow;
-    margin: 0.5rem 0;
-
-    img { width: 100%; height: 100%; object-fit: contain; border-radius: v.$radio-lg; }
+    margin: 0.25rem 0;
 }
 
-.premio-icono { font-size: 4rem; }
+// Rayos de luz dorados girando — más brillantes y visibles
+.premio-rayos {
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+        rgba(201, 162, 39, 0.35) 0deg 10deg,
+        rgba(240, 208,  96, 0.12) 10deg 20deg
+    );
+    animation: girarRayos 8s linear infinite;
+    pointer-events: none;
+    mix-blend-mode: screen; // hace que los rayos se mezclen con el fondo de forma más luminosa
+}
 
+@keyframes girarRayos {
+    to { transform: rotate(360deg); }
+}
+
+// Halo pulsante — más brillante
+.premio-imagen-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(240, 208, 96, 0.45) 0%,
+        rgba(201, 162, 39, 0.20) 40%,
+        transparent 70%
+    );
+    animation: haloGlow 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+// 4. Imagen del objeto — flota suavemente
+.premio-imagen {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter:
+            drop-shadow(0 12px 32px rgba(0,0,0,0.85))
+            drop-shadow(0 0 28px rgba(201,162,39,0.3));
+        // La animación de flotar empieza cuando el objeto es visible
+        .premio-visible & {
+            animation: flotarPremio 3.5s ease-in-out 0.9s infinite;
+        }
+    }
+}
+
+.premio-icono { font-size: 5.5rem; opacity: 0.5; }
+
+@keyframes flotarPremio {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+}
+
+// Nombre, tipo, precio — aparecen con retardo escalonado
 .premio-nombre {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: v.$texto;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    animation: fadeSlideUp 0.4s ease 0.65s both;
 }
 
 .premio-tipo {
     display: inline-block;
-    background: v.$dorado-tenue;
-    color: v.$dorado;
-    border: 1px solid v.$borde-dorado;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    background: rgba(255,255,255,0.05);
+    color: v.$texto-muted;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 100px;
+    font-size: 0.67rem;
+    font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
-    padding: 3px 12px;
+    padding: 4px 14px;
+    animation: fadeSlideUp 0.4s ease 0.72s both;
 }
 
 .premio-precio {
+    font-size: 1.6rem;
+    font-weight: 900;
     color: v.$dorado;
-    font-weight: 800;
-    font-size: 1.1rem;
+    letter-spacing: -0.5px;
+    animation: fadeSlideUp 0.4s ease 0.78s both;
 }
 
-.btn-premio-cerrar {
-    margin-top: 0.5rem;
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+// 5. Dos botones: vault + abrir otra
+.premio-botones {
+    display: flex;
+    gap: 0.65rem;
     width: 100%;
+    margin-top: 0.4rem;
+    animation: fadeSlideUp 0.4s ease 0.9s both;
+}
+
+// Botón principal — ir al vault
+.btn-premio-vault {
+    flex: 1;
     background: v.$grad-dorado;
     color: v.$negro;
     border: none;
-    border-radius: v.$radio;
-    padding: 13px;
+    border-radius: 12px;
+    padding: 13px 12px;
     font-weight: 800;
     font-size: 0.9rem;
     cursor: pointer;
     transition: v.$transicion;
     box-shadow: 0 4px 18px v.$dorado-glow;
 
-    &:hover { filter: brightness(1.12); transform: translateY(-2px); }
+    &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px v.$dorado-glow;
+    }
+}
+
+// Botón secundario — seguir abriendo
+.btn-premio-mas {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    color: v.$texto-suave;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 13px 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: v.$transicion;
+
+    &:hover {
+        background: rgba(255,255,255,0.09);
+        border-color: rgba(255,255,255,0.18);
+        color: v.$texto;
+    }
+}
+
+// Hint para el clic fuera
+.premio-hint {
+    font-size: 0.68rem;
+    color: v.$texto-oscuro;
+    animation: fadeSlideUp 0.4s ease 1.1s both;
 }
 
 // ─── Responsive ───────────────────────────────────────────────────────────────
-@media (max-width: 600px) {
+@media (max-width: 580px) {
     .modal-caja {
         grid-template-columns: 1fr;
-        max-height: 95vh;
+        max-height: 92vh;
 
         &.modal-caja-premio { max-width: 100%; }
     }
 
     .modal-caja-izq {
-        border-right: none;
-        border-bottom: 1px solid v.$borde;
-        padding: 1.5rem 1rem;
         flex-direction: row;
-        justify-content: flex-start;
-        text-align: left;
+        padding: 1.25rem 1.25rem 1rem;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         gap: 1rem;
+        text-align: left;
+        justify-content: flex-start;
     }
 
-    .modal-caja-imagen { width: 80px; height: 80px; flex-shrink: 0; }
+    .modal-caja-imagen {
+        width: 72px;
+        height: 72px;
+        flex-shrink: 0;
 
-    .modal-caja-der { padding: 1.25rem 1rem; }
+        &::before { display: none; }
+    }
+
+    .modal-caja-contenido { max-height: 220px; }
+
+    // En móvil 3 columnas (más estrecho)
+    .modal-objetos-grid { grid-template-columns: repeat(3, 1fr); }
 }

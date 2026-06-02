@@ -4,4 +4,6 @@
 #contenido {
     flex: 1;
     width: 100%;
+    // Compensa el nav fijo de 60px de alto
+    padding-top: 60px;
 }
