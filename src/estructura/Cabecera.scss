@@ -1,275 +1,356 @@
 @use '../styles/variables' as v;
 
-// ─── Barra principal ──────────────────────────────────────────────────────────
 #cabecera {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 60px;
-    z-index: 200;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 60px;
+	z-index: 200;
 
-    background: rgba(5, 5, 5, 0.72);
-    // backdrop-filter: efecto "vidrio esmerilado" — desenfoca y satura lo que hay detrás.
-    // No aparece en la referencia base pero es CSS moderno ampliamente soportado.
-    // El prefijo -webkit- es necesario para Safari/iOS.
-    backdrop-filter: blur(22px) saturate(150%);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
+	background: rgba(5, 5, 5, 0.72);
+	// backdrop-filter: efecto "vidrio esmerilado" — desenfoca y satura lo que hay detrás.
+	// El prefijo -webkit- es necesario para Safari/iOS.
+	backdrop-filter: blur(22px) saturate(150%);
+	-webkit-backdrop-filter: blur(22px) saturate(150%);
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
-    // &::after — pseudo-elemento: CSS crea un elemento "fantasma" que no existe en el HTML.
-    // Se usa para añadir decoración sin tocar el JSX.
-    // content: '' es obligatorio para que aparezca aunque esté vacío (solo visual).
-    // position: absolute lo saca del flujo y lo coloca con bottom/left/right.
-    // inset: 0 (si lo vieras en otro sitio) es equivalente a top:0; right:0; bottom:0; left:0
-    // — un shorthand que pone los 4 lados a la vez.
-    // Línea inferior: degradado dorado simétrico desde el centro
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 1px;
-        background: linear-gradient(
-            90deg,
-            transparent       0%,
-            rgba(201,162,39,0.04) 10%,
-            rgba(201,162,39,0.32) 35%,
-            rgba(201,162,39,0.55) 50%,
-            rgba(201,162,39,0.32) 65%,
-            rgba(201,162,39,0.04) 90%,
-            transparent       100%
-        );
-    }
-
+	// &::after — pseudo-elemento: CSS crea un elemento "fantasma" que no existe en el HTML.
+	// Se usa para añadir decoración sin tocar el JSX.
+	// content: '' es obligatorio para que aparezca aunque esté vacío (solo visual).
+	// position: absolute lo saca del flujo y lo coloca con bottom/left/right.
+	// inset: 0 (si lo vieras en otro sitio) es equivalente a top:0; right:0; bottom:0; left:0
+	// — un shorthand que pone los 4 lados a la vez.
+	// Línea inferior: degradado dorado simétrico desde el centro
+	&::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(201, 162, 39, 0.04) 10%,
+			rgba(201, 162, 39, 0.32) 35%,
+			rgba(201, 162, 39, 0.55) 50%,
+			rgba(201, 162, 39, 0.32) 65%,
+			rgba(201, 162, 39, 0.04) 90%,
+			transparent 100%
+		);
+	}
 }
 
-// ─── Wrapper centrado con max-width ───────────────────────────────────────────
+// Wrapper centrado con max-width
 .cabecera-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1320px;
-    padding: 0 2.5rem;
-    height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	max-width: 1320px;
+	padding: 0 2.5rem;
+	height: 100%;
 }
 
-// ─── Logo ─────────────────────────────────────────────────────────────────────
+// Logo
 .cabecera-logo a {
-    font-size: 1.18rem;
-    font-weight: 900;
-    letter-spacing: 7px;
-    color: v.$dorado;
-    text-transform: uppercase;
-    text-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
-    transition: v.$transicion;
+	font-size: 1.18rem;
+	font-weight: 900;
+	letter-spacing: 7px;
+	color: v.$dorado;
+	text-transform: uppercase;
+	text-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+	transition: v.$transicion;
 
-    &:hover {
-        color: v.$dorado-hover;
-        text-shadow: 0 0 32px rgba(201, 162, 39, 0.65);
-    }
+	&:hover {
+		color: v.$dorado-hover;
+		text-shadow: 0 0 32px rgba(201, 162, 39, 0.65);
+	}
 }
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
+// Nav
 .cabecera-nav {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
 
-    a {
-        position: relative;
-        color: v.$texto-muted;
-        font-size: 0.84rem;
-        font-weight: 500;
-        letter-spacing: 0.2px;
-        padding: 6px 16px;
-        border-radius: 6px;
-        transition: color 0.2s ease, background 0.2s ease;
-        white-space: nowrap;
+	a {
+		position: relative;
+		color: v.$texto-muted;
+		font-size: 0.84rem;
+		font-weight: 500;
+		letter-spacing: 0.2px;
+		padding: 6px 16px;
+		border-radius: 6px;
+		transition:
+			color 0.2s ease,
+			background 0.2s ease;
+		white-space: nowrap;
 
-        &:hover {
-            color: v.$texto;
-            background: rgba(255, 255, 255, 0.05);
-        }
+		&:hover {
+			color: v.$texto;
+			background: rgba(255, 255, 255, 0.05);
+		}
 
-        // Punto dorado debajo del link activo.
-        // left: 50% + translateX(-50%) es el truco clásico para centrar un elemento
-        // horizontalmente: lo mueves al 50% del padre y luego lo desplazas -50% de su
-        // propio ancho para que quede exactamente en el centro.
-        &.active {
-            color: v.$texto;
-            font-weight: 600;
+		// Punto dorado debajo del link activo.
+		// left: 50% + translateX(-50%) es el truco clásico para centrar un elemento
+		// horizontalmente: lo mueves al 50% del padre y luego lo desplazas -50% de su
+		// propio ancho para que quede exactamente en el centro.
+		&.active {
+			color: v.$texto;
+			font-weight: 600;
 
-            &::after {
-                content: '';
-                position: absolute;
-                bottom: 2px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 4px;
-                height: 4px;
-                border-radius: 50%;
-                background: v.$dorado;
-                box-shadow: 0 0 8px rgba(201, 162, 39, 0.8);
-            }
-        }
-    }
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: 2px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 4px;
+				height: 4px;
+				border-radius: 50%;
+				background: v.$dorado;
+				box-shadow: 0 0 8px rgba(201, 162, 39, 0.8);
+			}
+		}
+	}
 }
 
-// ─── Acciones derecha ─────────────────────────────────────────────────────────
+// Acciones derecha
 .cabecera-acciones {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 
 // Saldo KC — versión normal y VIP
 .badge-kc {
-    background: rgba(201, 162, 39, 0.09);
-    color: v.$dorado;
-    border: 1px solid rgba(201, 162, 39, 0.25);
-    padding: 4px 13px;
-    border-radius: 100px;
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    transition: v.$transicion;
+	background: rgba(201, 162, 39, 0.09);
+	color: v.$dorado;
+	border: 1px solid rgba(201, 162, 39, 0.25);
+	padding: 4px 13px;
+	border-radius: 100px;
+	font-size: 0.76rem;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	transition: v.$transicion;
 }
 
 // Versión VIP del saldo: borde más visible
 .badge-kc-vip {
-    background: rgba(201, 162, 39, 0.15);
-    border-color: rgba(201, 162, 39, 0.5);
+	background: rgba(201, 162, 39, 0.15);
+	border-color: rgba(201, 162, 39, 0.5);
 }
 
-// ─── Usuario ──────────────────────────────────────────────────────────────────
+// Usuario
 .cabecera-usuario {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 // Avatar circular con inicial
 .usuario-avatar {
-    position: relative;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    text-decoration: none;
-    transition: v.$transicion;
+	position: relative;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.07);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	text-decoration: none;
+	transition: v.$transicion;
 
-    &:hover {
-        border-color: rgba(201, 162, 39, 0.5);
-        background: rgba(201, 162, 39, 0.1);
-    }
+	&:hover {
+		border-color: rgba(201, 162, 39, 0.5);
+		background: rgba(201, 162, 39, 0.1);
+	}
 
-    .avatar-inicial {
-        font-size: 0.72rem;
-        font-weight: 800;
-        color: v.$texto-suave;
-        line-height: 1;
-        pointer-events: none;
-    }
+	.avatar-inicial {
+		font-size: 0.72rem;
+		font-weight: 800;
+		color: v.$texto-suave;
+		line-height: 1;
+		pointer-events: none;
+	}
 }
 
 // Avatar VIP: borde dorado sólido
 .usuario-avatar-vip {
-    border-color: rgba(201, 162, 39, 0.6);
-    background: rgba(201, 162, 39, 0.1);
+	border-color: rgba(201, 162, 39, 0.6);
+	background: rgba(201, 162, 39, 0.1);
 
-    .avatar-inicial { color: v.$dorado; }
+	.avatar-inicial {
+		color: v.$dorado;
+	}
 }
 
 // Botón salir
 .btn-logout {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: v.$texto-muted;
-    padding: 5px 13px;
-    border-radius: 6px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: v.$transicion;
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: v.$texto-muted;
+	padding: 5px 13px;
+	border-radius: 6px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: v.$transicion;
 
-    &:hover {
-        border-color: rgba(192, 57, 43, 0.5);
-        color: #e06060;
-        background: rgba(192, 57, 43, 0.07);
-    }
+	&:hover {
+		border-color: rgba(192, 57, 43, 0.5);
+		color: #e06060;
+		background: rgba(192, 57, 43, 0.07);
+	}
 }
 
-// ─── Badges extra ─────────────────────────────────────────────────────────────
+// Badges extra
 .badge-admin {
-    background: rgba(140, 60, 180, 0.1);
-    color: #cc90e8;
-    border: 1px solid rgba(140, 60, 180, 0.35);
-    padding: 4px 11px;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: v.$transicion;
+	background: rgba(140, 60, 180, 0.1);
+	color: #cc90e8;
+	border: 1px solid rgba(140, 60, 180, 0.35);
+	padding: 4px 11px;
+	border-radius: 100px;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: v.$transicion;
 
-    &:hover {
-        background: rgba(140, 60, 180, 0.22);
-        color: #e0aaff;
-    }
+	&:hover {
+		background: rgba(140, 60, 180, 0.22);
+		color: #e0aaff;
+	}
 }
 
 // Botones sin sesión
 .btn-login {
-    color: v.$texto-muted;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    transition: v.$transicion;
-    text-decoration: none;
+	color: v.$texto-muted;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 6px 16px;
+	border-radius: 6px;
+	font-size: 0.82rem;
+	font-weight: 600;
+	transition: v.$transicion;
+	text-decoration: none;
 
-    &:hover {
-        border-color: rgba(201, 162, 39, 0.4);
-        color: v.$dorado;
-    }
+	&:hover {
+		border-color: rgba(201, 162, 39, 0.4);
+		color: v.$dorado;
+	}
 }
 
 .btn-registro {
-    background: v.$grad-dorado;
-    color: v.$negro;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: v.$transicion;
-    text-decoration: none;
+	background: v.$grad-dorado;
+	color: v.$negro;
+	border: none;
+	padding: 6px 16px;
+	border-radius: 6px;
+	font-size: 0.82rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: v.$transicion;
+	text-decoration: none;
 
-    &:hover {
-        filter: brightness(1.1);
-        box-shadow: 0 0 18px rgba(201, 162, 39, 0.4);
-        transform: translateY(-1px);
-        color: v.$negro;
-    }
+	&:hover {
+		filter: brightness(1.1);
+		box-shadow: 0 0 18px rgba(201, 162, 39, 0.4);
+		transform: translateY(-1px);
+		color: v.$negro;
+	}
 }
 
-// ─── Responsive ───────────────────────────────────────────────────────────────
+// Botón hamburguesa (solo visible en móvil)
+.cabecera-hamburguesa {
+	display: none; // en escritorio nunca aparece
+	flex-direction: column;
+	justify-content: center;
+	gap: 5px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+
+	.linea {
+		display: block;
+		width: 22px;
+		height: 2px;
+		background: v.$texto-suave;
+		border-radius: 2px;
+		transition:
+			transform 0.25s ease,
+			opacity 0.2s ease;
+	}
+
+	// Al abrir: las dos líneas exteriores rotan 45° formando una X
+	.linea-arriba-x {
+		transform: translateY(7px) rotate(45deg);
+	}
+	.linea-oculta {
+		opacity: 0;
+	}
+	.linea-abajo-x {
+		transform: translateY(-7px) rotate(-45deg);
+	}
+}
+
+// Responsive
 @media (max-width: 768px) {
-    .cabecera-inner { padding: 0 1.25rem; }
-    .cabecera-nav   { display: none; }
-    .badge-kc       { display: none; }
+	.cabecera-inner {
+		padding: 0 1.25rem;
+	}
+	.badge-kc {
+		display: none;
+	}
+
+	// El hamburguesa aparece en móvil
+	.cabecera-hamburguesa {
+		display: flex;
+	}
+
+	// El nav se oculta por defecto en móvil
+	.cabecera-nav {
+		display: none;
+	}
+
+	// Cuando tiene la clase "abierta", se despliega como panel debajo del header
+	.cabecera-nav-abierta {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		position: fixed;
+		top: 60px;
+		left: 0;
+		right: 0;
+		background: rgba(5, 5, 5, 0.97);
+		backdrop-filter: blur(22px);
+		-webkit-backdrop-filter: blur(22px);
+		padding: 0.75rem 1.25rem 1.25rem;
+		z-index: 199;
+		border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+
+		a {
+			padding: 12px 8px;
+			font-size: 0.95rem;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+			&:last-child {
+				border-bottom: none;
+			}
+		}
+	}
 }
 
 @media (max-width: 420px) {
-    .usuario-nombre { display: none; }
+	.usuario-nombre {
+		display: none;
+	}
 }

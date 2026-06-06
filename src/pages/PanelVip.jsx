@@ -7,15 +7,9 @@ import './Tienda.scss';
 
 const VIP_PRECIO_KC = 1000;
 
-const VIP_BENEFICIOS = [
-	'Acceso a cajas exclusivas VIP',
-	'Badge VIP en tu perfil',
-	'Soporte prioritario',
-];
+const VIP_BENEFICIOS = ['Acceso a cajas exclusivas VIP', 'Badge VIP en tu perfil', 'Soporte prioritario'];
 
-// Panel de compra/estado VIP.
-// POST /api/comprar-vip — el backend descuenta 1000 KC y activa suscripcion=true
-// con fecha_fin_suscripcion = hoy + 30 días.
+// El backend descuenta 1000 KC y activa la suscripción poniendo la fecha de fin de suscripción en 30 días
 const PanelVip = ({ usuario, onCompra }) => {
 	const { notificar } = useNotificacion();
 	const [comprando, setComprando] = useState(false);
@@ -36,6 +30,7 @@ const PanelVip = ({ usuario, onCompra }) => {
 		setConfirmar(false);
 		setComprando(true);
 		try {
+			// Api directo, no hay hook porque solo este componente usa este endpoint
 			await api.post('/comprar-vip');
 			notificar('¡Bienvenido a KLYX VIP! Tu suscripción está activa.');
 			await onCompra();
@@ -60,14 +55,11 @@ const PanelVip = ({ usuario, onCompra }) => {
 			<div className={`vip-card${tieneVip ? ' vip-card-activo' : ''}`}>
 				<div className="vip-header">
 					<div className="vip-header-texto">
-						<h2 className="vip-titulo">
-							{tieneVip ? '⭐ VIP Activo' : 'Hazte VIP'}
-						</h2>
+						<h2 className="vip-titulo">{tieneVip ? 'VIP Activo' : 'Hazte VIP'}</h2>
 						<p className="vip-subtitulo">
 							{tieneVip
 								? `Tu suscripción caduca el ${formatearFecha(usuario.fecha_fin_suscripcion)}`
-								: 'Accede a cajas exclusivas y ventajas premium'
-							}
+								: 'Accede a cajas exclusivas y ventajas premium'}
 						</p>
 					</div>
 					{tieneVip && <span className="vip-badge-grande">VIP</span>}
@@ -98,8 +90,7 @@ const PanelVip = ({ usuario, onCompra }) => {
 								? 'Activando...'
 								: !saldoSuficiente
 									? `Faltan ${(VIP_PRECIO_KC - (usuario?.saldo ?? 0)).toLocaleString('es-ES')} KC`
-									: 'Activar VIP — 30 días'
-							}
+									: 'Activar VIP — 30 días'}
 						</button>
 					</div>
 				)}

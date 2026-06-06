@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import useAdminObjetos from '../hooks/useAdminObjetos.js';
+import CampoForm from './CampoForm.jsx';
 import { formatearKC } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
 import Confirmacion from '../estructura/Confirmacion.jsx';
 import './PanelAdmin.scss';
 
 const SeccionObjetos = () => {
-	const admin = useAdminObjetos();
+	const { getObjetos, actualizarObjeto, crearObjeto, eliminarObjeto, cargando } = useAdminObjetos();
 
 	const formVacio = { nombre: '', tipo: 'cuchillo', precio: '', peso: '', longitud: '', descripcion: '', imagen: '' };
 	const [objetos, setObjetos] = useState([]);
@@ -16,7 +17,7 @@ const SeccionObjetos = () => {
 	const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
 
 	const cargar = async () => {
-		const data = await admin.getObjetos();
+		const data = await getObjetos();
 		if (data) setObjetos(data);
 	};
 
@@ -35,18 +36,18 @@ const SeccionObjetos = () => {
 	const guardar = async () => {
 		const datos = { ...formulario, precio: Number(formulario.precio), peso: Number(formulario.peso) || 0, longitud: Number(formulario.longitud) || 0 };
 		const respuesta = editandoId
-			? await admin.actualizarObjeto(editandoId, datos)
-			: await admin.crearObjeto(datos);
+			? await actualizarObjeto(editandoId, datos)
+			: await crearObjeto(datos);
 		if (respuesta !== null) { cancelar(); cargar(); }
 	};
 
 	const eliminar = async () => {
-		const respuesta = await admin.eliminarObjeto(confirmarEliminarId);
+		const respuesta = await eliminarObjeto(confirmarEliminarId);
 		setConfirmarEliminarId(null);
 		if (respuesta !== null) cargar();
 	};
 
-	if (admin.cargando && objetos.length === 0) return <Cargando />;
+	if (cargando && objetos.length === 0) return <Cargando />;
 
 	return (
 		<>
@@ -88,8 +89,8 @@ const SeccionObjetos = () => {
 					</div>
 					<div className="admin-form-acciones">
 						<button className="btn-admin-cancelar" onClick={cancelar}>Cancelar</button>
-						<button className="btn-admin-guardar" onClick={guardar} disabled={admin.cargando}>
-							{admin.cargando ? 'Guardando...' : (editandoId ? 'Guardar cambios' : 'Crear objeto')}
+						<button className="btn-admin-guardar" onClick={guardar} disabled={cargando}>
+							{cargando ? 'Guardando...' : (editandoId ? 'Guardar cambios' : 'Crear objeto')}
 						</button>
 					</div>
 				</div>
@@ -126,12 +127,5 @@ const SeccionObjetos = () => {
 		</>
 	);
 };
-
-const CampoForm = ({ label, value, onChange, type = 'text' }) => (
-	<div className="campo-form">
-		<label>{label}</label>
-		<input type={type} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
-	</div>
-);
 
 export default SeccionObjetos;

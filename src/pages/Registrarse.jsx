@@ -7,8 +7,7 @@ import './Registrarse.scss';
 const Registrarse = () => {
 	const { datosSesion, actualizarDato, crearCuenta } = useSesion();
 	const { notificar } = useNotificacion();
-	// confirmarPassword es estado LOCAL — nunca se envía al backend.
-	// Solo sirve para validar en cliente que el usuario no ha cometido una errata.
+	// ConfirmarPassword solo se hace en el frontend y sirve para validar que el usuario no ha cometido un error al introducir la contraseña
 	const [confirmarPassword, setConfirmarPassword] = useState('');
 
 	// Solo muestra el error si el segundo campo tiene algo escrito (UX: no molestar al inicio)
@@ -16,7 +15,6 @@ const Registrarse = () => {
 
 	const enviarFormulario = (e) => {
 		e.preventDefault();
-		// Segunda línea de defensa por si el botón quedó habilitado con un estado inconsistente
 		if (datosSesion.password !== confirmarPassword) {
 			notificar('Las contraseñas no coinciden.', 'error');
 			return;
@@ -73,9 +71,7 @@ const Registrarse = () => {
 					<div className="grupo-input">
 						<label htmlFor="confirmarPassword">
 							Repetir contraseña
-							{noCoinciden && (
-								<span className="campo-error-inline"> — No coinciden</span>
-							)}
+							{noCoinciden && <span className="campo-error-inline"> — No coinciden</span>}
 						</label>
 						<input
 							id="confirmarPassword"
@@ -95,7 +91,9 @@ const Registrarse = () => {
 				</form>
 
 				<div className="sesion-pie">
-					<p>¿Ya tienes cuenta? <Link to="/inicio-sesion">Inicia sesión.</Link></p>
+					<p>
+						¿Ya tienes cuenta? <Link to="/inicio-sesion">Inicia sesión.</Link>
+					</p>
 				</div>
 			</div>
 		</div>

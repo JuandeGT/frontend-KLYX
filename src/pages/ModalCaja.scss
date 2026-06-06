@@ -1,6 +1,6 @@
 @use '../styles/variables' as v;
 
-// ─── Overlay ─────────────────────────────────────────────────────────────────
+// Overlay
 .modal-caja-overlay {
     position: fixed;
     inset: 0;
@@ -14,7 +14,7 @@
     padding: 1.25rem;
 }
 
-// ─── Contenedor principal (2 columnas) ───────────────────────────────────────
+// Contenedor principal (2 columnas)
 .modal-caja {
     position: relative;
     display: grid;
@@ -72,9 +72,7 @@
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// COLUMNA IZQUIERDA — imagen prominente
-// ═══════════════════════════════════════════════════════════════════════════════
+// Columna izquierda — imagen prominente
 .modal-caja-izq {
     display: flex;
     flex-direction: column;
@@ -173,9 +171,7 @@
     letter-spacing: -0.5px;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// COLUMNA DERECHA — botón + lista con scroll parcial
-// ═══════════════════════════════════════════════════════════════════════════════
+// Columna derecha — botón + lista con scroll
 .modal-caja-der {
     display: flex;
     flex-direction: column;
@@ -281,7 +277,7 @@
     padding: 2rem 0;
 }
 
-// ─── Grid de mini cards ───────────────────────────────────────────────────────
+// Grid de mini cards
 // Sin separación por tipo — todos juntos, ordenados por probabilidad desc
 .modal-objetos-grid {
     display: grid;
@@ -357,9 +353,7 @@
     margin-top: auto;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// PANTALLA DE PREMIO — secuencia: flash blanco → reveal → botones
-// ═══════════════════════════════════════════════════════════════════════════════
+// Pantalla de premio — flash blanco → reveal → botones
 
 // 1. Flash PANTALLA COMPLETA — cubre todo el viewport, nada es visible debajo
 .premio-flash-fullscreen {
@@ -599,7 +593,7 @@
     animation: fadeSlideUp 0.4s ease 1.1s both;
 }
 
-// ─── Responsive ───────────────────────────────────────────────────────────────
+// Responsive
 @media (max-width: 580px) {
     .modal-caja {
         grid-template-columns: 1fr;

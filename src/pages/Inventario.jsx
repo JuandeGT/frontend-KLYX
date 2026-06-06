@@ -1,7 +1,4 @@
-// Inventario personal del usuario. Muestra todos los objetos obtenidos al abrir cajas.
-// Incluye filtro por nombre/tipo y orden (A-Z, precio ↑↓) calculados en memoria con useMemo.
-// useMemo: no está en la referencia base — evita recalcular el filtrado en cada render.
-// Solo recalcula cuando cambian objetos, busqueda u orden.
+// useMemo, evita recalcular el filtrado en cada renderizado, solo recalcula cuando cambian objetos, busqueda u orden
 import React, { useEffect, useState, useMemo } from 'react';
 import api from '../utils/api.js';
 import Cargando from './Cargando.jsx';
@@ -19,6 +16,7 @@ const Inventario = () => {
 	useEffect(() => {
 		const cargarInventario = async () => {
 			try {
+				// Api directo, no hay hook porque solo este componente usa este endpoint
 				const respuesta = await api.get('/mi-inventario');
 				setObjetos(respuesta.data.data ?? []);
 			} catch {
@@ -35,28 +33,35 @@ const Inventario = () => {
 
 		if (busqueda.trim()) {
 			const texto = busqueda.toLowerCase();
-			lista = lista.filter(
-				(o) => o.nombre?.toLowerCase().includes(texto) || o.tipo?.toLowerCase().includes(texto)
-			);
+			lista = lista.filter((o) => o.nombre?.toLowerCase().includes(texto) || o.tipo?.toLowerCase().includes(texto));
 		}
 
-		if (orden === 'nombre')      lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
-		if (orden === 'precio-asc')  lista.sort((a, b) => Number(a.precio) - Number(b.precio));
+		if (orden === 'nombre') lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
+		if (orden === 'precio-asc') lista.sort((a, b) => Number(a.precio) - Number(b.precio));
 		if (orden === 'precio-desc') lista.sort((a, b) => Number(b.precio) - Number(a.precio));
 
 		return lista;
 	}, [objetos, busqueda, orden]);
 
-	// Ciclo del botón "Precio": sin orden → ascendente → descendente → sin orden
+	// Ciclo del botón Precio: sin orden → ascendente → descendente
 	const togglePrecio = () => {
-		if (orden === 'precio-asc')  { setOrden('precio-desc'); return; }
-		if (orden === 'precio-desc') { setOrden('');            return; }
+		if (orden === 'precio-asc') {
+			setOrden('precio-desc');
+			return;
+		}
+		if (orden === 'precio-desc') {
+			setOrden('');
+			return;
+		}
 		setOrden('precio-asc');
 	};
 
 	const hayFiltros = busqueda.trim() !== '' || orden !== '';
 
-	const limpiar = () => { setBusqueda(''); setOrden(''); };
+	const limpiar = () => {
+		setBusqueda('');
+		setOrden('');
+	};
 
 	if (cargando) return <Cargando />;
 
@@ -69,15 +74,13 @@ const Inventario = () => {
 				</div>
 				{!error && (
 					<span className="inventario-contador">
-						{hayFiltros
-							? `${objetosFiltrados.length} / ${objetos.length}`
-							: objetos.length
-						} objeto{objetos.length !== 1 ? 's' : ''}
+						{hayFiltros ? `${objetosFiltrados.length} / ${objetos.length}` : objetos.length} objeto
+						{objetos.length !== 1 ? 's' : ''}
 					</span>
 				)}
 			</div>
 
-			{/* Filtros — solo si hay objetos */}
+			{/* Filtros, solo si hay objetos */}
 			{!error && objetos.length > 0 && (
 				<div className="inventario-filtros">
 					<input
@@ -116,28 +119,24 @@ const Inventario = () => {
 
 			{error && (
 				<div className="inventario-estado">
-					<span className="inventario-estado-icono">⚠️</span>
 					<p>No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.</p>
 				</div>
 			)}
 
 			{!error && objetos.length === 0 && (
 				<div className="inventario-estado">
-					<span className="inventario-estado-icono">📦</span>
 					<p>Tu inventario está vacío. ¡Abre una caja para conseguir tu primer skin!</p>
 				</div>
 			)}
 
 			{!error && objetos.length > 0 && objetosFiltrados.length === 0 && (
 				<div className="inventario-estado">
-					<span className="inventario-estado-icono">🔍</span>
 					<p>Ningún objeto coincide con tu búsqueda.</p>
 				</div>
 			)}
 
 			{!error && objetosFiltrados.length > 0 && (
 				<div className="inventario-grid">
-					{/* key incluye el índice como desempate por si hay objetos con id repetido */}
 					{objetosFiltrados.map((objeto, i) => (
 						<TarjetaInventario key={`${objeto.id}-${i}`} objeto={objeto} />
 					))}

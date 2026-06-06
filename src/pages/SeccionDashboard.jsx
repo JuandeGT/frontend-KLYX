@@ -9,7 +9,9 @@ const SeccionDashboard = () => {
 	const [estadisticas, setEstadisticas] = useState(null);
 
 	useEffect(() => {
-		getEstadisticas().then((data) => { if (data) setEstadisticas(data); });
+		getEstadisticas().then((data) => {
+			if (data) setEstadisticas(data);
+		});
 	}, []);
 
 	if (!estadisticas) return <Cargando />;
@@ -19,13 +21,13 @@ const SeccionDashboard = () => {
 
 	return (
 		<div className="dashboard">
-
-			{/* KPIs principales */}
 			<div className="dashboard-kpis">
 				<div className="kpi-card">
 					<span className="kpi-valor">{usuarios.total}</span>
 					<span className="kpi-titulo">Usuarios</span>
-					<span className="kpi-sub">{usuarios.vip_activos} VIP · {usuarios.con_saldo} con saldo</span>
+					<span className="kpi-sub">
+						{usuarios.vip_activos} VIP · {usuarios.con_saldo} con saldo
+					</span>
 				</div>
 				<div className="kpi-card kpi-dorado">
 					<span className="kpi-valor">{formatearKC(economia.kc_en_circulacion)}</span>
@@ -35,7 +37,9 @@ const SeccionDashboard = () => {
 				<div className="kpi-card">
 					<span className="kpi-valor">{cajas.total_aperturas}</span>
 					<span className="kpi-titulo">Cajas abiertas</span>
-					<span className="kpi-sub">{objetos.total} objetos · {objetos.en_oferta} en oferta</span>
+					<span className="kpi-sub">
+						{objetos.total} objetos · {objetos.en_oferta} en oferta
+					</span>
 				</div>
 				<div className="kpi-card">
 					<span className="kpi-valor">{intercambios.total}</span>
@@ -52,28 +56,40 @@ const SeccionDashboard = () => {
 						<div className="barra-fila">
 							<span className="barra-label">Aceptados</span>
 							<div className="barra-track">
-								<div className="barra-fill barra-exito" style={{ width: `${Math.round((intercambios.aceptados / totalIntercambios) * 100)}%` }} />
+								<div
+									className="barra-fill barra-exito"
+									style={{ width: `${Math.round((intercambios.aceptados / totalIntercambios) * 100)}%` }}
+								/>
 							</div>
 							<span className="barra-valor">{intercambios.aceptados}</span>
 						</div>
 						<div className="barra-fila">
 							<span className="barra-label">Pendientes</span>
 							<div className="barra-track">
-								<div className="barra-fill barra-warning" style={{ width: `${Math.round((intercambios.pendientes / totalIntercambios) * 100)}%` }} />
+								<div
+									className="barra-fill barra-warning"
+									style={{ width: `${Math.round((intercambios.pendientes / totalIntercambios) * 100)}%` }}
+								/>
 							</div>
 							<span className="barra-valor">{intercambios.pendientes}</span>
 						</div>
 						<div className="barra-fila">
 							<span className="barra-label">Cancelados</span>
 							<div className="barra-track">
-								<div className="barra-fill barra-muted" style={{ width: `${Math.round((intercambios.cancelados / totalIntercambios) * 100)}%` }} />
+								<div
+									className="barra-fill barra-muted"
+									style={{ width: `${Math.round((intercambios.cancelados / totalIntercambios) * 100)}%` }}
+								/>
 							</div>
 							<span className="barra-valor">{intercambios.cancelados}</span>
 						</div>
 						<div className="barra-fila">
 							<span className="barra-label">Rechazados</span>
 							<div className="barra-track">
-								<div className="barra-fill barra-error" style={{ width: `${Math.round((intercambios.rechazados / totalIntercambios) * 100)}%` }} />
+								<div
+									className="barra-fill barra-error"
+									style={{ width: `${Math.round((intercambios.rechazados / totalIntercambios) * 100)}%` }}
+								/>
 							</div>
 							<span className="barra-valor">{intercambios.rechazados}</span>
 						</div>
@@ -95,13 +111,12 @@ const SeccionDashboard = () => {
 							{transacciones.map((t) => (
 								<tr key={t.tipo}>
 									<td>
-										<span className={`historial-tipo tipo-${t.tipo}`}>
-											{t.tipo.replace(/_/g, ' ')}
-										</span>
+										<span className={`historial-tipo tipo-${t.tipo}`}>{t.tipo.replace(/_/g, ' ')}</span>
 									</td>
 									<td>{t.total}</td>
 									<td className={t.suma_kc >= 0 ? 'positivo' : 'negativo'}>
-										{t.suma_kc >= 0 ? '+' : ''}{formatearKC(Math.abs(t.suma_kc))}
+										{t.suma_kc >= 0 ? '+' : ''}
+										{formatearKC(Math.abs(t.suma_kc))}
 									</td>
 								</tr>
 							))}

@@ -1,6 +1,6 @@
 @use '../styles/variables' as v;
 
-// ─── Layout ───────────────────────────────────────────────────────────────────
+// Layout
 .tienda-contenedor {
     max-width: 1100px;
     margin: 0 auto;
@@ -33,7 +33,7 @@
     }
 }
 
-// ─── Panel VIP ────────────────────────────────────────────────────────────────
+// Panel VIP
 .vip-card {
     background: v.$negro-card;
     border: 1px solid rgba(156, 39, 176, 0.3);
@@ -184,7 +184,7 @@
     }
 }
 
-// ─── Panel Recarga ────────────────────────────────────────────────────────────
+// Panel Recarga
 .recarga-card {
     background: v.$negro-card;
     border: 1px solid v.$borde-dorado;

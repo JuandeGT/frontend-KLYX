@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+
 import useSesion from '../hooks/useSesion.js';
 import useNotificacion from '../hooks/useNotificacion.js';
 import { formatearKC, formatearFecha } from '../utils/formatear.js';
 import api from '../utils/api.js';
 import Confirmacion from '../estructura/Confirmacion.jsx';
+import TarjetaWallet from './TarjetaWallet.jsx';
 import './Perfil.scss';
-
 
 const Perfil = () => {
 	const { usuario, obtenerPerfil, borrarCuenta, cerrarSesion } = useSesion();
@@ -51,6 +51,7 @@ const Perfil = () => {
 				return;
 			}
 
+			// Api directo, no hay hook porque solo este componente usa este endpoint
 			await api.put('/perfil', datos);
 			await obtenerPerfil();
 			notificar('Perfil actualizado correctamente.');
@@ -63,8 +64,8 @@ const Perfil = () => {
 		}
 	};
 
-	const [confirmarBorrar,  setConfirmarBorrar]  = useState(false);
-	const [confirmarSalir,   setConfirmarSalir]   = useState(false);
+	const [confirmarBorrar, setConfirmarBorrar] = useState(false);
+	const [confirmarSalir, setConfirmarSalir] = useState(false);
 
 	if (!usuario) return null;
 
@@ -73,7 +74,10 @@ const Perfil = () => {
 			{confirmarSalir && (
 				<Confirmacion
 					mensaje="¿Quieres cerrar la sesión?"
-					onConfirmar={() => { setConfirmarSalir(false); cerrarSesion(); }}
+					onConfirmar={() => {
+						setConfirmarSalir(false);
+						cerrarSesion();
+					}}
 					onCancelar={() => setConfirmarSalir(false)}
 				/>
 			)}
@@ -82,17 +86,18 @@ const Perfil = () => {
 				<Confirmacion
 					mensaje="Esta acción es irreversible. Se eliminarán tu cuenta, inventario y saldo."
 					detalle="No podrás recuperar tu cuenta una vez eliminada."
-					onConfirmar={() => { setConfirmarBorrar(false); borrarCuenta(); }}
+					onConfirmar={() => {
+						setConfirmarBorrar(false);
+						borrarCuenta();
+					}}
 					onCancelar={() => setConfirmarBorrar(false)}
 					peligroso
 				/>
 			)}
 
-			{/* Tarjeta de wallet — acceso rápido a recarga y VIP */}
 			<TarjetaWallet usuario={usuario} />
 
 			<div className="perfil-card">
-				{/* ——— Cabecera del perfil ——— */}
 				<div className="perfil-avatar-fila">
 					<div className="perfil-avatar">
 						<span>{usuario.nombre?.charAt(0)?.toUpperCase() ?? '?'}</span>
@@ -103,7 +108,7 @@ const Perfil = () => {
 					</div>
 				</div>
 
-				{/* ——— Stats ——— */}
+				{/* Estadísticas */}
 				<div className="perfil-stats">
 					<div className="perfil-stat">
 						<span className="stat-valor">{formatearKC(usuario.saldo ?? 0)}</span>
@@ -123,7 +128,7 @@ const Perfil = () => {
 					)}
 				</div>
 
-				{/* ——— Formulario de edición ——— */}
+				{/* Formulario para editar el perfil */}
 				{editando ? (
 					<form className="perfil-form" onSubmit={guardarPerfil}>
 						<h2 className="perfil-form-titulo">Editar perfil</h2>
@@ -153,7 +158,9 @@ const Perfil = () => {
 						</div>
 
 						<div className="grupo-input">
-							<label htmlFor="password">Nueva contraseña <span className="campo-opcional">(opcional)</span></label>
+							<label htmlFor="password">
+								Nueva contraseña <span className="campo-opcional">(opcional)</span>
+							</label>
 							<input
 								id="password"
 								name="password"
@@ -185,10 +192,12 @@ const Perfil = () => {
 				)}
 			</div>
 
-			{/* Zona de peligro */}
+			{/* Eliminar cuenta */}
 			<div className="zona-peligro">
 				<div className="zona-peligro-cabecera">
-					<span className="zona-peligro-icono" aria-hidden="true">☠</span>
+					<span className="zona-peligro-icono" aria-hidden="true">
+						☠
+					</span>
 					<div>
 						<h3 className="zona-peligro-titulo">Eliminar cuenta</h3>
 						<p className="zona-peligro-aviso">Esta acción no se puede deshacer</p>
@@ -207,29 +216,5 @@ const Perfil = () => {
 		</div>
 	);
 };
-
-// =============================================================================
-// TARJETA WALLET — acceso rápido a la tienda desde el perfil
-// Muestra el saldo actual y el estado VIP. Al hacer clic lleva a /tienda.
-// La recarga real y la compra VIP están en Tienda.jsx para mantener el perfil limpio.
-// =============================================================================
-const TarjetaWallet = ({ usuario }) => (
-	<Link to="/tienda" className="wallet-card">
-		<div className="wallet-card-info">
-			<p className="wallet-card-etiqueta">Saldo disponible</p>
-			<p className="wallet-card-saldo">{formatearKC(usuario?.saldo ?? 0)}</p>
-			<p className="wallet-card-plan">
-				{usuario?.suscripcion
-					? `⭐ VIP · caduca ${formatearFecha(usuario.fecha_fin_suscripcion)}`
-					: 'Plan Estándar'
-				}
-			</p>
-		</div>
-		<div className="wallet-card-accion">
-			<span>Recargar / VIP</span>
-			<span className="wallet-card-flecha">→</span>
-		</div>
-	</Link>
-);
 
 export default Perfil;

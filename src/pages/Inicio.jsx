@@ -4,52 +4,41 @@ import useSesion from '../hooks/useSesion.js';
 import api from '../utils/api.js';
 import { formatearKC } from '../utils/formatear.js';
 import ModalCaja from './ModalCaja.jsx';
-import BtnComprarDirecto from './BtnComprarDirecto.jsx';
-import HeroCtas from './HeroCtas.jsx';
+import BotonComprar from './BotonComprar.jsx';
+import BotonesHero from './BotonesHero.jsx';
 import FeedActividad from './FeedActividad.jsx';
 import './Inicio.scss';
 
-// ⚠️ lazy() + Suspense — NO están en la referencia del profesor.
-//
-// ¿Por qué lo usamos?
-// CuchilloVisor usa Three.js, una librería enorme (~950 KB).
-// Si la importáramos con un import normal arriba del todo, el navegador tendría que
-// descargar ese megabyte ANTES de mostrar cualquier cosa de la página.
-//
-// Con lazy() le decimos a React:
-//   "No descargues este archivo ahora. Descárgalo solo cuando lo vayas a mostrar."
-// Es como si en vez de traerte todos los libros de la biblioteca de golpe,
-// solo fueses a buscar el libro cuando alguien lo pide.
-//
-// Suspense actúa como sala de espera: mientras el archivo se descarga,
-// muestra el fallback (aquí null = nada). Cuando termina, muestra el visor 3D.
+// lazy() + Suspense:
+// CuchilloVisor usa Three.js, una librería enorme (~950 KB)
+// Si la importáramos con un import normal, el navegador tendría que descargar ese megabyte ANTES de mostrar cualquier cosa de la página
+
+// Con lazy() le decimos a React: "No descargues este archivo ahora. Descárgalo solo cuando lo vayas a mostrar."
+
+// Suspense actúa como sala de espera: mientras el archivo se descarga, muestra el fallback, cuando termina, muestra el visor 3D
 const CuchilloVisor = lazy(() => import('./CuchilloVisor.jsx'));
 
 const Inicio = () => {
 	const { sesionIniciada } = useSesion();
 	const [cajas, setCajas] = useState([]);
 	const [objetos, setObjetos] = useState([]);
-	// Solo una caja puede tener el modal abierto a la vez; null = modal cerrado
 	const [cajaSeleccionada, setCajaSeleccionada] = useState(null);
 
-	// Carga cajas y oferta semanal en paralelo al montar.
-	// Promise.all lanza ambas peticiones a la vez para reducir el tiempo de espera.
-	// Ambos endpoints son públicos — no requieren autenticación.
+	// Promise.all lanza ambas peticiones a la vez para reducir el tiempo de espera
 	useEffect(() => {
 		const cargarDatos = async () => {
 			try {
-				const [respuestaCajas, respuestaOferta] = await Promise.all([
-					api.get('/cajas'),
-					api.get('/oferta-semanal'),
-				]);
-				// Las 3 primeras cajas ordenadas: Sangrienta (izq) · Dioses (centro) · Elite (der)
+				// Api directo, no hay hook porque solo este componente usa este endpoint
+				const [respuestaCajas, respuestaOferta] = await Promise.all([api.get('/cajas'), api.get('/oferta-semanal')]);
 				const ordenNombres = ['sangrienta', 'dioses', 'elite'];
 				const todasCajas = respuestaCajas.data.data ?? [];
-				const cajasOrdenadas = [...todasCajas].sort((a, b) => {
-					const ai = ordenNombres.findIndex(k => a.nombre?.toLowerCase().includes(k));
-					const bi = ordenNombres.findIndex(k => b.nombre?.toLowerCase().includes(k));
-					return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-				}).slice(0, 3);
+				const cajasOrdenadas = [...todasCajas]
+					.sort((a, b) => {
+						const ai = ordenNombres.findIndex((k) => a.nombre?.toLowerCase().includes(k));
+						const bi = ordenNombres.findIndex((k) => b.nombre?.toLowerCase().includes(k));
+						return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+					})
+					.slice(0, 3);
 				setCajas(cajasOrdenadas);
 				setObjetos(respuestaOferta.data.data ?? []);
 			} catch {
@@ -61,8 +50,7 @@ const Inicio = () => {
 
 	return (
 		<div className="inicio-contenedor">
-
-			{/* ——— HERO ——— */}
+			{/* HERO*/}
 			<section className="hero">
 				<div className="hero-3d-bg">
 					<Suspense fallback={null}>
@@ -73,26 +61,29 @@ const Inicio = () => {
 				<div className="hero-texto">
 					<p className="hero-etiqueta">Plataforma de Lootboxes Nº1</p>
 					<h1 className="hero-titulo">
-						ABRE CAJAS.<br />
+						ABRE CAJAS.
+						<br />
 						<span className="hero-titulo-dorado">GANA SKINS.</span>
 					</h1>
 					<p className="hero-subtitulo">
-						Deposita saldo real, conviértelo en Klyx Coins y abre cajas con
-						skins exclusivos. Transparencia total en cada apertura.
+						Deposita saldo real, conviértelo en Klyx Coins y abre cajas con skins exclusivos. Transparencia total en
+						cada apertura.
 					</p>
-					<HeroCtas sesionIniciada={sesionIniciada} />
+					<BotonesHero sesionIniciada={sesionIniciada} />
 				</div>
 			</section>
 
-			{/* ——— FEED DE ACTIVIDAD EN VIVO ——— */}
+			{/* FEED DE ACTIVIDAD EN VIVO */}
 			<FeedActividad />
 
-			{/* ——— CAJAS DESTACADAS ——— */}
+			{/* CAJAS DESTACADAS */}
 			{cajas.length > 0 && (
 				<section className="destacadas">
 					<div className="destacadas-cabecera">
 						<h2>Cajas Destacadas</h2>
-						<Link to="/cajas" className="ver-todas-link">Ver todas →</Link>
+						<Link to="/cajas" className="ver-todas-link">
+							Ver todas →
+						</Link>
 					</div>
 
 					<div className="destacadas-grid">
@@ -100,17 +91,12 @@ const Inicio = () => {
 							<div key={caja.id} className="tarjeta-destacada">
 								{caja.vip && <span className="badge-vip">VIP</span>}
 
-								<div className="tarjeta-imagen">
-									{caja.imagen && <img src={caja.imagen} alt={caja.nombre} />}
-								</div>
+								<div className="tarjeta-imagen">{caja.imagen && <img src={caja.imagen} alt={caja.nombre} />}</div>
 
 								<h3>{caja.nombre}</h3>
 								<p className="tarjeta-precio">{formatearKC(caja.precio)}</p>
 
-								<button
-									className="btn-ver-caja"
-									onClick={() => setCajaSeleccionada(caja)}
-								>
+								<button className="btn-ver-caja" onClick={() => setCajaSeleccionada(caja)}>
 									Ver detalles
 								</button>
 							</div>
@@ -119,14 +105,9 @@ const Inicio = () => {
 				</section>
 			)}
 
-			{cajaSeleccionada && (
-				<ModalCaja
-					caja={cajaSeleccionada}
-					onCerrar={() => setCajaSeleccionada(null)}
-				/>
-			)}
+			{cajaSeleccionada && <ModalCaja caja={cajaSeleccionada} onCerrar={() => setCajaSeleccionada(null)} />}
 
-			{/* ——— SELECCIÓN SEMANAL ——— */}
+			{/* SELECCIÓN SEMANAL */}
 			{objetos.length > 0 && (
 				<section className="seleccion-semanal">
 					<div className="destacadas-cabecera">
@@ -142,7 +123,11 @@ const Inicio = () => {
 							<div key={objeto.id} className="tarjeta-objeto">
 								<div className="objeto-imagen">
 									{objeto.imagen && (
-										<img src={objeto.imagen} alt={objeto.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+										<img
+											src={objeto.imagen}
+											alt={objeto.nombre}
+											style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+										/>
 									)}
 								</div>
 
@@ -153,11 +138,7 @@ const Inicio = () => {
 
 								<div className="objeto-footer">
 									<span className="objeto-precio">{formatearKC(objeto.precio)}</span>
-									<BtnComprarDirecto
-										objetoId={objeto.id}
-										nombreObjeto={objeto.nombre}
-										precioObjeto={objeto.precio}
-									/>
+									<BotonComprar objetoId={objeto.id} nombreObjeto={objeto.nombre} precioObjeto={objeto.precio} />
 								</div>
 							</div>
 						))}
@@ -165,7 +146,7 @@ const Inicio = () => {
 				</section>
 			)}
 
-			{/* ——— CÓMO FUNCIONA ——— */}
+			{/* CÓMO FUNCIONA */}
 			<section className="como-funciona">
 				<h2>¿Cómo funciona KLYX?</h2>
 				<div className="pasos-grid">
@@ -186,7 +167,6 @@ const Inicio = () => {
 					</div>
 				</div>
 			</section>
-
 		</div>
 	);
 };

@@ -2,40 +2,41 @@ import React, { useState, useEffect } from 'react';
 import useAdminObjetos from '../hooks/useAdminObjetos.js';
 import { formatearKC } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
+import TarjetaOfertaAdmin from './TarjetaOfertaAdmin.jsx';
 import './PanelAdmin.scss';
 
-// Carga GET /api/objetos (público) y filtra solo cuchillos.
-// El toggle llama a PUT /api/admin/objetos/{id}/oferta (admin).
-// Máximo 3 activos simultáneamente — el 422 del backend se notifica automáticamente.
+// Carga los objetos y filtra solo los cuchillos
+// El toggle llama a PUT /api/admin/objetos/{id}/oferta (admin)
+// Máximo 3 cuchillos a la vez en la oferta semanal
 const SeccionOfertaSemanal = () => {
-	const admin = useAdminObjetos();
+	const { getObjetos, toggleOferta, cargando } = useAdminObjetos();
 	const [objetos, setObjetos] = useState([]);
 	const [cargandoLocal, setCargandoLocal] = useState(true);
 
 	const cargar = async () => {
-		const data = await admin.getObjetos();
+		const data = await getObjetos();
 		if (data) {
-			// Solo mostramos cuchillos — las pegatinas no aplican para la oferta
+			// Solo mostramos cuchillos, las pegatinas no aplican para la oferta
 			setObjetos(data.filter((o) => o.tipo === 'cuchillo'));
 		}
 		setCargandoLocal(false);
 	};
 
-	useEffect(() => { cargar(); }, []);
+	useEffect(() => {
+		cargar();
+	}, []);
 
 	const toggle = async (id) => {
-		const actualizado = await admin.toggleOferta(id);
+		const actualizado = await toggleOferta(id);
 		if (actualizado !== null) {
 			// Actualiza solo el objeto afectado sin recargar la lista completa
-			setObjetos((prev) =>
-				prev.map((o) => (o.id === actualizado.id ? { ...o, en_oferta: actualizado.en_oferta } : o))
-			);
+			setObjetos((prev) => prev.map((o) => (o.id === actualizado.id ? { ...o, en_oferta: actualizado.en_oferta } : o)));
 		}
 	};
 
 	if (cargandoLocal) return <Cargando />;
 
-	const activos   = objetos.filter((o) => o.en_oferta);
+	const activos = objetos.filter((o) => o.en_oferta);
 	const inactivos = objetos.filter((o) => !o.en_oferta);
 	const limiteAlcanzado = activos.length >= 3;
 
@@ -83,9 +84,7 @@ const SeccionOfertaSemanal = () => {
 							<tbody>
 								{inactivos.map((o) => (
 									<tr key={o.id}>
-										<td>
-											{o.imagen && <img src={o.imagen} alt={o.nombre} className="oferta-thumb" />}
-										</td>
+										<td>{o.imagen && <img src={o.imagen} alt={o.nombre} className="oferta-thumb" />}</td>
 										<td className="td-nombre">{o.nombre}</td>
 										<td className="td-muted">{o.descripcion}</td>
 										<td className="td-kc">{formatearKC(o.precio)}</td>
@@ -93,7 +92,7 @@ const SeccionOfertaSemanal = () => {
 											<button
 												className="btn-accion btn-editar"
 												onClick={() => toggle(o.id)}
-												disabled={limiteAlcanzado || admin.cargando}
+												disabled={limiteAlcanzado || cargando}
 												title={limiteAlcanzado ? 'Desactiva uno antes de añadir otro' : 'Añadir a la oferta'}
 											>
 												{limiteAlcanzado ? '+ (límite)' : '+ Activar'}
@@ -109,19 +108,5 @@ const SeccionOfertaSemanal = () => {
 		</div>
 	);
 };
-
-// Tarjeta visual para un cuchillo activo en la oferta
-const TarjetaOfertaAdmin = ({ objeto, onToggle, activo }) => (
-	<div className={`oferta-tarjeta ${activo ? 'oferta-tarjeta-activa' : ''}`}>
-		{objeto.imagen && <img src={objeto.imagen} alt={objeto.nombre} className="oferta-tarjeta-img" />}
-		<div className="oferta-tarjeta-info">
-			<p className="oferta-tarjeta-nombre">{objeto.nombre}</p>
-			<p className="oferta-tarjeta-precio">{formatearKC(objeto.precio)}</p>
-		</div>
-		<button className="btn-accion btn-eliminar" onClick={onToggle}>
-			✕ Desactivar
-		</button>
-	</div>
-);
 
 export default SeccionOfertaSemanal;

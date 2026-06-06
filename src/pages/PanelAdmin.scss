@@ -1,8 +1,6 @@
 @use '../styles/variables' as v;
 
-// =====================
-// PANEL PRINCIPAL
-// =====================
+// Panel principal
 .panel-admin {
 	max-width: 1200px;
 	margin: 0 auto;
@@ -55,9 +53,7 @@
 	font-size: 1.1rem;
 }
 
-// =====================
-// SECCIÓN GENÉRICA
-// =====================
+// Sección genérica
 .admin-seccion { }
 
 .admin-seccion-header {
@@ -95,9 +91,7 @@
 	&:hover { box-shadow: 0 0 14px v.$dorado-glow; transform: translateY(-1px); }
 }
 
-// =====================
-// FORMULARIO INLINE
-// =====================
+// Formulario inline
 .admin-form-inline {
 	background: v.$negro-card;
 	border: 1px solid v.$borde-dorado;
@@ -188,9 +182,7 @@
 	&:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
-// =====================
-// TABLA
-// =====================
+// Tabla
 .admin-tabla-wrapper {
 	overflow-x: auto;
 	border-radius: v.$radio-lg;
@@ -257,7 +249,7 @@
 .btn-historial { background: rgba(100,180,255,0.1); color: #7ec8ff; border: 1px solid rgba(100,180,255,0.3); &:hover { background: rgba(100,180,255,0.2); } }
 .btn-eliminar { background: rgba(201,64,64,0.1); color: v.$error-color; border: 1px solid rgba(201,64,64,0.3); &:hover { background: v.$error-color; color: #fff; } }
 
-// ── Badges ──
+// Badges
 .badge-vip-mini {
 	background: v.$grad-dorado;
 	color: v.$negro;
@@ -291,7 +283,7 @@
 	text-transform: capitalize;
 }
 
-// ── Paginación ──
+// Paginación
 .admin-paginacion {
 	display: flex;
 	align-items: center;
@@ -316,9 +308,7 @@
 	}
 }
 
-// =====================
-// MODAL
-// =====================
+// Modal
 .admin-modal-overlay {
 	position: fixed;
 	inset: 0;
@@ -407,7 +397,7 @@
 	font-size: 0.9rem;
 }
 
-// ── Historial filas ──
+// Historial filas
 .historial-fila {
 	display: flex;
 	gap: 1rem;
@@ -441,9 +431,7 @@
 .positivo { color: #4caf50; font-weight: 700; }
 .negativo { color: v.$error-color; font-weight: 700; }
 
-// =====================
-// DASHBOARD
-// =====================
+// Dashboard
 
 // Grid de 4 KPI cards
 .dashboard-kpis {
@@ -579,9 +567,7 @@
 	td { padding: 7px 10px; }
 }
 
-// =====================
-// INTERCAMBIOS ADMIN
-// =====================
+// Intercambios admin
 .trade-filtros {
 	display: flex;
 	gap: 4px;
@@ -639,9 +625,7 @@
 	&.trade-cancelado  { background: v.$negro-hover;        color: v.$texto-muted; border: 1px solid v.$borde-hover; }
 }
 
-// =====================
-// OFERTA SEMANAL
-// =====================
+// Oferta semanal
 .admin-oferta-desc {
     color: v.$texto-muted;
     font-size: 0.88rem;
@@ -760,7 +744,7 @@
     border: 1px solid v.$borde-hover;
 }
 
-// ── Añadir objeto a caja ──
+// Añadir objeto a caja
 .admin-añadir-objeto {
 	margin-top: 1.5rem;
 	border-top: 1px solid v.$borde;

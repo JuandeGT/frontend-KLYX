@@ -16,8 +16,6 @@ const ProveedorSesion = ({ children }) => {
 	const [administrador, setAdministrador] = useState(false);
 	const [cargando, setCargando] = useState(true);
 
-	// ——— CREAR CUENTA ———
-	// Llama a POST /api/registro con nombre, email y password.
 	const crearCuenta = async () => {
 		try {
 			await api.post('/registro', {
@@ -33,10 +31,7 @@ const ProveedorSesion = ({ children }) => {
 		}
 	};
 
-	// ——— INICIAR SESIÓN ———
-	// 1. POST /api/login → recibe { data: { token, usuario, rol } }
-	// 2. Guarda el token en localStorage (el interceptor de api.js lo inyectará en adelante)
-	// 3. Llama a obtenerPerfil()
+	// El login devuelve el token, lo guardamos en el localStorage para usarlo luego y obtenemos el perfil
 	const iniciarSesion = async () => {
 		try {
 			const respuesta = await api.post('/login', {
@@ -44,8 +39,7 @@ const ProveedorSesion = ({ children }) => {
 				password: datosSesion.password,
 			});
 
-			// respuesta.data.data: Axios guarda el cuerpo HTTP en .data,
-			// y Laravel lo envuelve además en { data: ... } → hay que hacer .data.data
+			// respuesta.data.data: Axios guarda el cuerpo HTTP en .data y Laravel lo envuelve además en { data: ... } por eso hay que hacer .data.data
 			const { token, usuario: datosUsuario, rol } = respuesta.data.data;
 
 			localStorage.setItem('klyx_token', token);
@@ -63,7 +57,6 @@ const ProveedorSesion = ({ children }) => {
 		}
 	};
 
-	// Limpieza local de sesión — compartida por cerrarSesion y borrarCuenta
 	const limpiarSesion = (mensaje) => {
 		localStorage.removeItem('klyx_token');
 		setUsuario(null);
@@ -73,38 +66,31 @@ const ProveedorSesion = ({ children }) => {
 		notificar(mensaje);
 	};
 
-	// ——— CERRAR SESIÓN ———
-	// POST /api/logout revoca el token en el servidor (tabla personal_access_tokens).
-	// Limpiamos localStorage independientemente de si la petición falla (por si el token ya expiró).
+	// Limpiamos el token de localStorage
 	const cerrarSesion = async () => {
 		try {
 			await api.post('/logout');
 		} catch {
-			// El token puede haber expirado; limpiamos igualmente
+			// El token puede haber expirado, lo limpiamos igualmente
 		} finally {
 			limpiarSesion('Sesión cerrada correctamente.');
 		}
 	};
 
-	// ——— BORRAR CUENTA ———
-	// DELETE /api/cuenta — elimina la cuenta del usuario autenticado y limpia la sesión local.
 	const borrarCuenta = async () => {
 		try {
 			await api.delete('/cuenta');
 		} catch {
-			// Si el servidor falla igualmente limpiamos la sesión local
+			// Si el servidor falla igualmente limpiamos el localStorage
 		} finally {
 			limpiarSesion('Cuenta eliminada correctamente.');
 		}
 	};
 
-	// ——— OBTENER PERFIL ———
-	// Llama a GET /api/perfil para hidratar el estado con los datos actualizados del usuario.
-	// Se usa al montar el componente para restaurar la sesión si hay token en localStorage.
 	const obtenerPerfil = async () => {
 		try {
 			const respuesta = await api.get('/perfil');
-			// respuesta.data.data: mismo motivo que en iniciarSesion (Axios + Laravel doble envoltorio)
+			// respuesta.data.data: mismo motivo que en iniciarSesion
 			const usuarioCompleto = respuesta.data.data;
 			const esAdmin = Array.isArray(usuarioCompleto.rol)
 				? usuarioCompleto.rol.includes('Admin')
@@ -114,7 +100,6 @@ const ProveedorSesion = ({ children }) => {
 			setSesionIniciada(true);
 			setAdministrador(esAdmin);
 		} catch {
-			// Token inválido o expirado: limpiamos
 			localStorage.removeItem('klyx_token');
 			setSesionIniciada(false);
 		} finally {
@@ -122,8 +107,7 @@ const ProveedorSesion = ({ children }) => {
 		}
 	};
 
-	// Al montar el proveedor: si hay token guardado, intentamos restaurar la sesión
-	// sin obligar al usuario a volver a iniciar sesión tras refrescar la página.
+	// Al montar el proveedor comprobamos si hay token guardado, si lo hay restauramos la sesión sin obligar al usuario a volver a iniciar sesión tras refrescar la página
 	useEffect(() => {
 		const token = localStorage.getItem('klyx_token');
 		if (token) {

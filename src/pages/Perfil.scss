@@ -9,7 +9,7 @@
 	gap: 1.5rem;
 }
 
-// ─── Tarjeta Wallet ───────────────────────────────────────────────────────────
+// Tarjeta Wallet
 .wallet-card {
     display: flex;
     align-items: center;
@@ -212,7 +212,7 @@
 	margin: 0 0 0.5rem 0;
 }
 
-// Reutiliza el patrÃ³n de grupo-input del _sesion.scss
+// Mismo patrón de grupo-input que en _sesion.scss
 .grupo-input {
 	display: flex;
 	flex-direction: column;
@@ -297,8 +297,7 @@
 	}
 }
 
-// â”€â”€ Zona de peligro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// ─── Zona de peligro ─────────────────────────────────────────────────────────
+// Zona de peligro
 .zona-peligro {
     background: v.$negro-card;
     border: 1px solid rgba(192, 57, 43, 0.18);

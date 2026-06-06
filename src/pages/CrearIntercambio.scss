@@ -27,9 +27,7 @@
 	margin-bottom: 2rem;
 }
 
-// =====================
-// SELECTOR DE TIPO
-// =====================
+// Selector de tipo
 .tipo-selector {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -81,9 +79,7 @@
 	}
 }
 
-// =====================
-// FORMULARIO
-// =====================
+// Formulario
 .crear-form {
 	display: flex;
 	flex-direction: column;
@@ -152,9 +148,7 @@
 	border: 1px dashed v.$borde-hover;
 }
 
-// =====================
-// ACCIONES
-// =====================
+// Acciones
 .crear-acciones {
 	display: flex;
 	gap: 1rem;

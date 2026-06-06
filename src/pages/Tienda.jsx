@@ -1,5 +1,3 @@
-// Página de la tienda: recarga de KC y activación VIP.
-// Accesible desde: badge KC del navbar, tarjeta wallet del perfil, URL /tienda directa.
 import React from 'react';
 import useSesion from '../hooks/useSesion.js';
 import PanelRecarga from './PanelRecarga.jsx';

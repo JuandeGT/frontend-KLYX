@@ -1,7 +1,6 @@
 @use './variables' as v;
 
-// Carga Inter desde Google Fonts — librería externa no presente en la referencia base.
-// Se usa para una tipografía más premium y legible que Segoe UI.
+// Carga Inter desde Google Fonts para una tipografía más limpia que la del sistema
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 *,

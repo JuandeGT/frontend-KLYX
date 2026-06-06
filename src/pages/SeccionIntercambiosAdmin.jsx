@@ -5,14 +5,14 @@ import Cargando from './Cargando.jsx';
 import './PanelAdmin.scss';
 
 const SeccionIntercambiosAdmin = () => {
-	const admin = useAdminIntercambios();
+	const { getIntercambiosAdmin, cargando } = useAdminIntercambios();
 	const [intercambios, setIntercambios] = useState([]);
 	const [paginacion, setPaginacion] = useState(null);
 	const [pagina, setPagina] = useState(1);
 	const [estado, setEstado] = useState('');
 
 	const cargar = async (p, e) => {
-		const data = await admin.getIntercambiosAdmin(p, e);
+		const data = await getIntercambiosAdmin(p, e);
 		if (data) {
 			setIntercambios(data.data ?? data);
 			setPaginacion(data);
@@ -40,7 +40,7 @@ const SeccionIntercambiosAdmin = () => {
 				<button className={`trade-filtro-btn ${estado === 'cancelado' ? 'activo' : ''}`} onClick={() => cambiarEstado('cancelado')}>Cancelados</button>
 			</div>
 
-			{admin.cargando && intercambios.length === 0 ? <Cargando /> : (
+			{cargando && intercambios.length === 0 ? <Cargando /> : (
 				<>
 					<div className="admin-tabla-wrapper">
 						<table className="admin-tabla">

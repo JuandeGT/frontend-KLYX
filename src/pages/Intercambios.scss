@@ -44,9 +44,7 @@
 	}
 }
 
-// =====================
-// TABS
-// =====================
+// Tabs
 .intercambios-tabs {
 	display: flex;
 	gap: 4px;
@@ -95,9 +93,7 @@
 	}
 }
 
-// =====================
-// LISTA DE OFERTAS
-// =====================
+// Lista de ofertas
 .intercambios-lista {
 	display: flex;
 	flex-direction: column;
@@ -287,22 +283,6 @@
 	&:hover {
 		background-color: v.$dorado-hover;
 		box-shadow: 0 0 14px v.$dorado-glow;
-	}
-}
-
-.btn-rechazar {
-	background: transparent;
-	border: 1px solid v.$error-color;
-	color: v.$error-color;
-	padding: 9px 18px;
-	border-radius: v.$radio;
-	font-weight: 600;
-	font-size: 0.85rem;
-	transition: v.$transicion;
-
-	&:hover {
-		background-color: v.$error-color;
-		color: #fff;
 	}
 }
 

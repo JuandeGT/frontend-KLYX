@@ -5,9 +5,7 @@
     flex-direction: column;
 }
 
-// =====================
-// HERO
-// =====================
+// Hero
 .hero {
     // position: sticky — a mitad de camino entre relative y fixed.
     // El elemento se comporta como relative normalmente (ocupa su espacio),
@@ -222,9 +220,7 @@
     50%       { transform: translateY(-12px); }
 }
 
-// =====================
-// FEED DE ACTIVIDAD
-// =====================
+// Feed de actividad
 .feed-actividad {
     position: relative;
     z-index: 1;
@@ -383,9 +379,7 @@
     .feed-card { width: 82px; height: 106px; }
 }
 
-// =====================
-// CAJAS DESTACADAS
-// =====================
+// Cajas destacadas
 .destacadas {
     position: relative;
     z-index: 1;          // sube por encima del hero sticky
@@ -438,8 +432,7 @@
     margin: 0 auto;
 }
 
-// ── Tarjeta de caja ──────────────────────────────────────────────────────────
-// Diseño tipo product card: imagen full-width arriba, info abajo
+// Tarjeta de caja — imagen full-width arriba, info abajo
 .tarjeta-destacada {
     background: v.$negro-card;
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -575,9 +568,7 @@
     }
 }
 
-// =====================
-// SELECCIÓN SEMANAL
-// =====================
+// Selección semanal
 .seleccion-semanal {
     position: relative;
     z-index: 1;          // sube por encima del hero sticky
@@ -721,9 +712,7 @@
     &:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 }
 
-// =====================
-// CÓMO FUNCIONA
-// =====================
+// Cómo funciona
 .como-funciona {
     position: relative;
     z-index: 1;          // sube por encima del hero sticky
@@ -802,9 +791,7 @@
     box-shadow: 0 0 16px v.$dorado-glow;
 }
 
-// =====================
-// RESPONSIVE
-// =====================
+// Responsive
 @media (max-width: 900px) {
     .hero {
         flex-direction: column;

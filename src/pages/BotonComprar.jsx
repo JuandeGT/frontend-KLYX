@@ -5,9 +5,8 @@ import { formatearKC } from '../utils/formatear.js';
 import api from '../utils/api.js';
 import Confirmacion from '../estructura/Confirmacion.jsx';
 
-// Botón de compra directa de la Selección Semanal.
-// Llama a POST /api/objetos/{id}/comprar-directo con el Bearer token de Sanctum.
-const BtnComprarDirecto = ({ objetoId, nombreObjeto, precioObjeto }) => {
+// Botón de compra directa de la Selección Semanal
+const BotonComprar = ({ objetoId, nombreObjeto, precioObjeto }) => {
 	const { sesionIniciada, obtenerPerfil } = useSesion();
 	const { notificar } = useNotificacion();
 	const [comprando, setComprando] = useState(false);
@@ -25,12 +24,12 @@ const BtnComprarDirecto = ({ objetoId, nombreObjeto, precioObjeto }) => {
 		setConfirmar(false);
 		setComprando(true);
 		try {
+			// Api directo, no hay hook porque solo este componente usa este endpoint
 			await api.post(`/objetos/${objetoId}/comprar-directo`);
 			notificar('¡Objeto añadido a tu Inventario!');
 			await obtenerPerfil();
 		} catch (error) {
-			const msg = error.response?.data?.message || 'No se pudo completar la compra.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'No se pudo completar la compra.', 'error');
 		} finally {
 			setComprando(false);
 		}
@@ -53,4 +52,4 @@ const BtnComprarDirecto = ({ objetoId, nombreObjeto, precioObjeto }) => {
 	);
 };
 
-export default BtnComprarDirecto;
+export default BotonComprar;

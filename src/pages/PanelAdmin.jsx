@@ -8,9 +8,6 @@ import SeccionOfertaSemanal from './SeccionOfertaSemanal.jsx';
 import SeccionIntercambiosAdmin from './SeccionIntercambiosAdmin.jsx';
 import './PanelAdmin.scss';
 
-// Panel principal de administración.
-// Las pestañas renderizan su sección directamente con {seccion === 'x' && <SeccionX />}
-// para que el código sea explícito y fácil de leer.
 const PanelAdmin = () => {
 	const { administrador } = useSesion();
 	const [seccion, setSeccion] = useState('dashboard');
@@ -28,13 +25,22 @@ const PanelAdmin = () => {
 
 			{/* Navegación entre secciones */}
 			<div className="panel-admin-tabs">
-				<button className={`admin-tab ${seccion === 'dashboard' ? 'activo' : ''}`} onClick={() => setSeccion('dashboard')}>
+				<button
+					className={`admin-tab ${seccion === 'dashboard' ? 'activo' : ''}`}
+					onClick={() => setSeccion('dashboard')}
+				>
 					Dashboard
 				</button>
-				<button className={`admin-tab ${seccion === 'usuarios' ? 'activo' : ''}`} onClick={() => setSeccion('usuarios')}>
+				<button
+					className={`admin-tab ${seccion === 'usuarios' ? 'activo' : ''}`}
+					onClick={() => setSeccion('usuarios')}
+				>
 					Usuarios
 				</button>
-				<button className={`admin-tab ${seccion === 'intercambios' ? 'activo' : ''}`} onClick={() => setSeccion('intercambios')}>
+				<button
+					className={`admin-tab ${seccion === 'intercambios' ? 'activo' : ''}`}
+					onClick={() => setSeccion('intercambios')}
+				>
 					Intercambios
 				</button>
 				<button className={`admin-tab ${seccion === 'oferta' ? 'activo' : ''}`} onClick={() => setSeccion('oferta')}>
@@ -48,14 +54,14 @@ const PanelAdmin = () => {
 				</button>
 			</div>
 
-			{/* Contenido de la sección activa */}
+			{/* Contenido de las secciones */}
 			<div className="panel-admin-contenido">
-				{seccion === 'dashboard'    && <SeccionDashboard />}
-				{seccion === 'usuarios'     && <SeccionUsuarios />}
+				{seccion === 'dashboard' && <SeccionDashboard />}
+				{seccion === 'usuarios' && <SeccionUsuarios />}
 				{seccion === 'intercambios' && <SeccionIntercambiosAdmin />}
-				{seccion === 'oferta'       && <SeccionOfertaSemanal />}
-				{seccion === 'objetos'      && <SeccionObjetos />}
-				{seccion === 'cajas'        && <SeccionCajas />}
+				{seccion === 'oferta' && <SeccionOfertaSemanal />}
+				{seccion === 'objetos' && <SeccionObjetos />}
+				{seccion === 'cajas' && <SeccionCajas />}
 			</div>
 		</div>
 	);
