@@ -8,6 +8,9 @@
     z-index: 200;
 
     background: rgba(5, 5, 5, 0.72);
+    // backdrop-filter: efecto "vidrio esmerilado" — desenfoca y satura lo que hay detrás.
+    // No aparece en la referencia base pero es CSS moderno ampliamente soportado.
+    // El prefijo -webkit- es necesario para Safari/iOS.
     backdrop-filter: blur(22px) saturate(150%);
     -webkit-backdrop-filter: blur(22px) saturate(150%);
 
@@ -15,8 +18,12 @@
     justify-content: center;
     align-items: center;
 
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-
+    // &::after — pseudo-elemento: CSS crea un elemento "fantasma" que no existe en el HTML.
+    // Se usa para añadir decoración sin tocar el JSX.
+    // content: '' es obligatorio para que aparezca aunque esté vacío (solo visual).
+    // position: absolute lo saca del flujo y lo coloca con bottom/left/right.
+    // inset: 0 (si lo vieras en otro sitio) es equivalente a top:0; right:0; bottom:0; left:0
+    // — un shorthand que pone los 4 lados a la vez.
     // Línea inferior: degradado dorado simétrico desde el centro
     &::after {
         content: '';
@@ -35,10 +42,6 @@
         );
     }
 
-    &.scrolled {
-        background: rgba(5, 5, 5, 0.92);
-        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.65);
-    }
 }
 
 // ─── Wrapper centrado con max-width ───────────────────────────────────────────
@@ -90,7 +93,10 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        // Punto dorado debajo del link activo
+        // Punto dorado debajo del link activo.
+        // left: 50% + translateX(-50%) es el truco clásico para centrar un elemento
+        // horizontalmente: lo mueves al 50% del padre y luego lo desplazas -50% de su
+        // propio ancho para que quede exactamente en el centro.
         &.active {
             color: v.$texto;
             font-weight: 600;
@@ -131,17 +137,10 @@
     transition: v.$transicion;
 }
 
-// Versión VIP del saldo: brilla más
+// Versión VIP del saldo: borde más visible
 .badge-kc-vip {
     background: rgba(201, 162, 39, 0.15);
     border-color: rgba(201, 162, 39, 0.5);
-    box-shadow: 0 0 12px rgba(201, 162, 39, 0.2);
-    animation: kcVipPulse 3s ease-in-out infinite;
-}
-
-@keyframes kcVipPulse {
-    0%, 100% { box-shadow: 0 0 10px rgba(201,162,39,0.18); }
-    50%       { box-shadow: 0 0 20px rgba(201,162,39,0.38); }
 }
 
 // ─── Usuario ──────────────────────────────────────────────────────────────────
@@ -180,37 +179,12 @@
     }
 }
 
-// Avatar VIP: borde dorado animado
+// Avatar VIP: borde dorado sólido
 .usuario-avatar-vip {
     border-color: rgba(201, 162, 39, 0.6);
     background: rgba(201, 162, 39, 0.1);
-    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.35);
-    animation: avatarVipGlow 3s ease-in-out infinite;
 
     .avatar-inicial { color: v.$dorado; }
-}
-
-@keyframes avatarVipGlow {
-    0%, 100% { box-shadow: 0 0 0 0   rgba(201,162,39,0.35); }
-    50%       { box-shadow: 0 0 0 4px rgba(201,162,39,0.12); }
-}
-
-// Corona VIP encima del avatar (posición absoluta)
-.corona-vip {
-    position: absolute;
-    top: -9px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    line-height: 1;
-    filter: drop-shadow(0 0 4px rgba(201,162,39,0.8));
-    animation: coronaFlote 2.8s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes coronaFlote {
-    0%, 100% { transform: translateX(-50%) translateY(0);    }
-    50%       { transform: translateX(-50%) translateY(-2px); }
 }
 
 // Botón salir

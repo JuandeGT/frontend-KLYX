@@ -1,17 +1,19 @@
+// Inventario personal del usuario. Muestra todos los objetos obtenidos al abrir cajas.
+// Incluye filtro por nombre/tipo y orden (A-Z, precio ↑↓) calculados en memoria con useMemo.
+// useMemo: no está en la referencia base — evita recalcular el filtrado en cada render.
+// Solo recalcula cuando cambian objetos, busqueda u orden.
 import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../utils/api.js';
-import { formatearKC } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
-import './Vault.scss';
+import TarjetaInventario from './TarjetaInventario.jsx';
+import './Inventario.scss';
 
-const Vault = () => {
+const Inventario = () => {
 	const [objetos, setObjetos] = useState([]);
 	const [cargando, setCargando] = useState(true);
 	const [error, setError] = useState(false);
 
 	const [busqueda, setBusqueda] = useState('');
-	// 'nombre' | 'precio-asc' | 'precio-desc' | ''
 	const [orden, setOrden] = useState('');
 
 	useEffect(() => {
@@ -32,9 +34,9 @@ const Vault = () => {
 		let lista = [...objetos];
 
 		if (busqueda.trim()) {
-			const q = busqueda.toLowerCase();
+			const texto = busqueda.toLowerCase();
 			lista = lista.filter(
-				(o) => o.nombre?.toLowerCase().includes(q) || o.tipo?.toLowerCase().includes(q)
+				(o) => o.nombre?.toLowerCase().includes(texto) || o.tipo?.toLowerCase().includes(texto)
 			);
 		}
 
@@ -45,7 +47,7 @@ const Vault = () => {
 		return lista;
 	}, [objetos, busqueda, orden]);
 
-	// Alterna el botón de precio: vacío → asc → desc → vacío
+	// Ciclo del botón "Precio": sin orden → ascendente → descendente → sin orden
 	const togglePrecio = () => {
 		if (orden === 'precio-asc')  { setOrden('precio-desc'); return; }
 		if (orden === 'precio-desc') { setOrden('');            return; }
@@ -54,22 +56,19 @@ const Vault = () => {
 
 	const hayFiltros = busqueda.trim() !== '' || orden !== '';
 
-	const limpiar = () => {
-		setBusqueda('');
-		setOrden('');
-	};
+	const limpiar = () => { setBusqueda(''); setOrden(''); };
 
 	if (cargando) return <Cargando />;
 
 	return (
-		<div className="vault-contenedor">
-			<div className="vault-cabecera">
+		<div className="inventario-contenedor">
+			<div className="inventario-cabecera">
 				<div>
-					<h1>Mi Vault</h1>
+					<h1>Mi Inventario</h1>
 					<p>Tu colección de skins obtenidos en KLYX.</p>
 				</div>
 				{!error && (
-					<span className="vault-contador">
+					<span className="inventario-contador">
 						{hayFiltros
 							? `${objetosFiltrados.length} / ${objetos.length}`
 							: objetos.length
@@ -80,37 +79,34 @@ const Vault = () => {
 
 			{/* Filtros — solo si hay objetos */}
 			{!error && objetos.length > 0 && (
-				<div className="vault-filtros">
+				<div className="inventario-filtros">
 					<input
 						type="text"
-						className="vault-busqueda"
+						className="inventario-busqueda"
 						placeholder="Buscar por nombre o tipo…"
 						value={busqueda}
 						onChange={(e) => setBusqueda(e.target.value)}
 					/>
 
-					<div className="vault-orden">
-						<span className="vault-orden-label">Ordenar:</span>
+					<div className="inventario-orden">
+						<span className="inventario-orden-label">Ordenar:</span>
 
-						{/* Botón A-Z: toggle on/off */}
 						<button
-							className={`vault-orden-btn${orden === 'nombre' ? ' activo' : ''}`}
+							className={`inventario-orden-btn${orden === 'nombre' ? ' activo' : ''}`}
 							onClick={() => setOrden(orden === 'nombre' ? '' : 'nombre')}
 						>
 							A–Z
 						</button>
 
-						{/* Botón Precio: un solo botón que cicla vacío → ↑ → ↓ → vacío */}
 						<button
-							className={`vault-orden-btn${orden.startsWith('precio') ? ' activo' : ''}`}
+							className={`inventario-orden-btn${orden.startsWith('precio') ? ' activo' : ''}`}
 							onClick={togglePrecio}
 						>
 							Precio{orden === 'precio-asc' ? ' ↑' : orden === 'precio-desc' ? ' ↓' : ''}
 						</button>
 
-						{/* Limpiar — siempre visible cuando hay algo activo */}
 						{hayFiltros && (
-							<button className="vault-orden-btn vault-limpiar" onClick={limpiar}>
+							<button className="inventario-orden-btn inventario-limpiar" onClick={limpiar}>
 								✕ Limpiar
 							</button>
 						)}
@@ -119,31 +115,31 @@ const Vault = () => {
 			)}
 
 			{error && (
-				<div className="vault-estado">
-					<span className="vault-estado-icono">⚠️</span>
+				<div className="inventario-estado">
+					<span className="inventario-estado-icono">⚠️</span>
 					<p>No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.</p>
 				</div>
 			)}
 
 			{!error && objetos.length === 0 && (
-				<div className="vault-estado">
-					<span className="vault-estado-icono">📦</span>
-					<p>Tu vault está vacío. ¡Abre una caja para conseguir tu primer skin!</p>
+				<div className="inventario-estado">
+					<span className="inventario-estado-icono">📦</span>
+					<p>Tu inventario está vacío. ¡Abre una caja para conseguir tu primer skin!</p>
 				</div>
 			)}
 
 			{!error && objetos.length > 0 && objetosFiltrados.length === 0 && (
-				<div className="vault-estado">
-					<span className="vault-estado-icono">🔍</span>
+				<div className="inventario-estado">
+					<span className="inventario-estado-icono">🔍</span>
 					<p>Ningún objeto coincide con tu búsqueda.</p>
 				</div>
 			)}
 
 			{!error && objetosFiltrados.length > 0 && (
-				<div className="vault-grid">
+				<div className="inventario-grid">
 					{/* key incluye el índice como desempate por si hay objetos con id repetido */}
 					{objetosFiltrados.map((objeto, i) => (
-						<TarjetaObjeto key={`${objeto.id}-${i}`} objeto={objeto} />
+						<TarjetaInventario key={`${objeto.id}-${i}`} objeto={objeto} />
 					))}
 				</div>
 			)}
@@ -151,36 +147,4 @@ const Vault = () => {
 	);
 };
 
-const TarjetaObjeto = ({ objeto }) => {
-	const navegar = useNavigate();
-
-	const vender = () => navegar('/crear-intercambio', {
-		state: { objetoId: objeto.id, tipo: 'venta' }
-	});
-
-	return (
-		<div className="tarjeta-objeto-vault">
-			<div className="objeto-imagen-vault">
-				{objeto.imagen
-					? <img src={objeto.imagen} alt={objeto.nombre} />
-					: <span className="objeto-icono">🔪</span>
-				}
-			</div>
-
-			<div className="objeto-info-vault">
-				{objeto.tipo && (
-					<span className="objeto-tipo-badge">{objeto.tipo}</span>
-				)}
-				<h3 className="objeto-nombre-vault">{objeto.nombre}</h3>
-				{objeto.precio > 0 && (
-					<p className="objeto-precio-vault">{formatearKC(objeto.precio)}</p>
-				)}
-				<button className="btn-vender-vault" onClick={vender}>
-					Vender
-				</button>
-			</div>
-		</div>
-	);
-};
-
-export default Vault;
+export default Inventario;

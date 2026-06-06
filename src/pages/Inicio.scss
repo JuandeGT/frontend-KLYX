@@ -9,9 +9,12 @@
 // HERO
 // =====================
 .hero {
-    // Sticky hero: se queda fijo mientras las secciones inferiores
-    // suben sobre él. top: 62px = altura de la Cabecera.
-    // z-index: 0 garantiza que las secciones (z-index: 1) lo cubran.
+    // position: sticky — a mitad de camino entre relative y fixed.
+    // El elemento se comporta como relative normalmente (ocupa su espacio),
+    // pero cuando el scroll llega a top: 60px se "pega" ahí y no sube más.
+    // Así el hero se queda fijo mientras las secciones de abajo suben sobre él.
+    // top: 60px = altura de la Cabecera (para no quedar tapado por ella).
+    // z-index: 0 garantiza que las secciones (z-index: 1) lo cubran cuando suben.
     position: sticky;
     top: 60px;
     z-index: 0;
@@ -82,6 +85,11 @@
 }
 
 .hero-titulo {
+    // clamp(mínimo, preferido, máximo) — tipografía fluida responsive.
+    // El tamaño cambia con el ancho de pantalla (5.5vw = 5.5% del ancho),
+    // pero nunca baja de 2.8rem (móvil) ni sube de 4.4rem (escritorio grande).
+    // Es como decir: "escala con la pantalla, pero con límites".
+    // Sin clamp habría que usar @media queries para cada breakpoint.
     font-size: clamp(2.8rem, 5.5vw, 4.4rem);
     font-weight: 900;
     line-height: 1.02;
@@ -91,6 +99,19 @@
 }
 
 .hero-titulo-dorado {
+    // Técnica de texto con degradado — pasos:
+    //   1. background: pone el gradiente dorado como fondo del elemento
+    //   2. background-clip: text — recorta ese fondo a la forma de las letras
+    //   3. -webkit-text-fill-color: transparent — hace las letras transparentes
+    //      para que se vea el gradiente que hay detrás
+    // Sin el paso 3 las letras tapan el gradiente y no se ve nada.
+    // El prefijo -webkit- es necesario en Chrome/Safari (la versión sin prefijo
+    // también se pone para Firefox y navegadores modernos).
+    //
+    // drop-shadow() vs box-shadow:
+    //   box-shadow añade sombra al rectángulo del elemento (el "cuadrado" exterior).
+    //   drop-shadow() sigue la forma real del contenido — en texto sigue las letras,
+    //   en imágenes PNG sigue el contorno del objeto sin el fondo transparente.
     background: v.$grad-dorado;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -270,6 +291,10 @@
     flex: 1;
     scrollbar-width: none;
     padding: 0.15rem 0;
+    // scrollbar-width: none (Firefox) + ::-webkit-scrollbar { display: none } (Chrome/Safari)
+    // — oculta la barra de scroll horizontal del feed. El contenido sigue siendo
+    // scrollable con el dedo/trackpad, solo desaparece la barra visual.
+    // Hay que poner los dos porque cada navegador usa una propiedad distinta.
     &::-webkit-scrollbar { display: none; }
 }
 
@@ -400,6 +425,12 @@
 // Grid centrado — máximo 3 columnas, centrado horizontalmente
 .destacadas-grid {
     display: grid;
+    // repeat(auto-fit, minmax(280px, 320px)) — grid responsive sin media queries:
+    //   auto-fit: crea tantas columnas como quepan en el ancho disponible
+    //   minmax(280px, 320px): cada columna mide mínimo 280px y máximo 320px
+    // En pantalla grande cabrán 3 columnas (3 × ~300px = ~900px).
+    // En móvil solo cabrá 1 columna porque 280px ya ocupa casi todo el ancho.
+    // justify-content: center centra las columnas en vez de estirarlas al 100%.
     grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
     justify-content: center;
     gap: 1.5rem;
@@ -587,7 +618,6 @@
 }
 
 // Tarjeta de objeto — diseño vertical con imagen a ancho completo
-// SIN colores de borde por rareza — todos los cards son iguales
 .tarjeta-objeto {
     background: v.$negro-card;
     border-radius: 20px;
@@ -603,13 +633,6 @@
         box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
 
-    // Todas las variantes de rareza tienen el mismo estilo — sin borde de color
-    &.rareza-legendario,
-    &.rareza-raro,
-    &.rareza-especial {
-        border-left: 1px solid rgba(255,255,255,0.06);
-        &:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-    }
 }
 
 // Imagen a ancho completo, prominente

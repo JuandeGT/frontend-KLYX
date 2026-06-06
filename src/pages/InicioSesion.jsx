@@ -6,6 +6,8 @@ import './InicioSesion.scss';
 const InicioSesion = () => {
 	const { datosSesion, actualizarDato, iniciarSesion } = useSesion();
 
+	// onSubmit con preventDefault en vez de onClick en el botón:
+	// así el formulario también se envía al pulsar Enter en cualquier campo
 	const enviarFormulario = (e) => {
 		e.preventDefault();
 		iniciarSesion();

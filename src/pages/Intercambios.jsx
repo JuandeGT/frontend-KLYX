@@ -1,19 +1,14 @@
+// Página del mercado de intercambios. Organizada en 3 pestañas:
+//   - Mercado público: ofertas de otros usuarios que el autenticado puede aceptar
+//   - Recibidas: ofertas directas dirigidas específicamente al usuario actual
+//   - Mis ofertas: historial de todo lo que el usuario ha publicado
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useIntercambios from '../hooks/useIntercambios.js';
 import useSesion from '../hooks/useSesion.js';
-import { formatearKC, formatearFecha } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
-import Confirmacion from '../estructura/Confirmacion.jsx';
+import TarjetaOferta from './TarjetaOferta.jsx';
 import './Intercambios.scss';
-
-// Etiquetas de estado en español con color
-const ESTADO_INFO = {
-	pendiente:  { etiqueta: 'Pendiente',  clase: 'estado-pendiente'  },
-	aceptado:   { etiqueta: 'Aceptado',   clase: 'estado-aceptado'   },
-	rechazado:  { etiqueta: 'Rechazado',  clase: 'estado-rechazado'  },
-	cancelado:  { etiqueta: 'Cancelado',  clase: 'estado-cancelado'  },
-};
 
 const Intercambios = () => {
 	const { mercado, misOfertas, cargando, aceptarIntercambio, rechazarIntercambio, cancelarIntercambio } = useIntercambios();
@@ -21,11 +16,13 @@ const Intercambios = () => {
 
 	const [tab, setTab] = useState('mercado');
 
-	// Ofertas directas que he recibido (estoy en receptor_id) y que están pendientes
+	// Filtramos misOfertas para separar recibidas (soy receptor) de enviadas (soy emisor).
+	// La API devuelve ambas mezcladas en /mis-intercambios para evitar dos peticiones.
+	// o.emisor_id !== usuario?.id es imposible que sea false si receptor_id === usuario?.id
+	// (nadie puede ser emisor y receptor a la vez), así que se elimina la condición redundante
 	const ofertasRecibidas = misOfertas.filter(
-		(o) => o.receptor_id === usuario?.id && o.emisor_id !== usuario?.id && o.estado === 'pendiente'
+		(o) => o.receptor_id === usuario?.id && o.estado === 'pendiente'
 	);
-	// Ofertas que yo he enviado (soy emisor)
 	const ofertasEnviadas = misOfertas.filter((o) => o.emisor_id === usuario?.id);
 
 	if (cargando) return <Cargando />;
@@ -69,7 +66,6 @@ const Intercambios = () => {
 				</button>
 			</div>
 
-			{/* Contenido de cada tab */}
 			{tab === 'mercado' && (
 				<div className="intercambios-lista">
 					{mercado.length === 0 ? (
@@ -125,132 +121,9 @@ const Intercambios = () => {
 	);
 };
 
-// ——— Tarjeta de oferta ———
-const TarjetaOferta = ({ oferta, modo, onAceptar, onRechazar, onCancelar }) => {
-	const estado = ESTADO_INFO[oferta.estado] ?? { etiqueta: oferta.estado, clase: '' };
-	// null = cerrado; 'aceptar' | 'rechazar' | 'cancelar' = acción pendiente
-	const [confirmar, setConfirmar] = useState(null);
-
-	const acciones = {
-		aceptar:  { mensaje: 'Vas a aceptar este intercambio.',                    detalle: 'Se transferirán los objetos y/o KC entre ambas partes.',  fn: onAceptar,  peligroso: false },
-		rechazar: { mensaje: 'Vas a rechazar esta oferta.',                         detalle: 'El emisor será notificado del rechazo.',                  fn: onRechazar, peligroso: false },
-		cancelar: { mensaje: 'Vas a cancelar tu oferta. Se retirará del mercado.',  detalle: 'Esta acción no se puede deshacer.',                       fn: onCancelar, peligroso: true  },
-	};
-
-	const ejecutar = () => {
-		const accion = acciones[confirmar];
-		setConfirmar(null);
-		accion?.fn?.();
-	};
-
-	return (
-		<>
-			{confirmar && (
-				<Confirmacion
-					mensaje={acciones[confirmar].mensaje}
-					detalle={acciones[confirmar].detalle}
-					onConfirmar={ejecutar}
-					onCancelar={() => setConfirmar(null)}
-					peligroso={acciones[confirmar].peligroso}
-				/>
-			)}
-		<div className={`tarjeta-oferta ${oferta.estado !== 'pendiente' ? 'oferta-inactiva' : ''}`}>
-			{/* Cabecera: emisor y fecha */}
-			<div className="oferta-meta">
-				<span className="oferta-emisor">
-					{modo === 'enviada' ? 'Tú' : (oferta.emisor?.nombre ?? 'Usuario')}
-				</span>
-				<div className="oferta-meta-derecha">
-					<span className={`oferta-estado ${estado.clase}`}>{estado.etiqueta}</span>
-					<span className="oferta-fecha">{formatearFecha(oferta.created_at)}</span>
-				</div>
-			</div>
-
-			{/* Cuerpo: ofrece ↔ pide */}
-			<div className="oferta-cuerpo">
-				{/* Lo que ofrece */}
-				<div className="oferta-lado">
-					<p className="oferta-lado-etiqueta">Ofrece</p>
-					{oferta.objeto_ofrecido && (
-						<div className="oferta-objeto">
-							<div className="oferta-objeto-img">
-								{oferta.objeto_ofrecido.imagen
-									? <img src={oferta.objeto_ofrecido.imagen} alt={oferta.objeto_ofrecido.nombre} />
-									: <span className="oferta-objeto-icono">🔪</span>
-								}
-							</div>
-							<div className="oferta-objeto-info">
-								<span className="objeto-tipo-mini">{oferta.objeto_ofrecido.tipo}</span>
-								<strong>{oferta.objeto_ofrecido.nombre}</strong>
-								<span className="objeto-val">{formatearKC(oferta.objeto_ofrecido.precio)}</span>
-							</div>
-						</div>
-					)}
-					{oferta.monedas_ofrecidas > 0 && (
-						<p className="oferta-kc">+ {formatearKC(oferta.monedas_ofrecidas)}</p>
-					)}
-					{!oferta.objeto_ofrecido && oferta.monedas_ofrecidas === 0 && (
-						<p className="oferta-vacio">—</p>
-					)}
-				</div>
-
-				<div className="oferta-flecha">⇄</div>
-
-				{/* Lo que pide */}
-				<div className="oferta-lado">
-					<p className="oferta-lado-etiqueta">Pide</p>
-					{oferta.objeto_solicitado && (
-						<div className="oferta-objeto">
-							<div className="oferta-objeto-img">
-								{oferta.objeto_solicitado.imagen
-									? <img src={oferta.objeto_solicitado.imagen} alt={oferta.objeto_solicitado.nombre} />
-									: <span className="oferta-objeto-icono">🔪</span>
-								}
-							</div>
-							<div className="oferta-objeto-info">
-								<span className="objeto-tipo-mini">{oferta.objeto_solicitado.tipo}</span>
-								<strong>{oferta.objeto_solicitado.nombre}</strong>
-								<span className="objeto-val">{formatearKC(oferta.objeto_solicitado.precio)}</span>
-							</div>
-						</div>
-					)}
-					{oferta.monedas_solicitadas > 0 && (
-						<p className="oferta-kc">+ {formatearKC(oferta.monedas_solicitadas)}</p>
-					)}
-					{!oferta.objeto_solicitado && oferta.monedas_solicitadas === 0 && (
-						<p className="oferta-vacio">—</p>
-					)}
-				</div>
-			</div>
-
-			{/* Acciones */}
-			{oferta.estado === 'pendiente' && (
-				<div className="oferta-acciones">
-					{(modo === 'mercado' || modo === 'recibida') && onAceptar && (
-						<button className="btn-aceptar" onClick={() => setConfirmar('aceptar')}>
-							Aceptar intercambio
-						</button>
-					)}
-					{modo === 'recibida' && onRechazar && (
-						<button className="btn-rechazar" onClick={() => setConfirmar('rechazar')}>
-							Rechazar
-						</button>
-					)}
-					{modo === 'enviada' && onCancelar && (
-						<button className="btn-cancelar-oferta" onClick={() => setConfirmar('cancelar')}>
-							Cancelar oferta
-						</button>
-					)}
-				</div>
-			)}
-		</div>
-		</>
-	);
-};
-
+// EstadoVacio se mantiene aquí por ser un helper muy pequeño exclusivo de esta página
 const EstadoVacio = ({ mensaje }) => (
 	<div className="intercambios-vacio">
-		{/* SVG en lugar de emoji para mantener la estética monocromática dorada */}
 		<svg className="intercambios-vacio-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
 			<path d="M7 16V4m0 0L3 8m4-4l4 4" strokeLinecap="round" strokeLinejoin="round"/>
 			<path d="M17 8v12m0 0l4-4m-4 4l-4-4" strokeLinecap="round" strokeLinejoin="round"/>

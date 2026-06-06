@@ -1,3 +1,6 @@
+// Hook de acceso al mercado de intercambios.
+// Expone: mercado, misOfertas, cargando, crearIntercambio, aceptarIntercambio,
+//         rechazarIntercambio, cancelarIntercambio, cargarIntercambios.
 import { useContext } from 'react';
 import { contextoIntercambios } from '../contexts/ProveedorIntercambios.jsx';
 

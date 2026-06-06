@@ -2,6 +2,18 @@
 // KLYX — Sistema de diseño global
 // Paleta: Dark Premium / Dorado
 // =============================================
+//
+// ¿Por qué un archivo de variables separado?
+// Para no repetir los mismos colores y tamaños en cada archivo .scss.
+// Si mañana cambias $dorado aquí, cambia en toda la web a la vez.
+//
+// ¿Cómo se usa en otros archivos?
+//   @use '../styles/variables' as v;  ← importa este archivo con el alias "v"
+//   color: v.$dorado;                 ← accede a la variable con v. delante
+//
+// El alias "as v" es opcional pero evita conflictos de nombres si dos archivos
+// importados tuvieran variables con el mismo nombre.
+// =============================================
 
 // ——— Fondos ———
 $negro:           #080808;

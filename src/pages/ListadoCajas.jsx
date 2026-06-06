@@ -1,15 +1,16 @@
+// Página pública que muestra todas las cajas disponibles en la plataforma.
+// GET /api/cajas no requiere autenticación — cualquier visitante puede ver el catálogo.
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api.js';
-import { formatearKC } from '../utils/formatear.js';
 import Cargando from './Cargando.jsx';
 import ModalCaja from './ModalCaja.jsx';
+import TarjetaCaja from './TarjetaCaja.jsx';
 import './ListadoCajas.scss';
 
 const ListadoCajas = () => {
 	const [cajas, setCajas] = useState([]);
 	const [cargando, setCargando] = useState(true);
 	const [error, setError] = useState(false);
-	// caja seleccionada para el modal — null = cerrado
 	const [cajaSeleccionada, setCajaSeleccionada] = useState(null);
 
 	useEffect(() => {
@@ -23,7 +24,6 @@ const ListadoCajas = () => {
 				setCargando(false);
 			}
 		};
-
 		cargarCajas();
 	}, []);
 
@@ -65,25 +65,5 @@ const ListadoCajas = () => {
 		</div>
 	);
 };
-
-const TarjetaCaja = ({ caja, onVerDetalles }) => (
-	<div className="tarjeta-caja" onClick={onVerDetalles}>
-		{caja.vip && <span className="badge-vip">VIP</span>}
-
-		<div className="tarjeta-caja-imagen">
-			{caja.imagen
-				? <img src={caja.imagen} alt={caja.nombre} />
-				: <span className="icono-caja">⬡</span>
-			}
-		</div>
-
-		<h3 className="tarjeta-caja-nombre">{caja.nombre}</h3>
-		<p className="tarjeta-caja-precio">{formatearKC(caja.precio)}</p>
-
-		<button className="btn-abrir-caja" onClick={(e) => { e.stopPropagation(); onVerDetalles(); }}>
-			Ver detalles
-		</button>
-	</div>
-);
 
 export default ListadoCajas;

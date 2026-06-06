@@ -1,12 +1,12 @@
 @use '../styles/variables' as v;
 
-.vault-contenedor {
+.inventario-contenedor {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 3rem 2rem;
 }
 
-.vault-cabecera {
+.inventario-cabecera {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
@@ -19,13 +19,10 @@
 		margin-bottom: 6px;
 	}
 
-	p {
-		color: v.$texto-muted;
-		font-size: 1rem;
-	}
+	p { color: v.$texto-muted; font-size: 1rem; }
 }
 
-.vault-contador {
+.inventario-contador {
 	background-color: v.$dorado-tenue;
 	color: v.$dorado;
 	border: 1px solid v.$dorado;
@@ -36,7 +33,7 @@
 	white-space: nowrap;
 }
 
-.vault-estado {
+.inventario-estado {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -45,9 +42,7 @@
 	gap: 1rem;
 	text-align: center;
 
-	.vault-estado-icono {
-		font-size: 3rem;
-	}
+	.inventario-estado-icono { font-size: 3rem; }
 
 	p {
 		color: v.$texto-muted;
@@ -57,13 +52,14 @@
 	}
 }
 
-.vault-grid {
+.inventario-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	gap: 1.5rem;
 }
 
-.tarjeta-objeto-vault {
+// ── Tarjeta de objeto ─────────────────────────────────────────────────────────
+.tarjeta-objeto-inventario {
 	background-color: v.$negro-card;
 	border: 1px solid v.$borde;
 	border-radius: v.$radio-lg;
@@ -74,12 +70,11 @@
 
 	&:hover {
 		border-color: v.$dorado;
-		box-shadow: 0 0 20px v.$dorado-glow, 0 4px 16px rgba(0,0,0,0.4);
 		transform: translateY(-4px);
 	}
 }
 
-.objeto-imagen-vault {
+.objeto-imagen-inventario {
 	width: 100%;
 	height: 150px;
 	background-color: v.$negro-hover;
@@ -91,24 +86,19 @@
 	img {
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
-	}
-
-	.objeto-icono {
-		font-size: 3rem;
-		opacity: 0.6;
+		object-fit: contain;
+		padding: 10px;
 	}
 }
 
-.objeto-info-vault {
+.objeto-info-inventario {
 	padding: 1rem;
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
 	flex: 1;
 
-	// Empuja el botón Vender al fondo de la tarjeta siempre
-	.btn-vender-vault { margin-top: auto; }
+	.btn-vender-inventario { margin-top: auto; }
 }
 
 .objeto-tipo-badge {
@@ -119,22 +109,21 @@
 	color: v.$texto-muted;
 }
 
-.objeto-nombre-vault {
+.objeto-nombre-inventario {
 	font-size: 0.95rem;
 	font-weight: 700;
 	color: v.$texto;
 	margin: 0;
 }
 
-.objeto-precio-vault {
+.objeto-precio-inventario {
 	font-size: 0.9rem;
 	color: v.$dorado;
 	font-weight: 600;
 	margin: 0;
 }
 
-.btn-vender-vault {
-	margin-top: 4px;
+.btn-vender-inventario {
 	background: transparent;
 	border: 1px solid rgba(201, 162, 39, 0.3);
 	color: v.$dorado;
@@ -142,7 +131,6 @@
 	border-radius: 100px;
 	font-size: 0.76rem;
 	font-weight: 700;
-	letter-spacing: 0.3px;
 	cursor: pointer;
 	width: 100%;
 	transition: v.$transicion;
@@ -151,12 +139,11 @@
 		background: v.$grad-dorado;
 		color: v.$negro;
 		border-color: transparent;
-		box-shadow: 0 3px 14px rgba(201, 162, 39, 0.35);
 	}
 }
 
-// ─── Barra de filtros ─────────────────────────────────────────────────────────
-.vault-filtros {
+// ── Barra de filtros ──────────────────────────────────────────────────────────
+.inventario-filtros {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
@@ -164,7 +151,7 @@
 	flex-wrap: wrap;
 }
 
-.vault-busqueda {
+.inventario-busqueda {
 	flex: 1;
 	min-width: 200px;
 	background: v.$negro-card;
@@ -178,27 +165,24 @@
 
 	&::placeholder { color: v.$texto-muted; }
 
-	&:focus {
-		border-color: rgba(201, 162, 39, 0.4);
-		box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.07);
-	}
+	&:focus { border-color: rgba(201, 162, 39, 0.4); }
 }
 
-.vault-orden {
+.inventario-orden {
 	display: flex;
 	align-items: center;
 	gap: 6px;
 	flex-wrap: wrap;
 }
 
-.vault-orden-label {
+.inventario-orden-label {
 	font-size: 0.78rem;
 	color: v.$texto-muted;
 	font-weight: 500;
 	white-space: nowrap;
 }
 
-.vault-orden-btn {
+.inventario-orden-btn {
 	background: transparent;
 	border: 1px solid v.$borde-hover;
 	color: v.$texto-muted;
@@ -219,13 +203,12 @@
 	}
 }
 
-.vault-limpiar {
+.inventario-limpiar {
 	border-color: rgba(192, 57, 43, 0.3);
 	color: #e06060;
 
 	&:hover {
 		background: rgba(192, 57, 43, 0.08);
 		border-color: rgba(192, 57, 43, 0.5);
-		color: #e06060;
 	}
 }

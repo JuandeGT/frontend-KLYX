@@ -1,18 +1,24 @@
+// Renderiza los toasts de notificación en la esquina superior derecha.
+// Se alimenta del contexto ProveerNotificaciones — no hay estado local.
+// El icono cambia según el tipo: ✓ (éxito) o ! (error).
 import React from 'react';
 import useNotificacion from '../hooks/useNotificacion.js';
 import './Notificaciones.scss';
 
 const Notificaciones = () => {
-	const { lista } = useNotificacion();
+	const { notificaciones } = useNotificacion();
+
+	if (notificaciones.length === 0) return null;
 
 	return (
 		<div className="notificaciones-contenedor">
-			{lista.map((item) => (
+			{notificaciones.map((item) => (
 				<div
 					key={item.id}
 					className={`alerta alerta-${item.tipo}`}
 				>
 					<div className="alerta-icono">
+						{/* SVGs inline para evitar dependencia de librerías de iconos */}
 						{item.tipo === 'error' ? (
 							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
 								<circle cx="12" cy="12" r="10"></circle>

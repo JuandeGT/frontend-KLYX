@@ -20,9 +20,16 @@
     width: 100%;
     max-width: 420px;
     text-align: center;
+    // box-shadow con dos capas separadas por coma:
+    //   1ª: un anillo muy sutil de 1px (0 0 0 1px) — como un segundo borde dorado casi invisible
+    //   2ª: la sombra grande oscura que da profundidad al modal
     box-shadow:
         0 0 0 1px rgba(201, 162, 39, 0.08),
         0 24px 60px rgba(0, 0, 0, 0.7);
+    // cubic-bezier: curva de aceleración personalizada para la animación.
+    // Los 4 números controlan la forma de la curva (como doblar un muelle).
+    // (0.34, 1.56, 0.64, 1) produce un efecto "rebote" — el modal se hace un poco
+    // más grande de lo normal y luego vuelve a su tamaño final, como si botara.
     animation: confZoom 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 

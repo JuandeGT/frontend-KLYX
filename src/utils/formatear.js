@@ -1,4 +1,4 @@
-// Formatea un número como moneda EUR (ej: 1.250,00 €)
+// Formatea EUR
 const formatearPrecio = (cantidad) => {
 	return Number(cantidad).toLocaleString('es-ES', {
 		style: 'currency',
@@ -7,7 +7,7 @@ const formatearPrecio = (cantidad) => {
 	});
 };
 
-// Formatea un número con decimales opcionales (ej: 1.250,5)
+// Formatea decimal
 const formatearDecimal = (cantidad) => {
 	return Number(cantidad).toLocaleString('es-ES', {
 		minimumFractionDigits: 0,
@@ -16,7 +16,7 @@ const formatearDecimal = (cantidad) => {
 	});
 };
 
-// Formatea una fecha ISO a formato legible en español (ej: 4 de mayo de 2026)
+// Formatea fecha formato español
 const formatearFecha = (fecha) => {
 	if (!fecha) return 'Fecha desconocida';
 	const nuevaFecha = new Date(fecha);
@@ -27,7 +27,7 @@ const formatearFecha = (fecha) => {
 	});
 };
 
-// Formatea un número como Klyx Coins (ej: 1.250 KC)
+// Formatea precio de la web KlyxCoins
 const formatearKC = (cantidad) => {
 	return `${Number(cantidad).toLocaleString('es-ES')} KC`;
 };

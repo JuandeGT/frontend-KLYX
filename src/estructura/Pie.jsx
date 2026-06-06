@@ -16,7 +16,7 @@ const Pie = () => {
 						<h4>Plataforma</h4>
 						<Link to="/cajas">Cajas</Link>
 						<Link to="/intercambios">Mercado</Link>
-						<Link to="/vault">Mi Vault</Link>
+						<Link to="/inventario">Mi Inventario</Link>
 					</div>
 					<div className="pie-grupo">
 						<h4>Cuenta</h4>

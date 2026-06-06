@@ -29,6 +29,9 @@
     box-shadow:
         0 0 0 1px rgba(201, 162, 39, 0.12),
         0 40px 80px rgba(0, 0, 0, 0.75);
+    // cubic-bezier: curva de animación personalizada (los 4 números definen la forma).
+    // (0.34, 1.3, 0.64, 1) → el modal llega ligeramente más grande y luego se asienta.
+    // "both" = aplica el estado inicial (from) antes de empezar y mantiene el final (to).
     animation: modalEntrar 0.32s cubic-bezier(0.34, 1.3, 0.64, 1) both;
 
     &.modal-caja-premio {
@@ -97,7 +100,9 @@
     justify-content: center;
     flex-shrink: 0;
 
-    // Halo pulsante detrás de la imagen
+    // Halo pulsante detrás de la imagen.
+    // inset: -20px es shorthand de top:-20px; right:-20px; bottom:-20px; left:-20px
+    // — lo hace 20px más grande que el contenedor por todos lados.
     &::before {
         content: '';
         position: absolute;
@@ -258,7 +263,13 @@
         &:hover { background: rgba(201, 162, 39, 0.45); }
     }
 
-    // Fade inferior — indica que hay más objetos al hacer scroll
+    // mask-image — recorta el elemento con una máscara de forma arbitraria.
+    // Funciona como una plantilla: donde la máscara es negra el elemento es visible,
+    // donde es transparente el elemento desaparece.
+    // linear-gradient(to bottom, black 82%, transparent 100%) crea un degradado
+    // de negro (visible) a transparente — el efecto es que el contenido se desvanece
+    // gradualmente al llegar al borde inferior, indicando que hay más al hacer scroll.
+    // El prefijo -webkit- es necesario para Chrome/Safari.
     mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
 }
@@ -320,7 +331,12 @@
     font-weight: 500;
     color: v.$texto-suave;
     line-height: 1.3;
-    // Máximo 2 líneas, luego puntos suspensivos
+    // Truncar texto a N líneas con puntos suspensivos — técnica de 3 propiedades:
+    //   display: -webkit-box + -webkit-box-orient: vertical → activa el modo de caja multi-línea
+    //   -webkit-line-clamp: 2 → limita a 2 líneas y añade "..." al final
+    //   overflow: hidden → oculta lo que sobra
+    // Es la única forma estándar de truncar texto a más de 1 línea en CSS.
+    // Los prefijos -webkit- son necesarios aunque hoy ya tiene soporte amplio.
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -419,13 +435,24 @@
     position: absolute;
     inset: -30px;
     border-radius: 50%;
+    // repeating-conic-gradient — degradado cónico que se repite como un abanico.
+    // "cónico" significa que los colores van en ángulo alrededor de un punto central
+    // (como los rayos de sol o las secciones de una tarta).
+    // "repeating" repite el patrón definido (10 grados dorado, 10 grados claro)
+    // dando la vuelta completa a los 360 grados. Resultado: 18 pares de rayos.
     background: repeating-conic-gradient(
         rgba(201, 162, 39, 0.35) 0deg 10deg,
         rgba(240, 208,  96, 0.12) 10deg 20deg
     );
     animation: girarRayos 8s linear infinite;
+    // pointer-events: none — desactiva todos los eventos de ratón en este elemento.
+    // Es decorativo: no debe capturar clics ni hover que pertenecen a lo que hay debajo.
     pointer-events: none;
-    mix-blend-mode: screen; // hace que los rayos se mezclen con el fondo de forma más luminosa
+    // mix-blend-mode: screen — modo de fusión que aclara los colores superpuestos.
+    // En vez de taparlo, los rayos se "suman" al brillo del fondo.
+    // Es como proyectar luz sobre una pared: donde se solapan se hace más brillante.
+    // Otros modos comunes: multiply (oscurece), overlay (contraste), darken, lighten.
+    mix-blend-mode: screen;
 }
 
 @keyframes girarRayos {
@@ -515,7 +542,7 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
-// 5. Dos botones: vault + abrir otra
+// 5. Dos botones: inventario + abrir otra
 .premio-botones {
     display: flex;
     gap: 0.65rem;
@@ -524,8 +551,8 @@
     animation: fadeSlideUp 0.4s ease 0.9s both;
 }
 
-// Botón principal — ir al vault
-.btn-premio-vault {
+// Botón principal — ir al inventario
+.btn-premio-inventario {
     flex: 1;
     background: v.$grad-dorado;
     color: v.$negro;

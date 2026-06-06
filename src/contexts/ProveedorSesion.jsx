@@ -29,15 +29,14 @@ const ProveedorSesion = ({ children }) => {
 			setDatosSesion(sesionInicial);
 			navegar('/inicio-sesion');
 		} catch (error) {
-			const msg = error.response?.data?.message || 'Error al crear la cuenta.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'Error al crear la cuenta.', 'error');
 		}
 	};
 
 	// ——— INICIAR SESIÓN ———
 	// 1. POST /api/login → recibe { data: { token, usuario, rol } }
 	// 2. Guarda el token en localStorage (el interceptor de api.js lo inyectará en adelante)
-	// 3. Llama a obtenerPerfil() para hidratar el estado con los datos completos (saldo, etc.)
+	// 3. Llama a obtenerPerfil()
 	const iniciarSesion = async () => {
 		try {
 			const respuesta = await api.post('/login', {
@@ -45,12 +44,14 @@ const ProveedorSesion = ({ children }) => {
 				password: datosSesion.password,
 			});
 
-			const { token, usuario: usuarioRaw, rol } = respuesta.data.data;
+			// respuesta.data.data: Axios guarda el cuerpo HTTP en .data,
+			// y Laravel lo envuelve además en { data: ... } → hay que hacer .data.data
+			const { token, usuario: datosUsuario, rol } = respuesta.data.data;
 
 			localStorage.setItem('klyx_token', token);
 
 			const esAdmin = Array.isArray(rol) ? rol.includes('Admin') : rol === 'Admin';
-			setUsuario({ ...usuarioRaw, rol });
+			setUsuario({ ...datosUsuario, rol });
 			setSesionIniciada(true);
 			setAdministrador(esAdmin);
 
@@ -58,9 +59,18 @@ const ProveedorSesion = ({ children }) => {
 			setDatosSesion(sesionInicial);
 			navegar('/');
 		} catch (error) {
-			const msg = error.response?.data?.message || 'Credenciales incorrectas.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'Credenciales incorrectas.', 'error');
 		}
+	};
+
+	// Limpieza local de sesión — compartida por cerrarSesion y borrarCuenta
+	const limpiarSesion = (mensaje) => {
+		localStorage.removeItem('klyx_token');
+		setUsuario(null);
+		setSesionIniciada(false);
+		setAdministrador(false);
+		navegar('/');
+		notificar(mensaje);
 	};
 
 	// ——— CERRAR SESIÓN ———
@@ -72,12 +82,7 @@ const ProveedorSesion = ({ children }) => {
 		} catch {
 			// El token puede haber expirado; limpiamos igualmente
 		} finally {
-			localStorage.removeItem('klyx_token');
-			setUsuario(null);
-			setSesionIniciada(false);
-			setAdministrador(false);
-			navegar('/');
-			notificar('Sesión cerrada correctamente.');
+			limpiarSesion('Sesión cerrada correctamente.');
 		}
 	};
 
@@ -89,12 +94,7 @@ const ProveedorSesion = ({ children }) => {
 		} catch {
 			// Si el servidor falla igualmente limpiamos la sesión local
 		} finally {
-			localStorage.removeItem('klyx_token');
-			setUsuario(null);
-			setSesionIniciada(false);
-			setAdministrador(false);
-			navegar('/');
-			notificar('Cuenta eliminada correctamente.');
+			limpiarSesion('Cuenta eliminada correctamente.');
 		}
 	};
 
@@ -104,6 +104,7 @@ const ProveedorSesion = ({ children }) => {
 	const obtenerPerfil = async () => {
 		try {
 			const respuesta = await api.get('/perfil');
+			// respuesta.data.data: mismo motivo que en iniciarSesion (Axios + Laravel doble envoltorio)
 			const usuarioCompleto = respuesta.data.data;
 			const esAdmin = Array.isArray(usuarioCompleto.rol)
 				? usuarioCompleto.rol.includes('Admin')
@@ -151,11 +152,7 @@ const ProveedorSesion = ({ children }) => {
 		obtenerPerfil,
 	};
 
-	return (
-		<contextoSesion.Provider value={datosProveer}>
-			{children}
-		</contextoSesion.Provider>
-	);
+	return <contextoSesion.Provider value={datosProveer}>{children}</contextoSesion.Provider>;
 };
 
 export default ProveedorSesion;

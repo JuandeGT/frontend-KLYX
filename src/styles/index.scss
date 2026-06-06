@@ -14,6 +14,10 @@
 
 html {
     scroll-behavior: smooth;
+    // -webkit-font-smoothing: hace que las fuentes se vean más finas y nítidas en Mac/iOS.
+    // Sin esto las letras se ven ligeramente más gruesas en pantallas de alta densidad.
+    // El prefijo -webkit- indica que es una propiedad específica de navegadores WebKit (Chrome, Safari).
+    // -moz-osx-font-smoothing: lo mismo pero para Firefox en macOS.
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -35,7 +39,8 @@ html {
     }
 }
 
-// Selección de texto
+// ::selection — estilo del texto cuando el usuario lo selecciona con el ratón.
+// Sin esto se ve el azul/morado por defecto del navegador, que choca con el tema oscuro.
 ::selection {
     background-color: v.$dorado-medio;
     color: v.$dorado-claro;
@@ -73,14 +78,18 @@ img {
     display: block;
 }
 
-// Focus visible accesible
+// :focus-visible — muestra el borde de foco SOLO cuando el usuario navega con el teclado.
+// Es accesibilidad: el borde azul/dorado ayuda a saber qué elemento está seleccionado
+// al pulsar Tab. Sin esto los usuarios de teclado no sabrían dónde están.
 :focus-visible {
     outline: 2px solid v.$dorado;
     outline-offset: 3px;
     border-radius: v.$radio;
 }
 
-// Remove focus outline for mouse users
+// :focus:not(:focus-visible) — quita el borde de foco cuando se hace clic con el ratón.
+// Los usuarios de ratón no necesitan ver ese borde (ya saben dónde han hecho clic)
+// y quitarlo hace la web más limpia visualmente para la mayoría de usuarios.
 :focus:not(:focus-visible) {
     outline: none;
 }

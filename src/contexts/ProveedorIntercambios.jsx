@@ -1,3 +1,26 @@
+// ¿Por qué aquí SÍ hay un Proveedor y en los hooks de admin no?
+// ─────────────────────────────────────────────────────────────────
+// En la referencia el patrón era: Proveedor (guarda el estado) + hook (lo expone).
+// Ese patrón tiene sentido cuando el MISMO estado lo necesitan VARIOS componentes
+// que no son padre e hijo directo.
+//
+// Los intercambios los usan:
+//   - Intercambios.jsx     → muestra el mercado y mis ofertas
+//   - CrearIntercambio.jsx → publica una nueva oferta y recarga el mercado
+//   - TarjetaOferta.jsx    → acepta, rechaza o cancela una oferta y recarga
+//
+// Sin el Proveedor, cada uno haría su propia petición al servidor y el estado
+// estaría desincronizado (uno puede mostrar datos viejos mientras otro ya recargó).
+// El Proveedor guarda UN SOLO estado compartido y cualquiera puede llamar a
+// cargarIntercambios() para que todos vean los datos frescos a la vez.
+//
+// Los hooks de admin (useAdminCajas etc.) no necesitan esto porque cada sección
+// del panel admin la usa UN único componente — no hay nada que compartir.
+//
+// ⚠️ useCallback: memorizamos la función cargarIntercambios para que su referencia
+// no cambie en cada render. Sin esto, incluirla en el array de dependencias de
+// useEffect provocaría un bucle infinito (el efecto llama a la función, la función
+// se recrea, el efecto vuelve a ejecutarse...). No aparece en la referencia base.
 import React, { createContext, useEffect, useState, useCallback } from 'react';
 import api from '../utils/api.js';
 import useSesion from '../hooks/useSesion.js';
@@ -13,17 +36,20 @@ const ProveedorIntercambios = ({ children }) => {
 	const [misOfertas, setMisOfertas] = useState([]);
 	const [cargando, setCargando] = useState(false);
 
-	// Carga el mercado público y mis ofertas enviadas
+	// Carga el mercado público y mis ofertas enviadas.
+	// Promise.all lanza ambas peticiones al mismo tiempo en vez de una tras otra,
+	// reduciendo el tiempo de carga a la duración de la más lenta (no la suma de las dos).
+	// No aparece en la referencia base pero es JS estándar.
 	const cargarIntercambios = useCallback(async () => {
 		if (!sesionIniciada) return;
 		setCargando(true);
 		try {
-			const [resMercado, resMias] = await Promise.all([
+			const [respuestaMercado, respuestaMias] = await Promise.all([
 				api.get('/intercambios'),
 				api.get('/mis-intercambios'),
 			]);
-			setMercado(resMercado.data.data);
-			setMisOfertas(resMias.data.data);
+			setMercado(respuestaMercado.data.data);
+			setMisOfertas(respuestaMias.data.data);
 		} catch {
 			notificar('No se pudo cargar el mercado de intercambios.', 'error');
 		} finally {
@@ -39,8 +65,7 @@ const ProveedorIntercambios = ({ children }) => {
 			await cargarIntercambios();
 			return true;
 		} catch (error) {
-			const msg = error.response?.data?.message || 'Error al crear la oferta.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'Error al crear la oferta.', 'error');
 			return false;
 		}
 	};
@@ -52,8 +77,7 @@ const ProveedorIntercambios = ({ children }) => {
 			notificar('¡Intercambio completado con éxito!');
 			await cargarIntercambios();
 		} catch (error) {
-			const msg = error.response?.data?.message || 'No se pudo completar el intercambio.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'No se pudo completar el intercambio.', 'error');
 		}
 	};
 
@@ -64,8 +88,7 @@ const ProveedorIntercambios = ({ children }) => {
 			notificar('Oferta rechazada.');
 			await cargarIntercambios();
 		} catch (error) {
-			const msg = error.response?.data?.message || 'No se pudo rechazar la oferta.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'No se pudo rechazar la oferta.', 'error');
 		}
 	};
 
@@ -76,8 +99,7 @@ const ProveedorIntercambios = ({ children }) => {
 			notificar('Oferta cancelada.');
 			await cargarIntercambios();
 		} catch (error) {
-			const msg = error.response?.data?.message || 'No se pudo cancelar la oferta.';
-			notificar(msg, 'error');
+			notificar(error.response?.data?.message || 'No se pudo cancelar la oferta.', 'error');
 		}
 	};
 

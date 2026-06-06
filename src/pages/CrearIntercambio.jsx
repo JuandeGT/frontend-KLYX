@@ -1,9 +1,23 @@
 import React, { useEffect, useState } from 'react';
-// useLocation: hook de react-router para leer el state de navegación.
-// Se usa para pre-rellenar el formulario cuando se llega desde el Vault con un objeto ya seleccionado.
+// ⚠️ useLocation — NO está en la referencia del profesor.
+//
+// ¿Qué es location.state?
+// Cuando navegas de una página a otra con React Router, puedes llevar una "nota" escondida.
+// Es como pasarle un papelito al siguiente componente al cambiar de clase:
+// "oye, el usuario quería vender el objeto con id 42".
+//
+// En TarjetaInventario hay un botón "Vender" que hace:
+//   navegar('/crear-intercambio', { state: { objetoId: 42, tipo: 'venta' } })
+//
+// Y aquí, en CrearIntercambio, lo recogemos con:
+//   const estadoNavegacion = location.state ?? {};
+//
+// Así el formulario aparece ya con ese objeto preseleccionado, sin que el usuario
+// tenga que buscarlo otra vez.
+// Si el usuario entra directamente a /crear-intercambio (sin venir del Inventario),
+// location.state es null y el ?? {} lo convierte en un objeto vacío para no romper nada.
 import { useNavigate, useLocation } from 'react-router-dom';
 import useIntercambios from '../hooks/useIntercambios.js';
-import useSesion from '../hooks/useSesion.js';
 import useNotificacion from '../hooks/useNotificacion.js';
 import { formatearKC } from '../utils/formatear.js';
 import api from '../utils/api.js';
@@ -12,7 +26,6 @@ import './CrearIntercambio.scss';
 
 const CrearIntercambio = () => {
 	const { crearIntercambio } = useIntercambios();
-	const { usuario } = useSesion();
 	const { notificar } = useNotificacion();
 	const navegar = useNavigate();
 	const location = useLocation();
@@ -23,43 +36,34 @@ const CrearIntercambio = () => {
 	const [objetosMercado, setObjetosMercado] = useState([]);
 	const [cargandoMercado, setCargandoMercado] = useState(true);
 
-	// Formulario — puede llegar pre-rellenado desde el Vault via location.state
+	// Formulario — puede llegar pre-rellenado desde el Inventario via location.state
 	const estadoNavegacion = location.state ?? {};
 	const [objetoOfrecidoId, setObjetoOfrecidoId] = useState(String(estadoNavegacion.objetoId ?? ''));
 	const [monedasOfrecidas, setMonedasOfrecidas] = useState(0);
 	const [objetoSolicitadoId, setObjetoSolicitadoId] = useState('');
 	const [monedasSolicitadas, setMonedasSolicitadas] = useState(0);
 
-	// Tipo de oferta — si viene del Vault siempre empieza en 'venta'
+	// El tipo puede venir pre-seleccionado desde el Inventario ('venta').
+	// Si no, por defecto es 'venta' que es el caso más habitual.
 	const [tipo, setTipo] = useState(estadoNavegacion.tipo ?? 'venta');
 	const [enviando, setEnviando] = useState(false);
 	const [confirmar, setConfirmar] = useState(false);
-	const [datosPendientes, setDatosPendientes] = useState(null);
 
-	// Cargar inventario propio y catálogo global en paralelo
+	// Carga inventario propio y catálogo global en paralelo con Promise.all
 	useEffect(() => {
-		const cargarInventario = async () => {
-			try {
-				const res = await api.get('/mi-inventario');
-				setInventario(res.data.data ?? []);
-			} catch {
-				notificar('No se pudo cargar tu inventario.', 'error');
-			} finally {
-				setCargandoInv(false);
-			}
+		const cargarDatos = async () => {
+			await Promise.all([
+				api.get('/mi-inventario')
+					.then((respuesta) => setInventario(respuesta.data.data ?? []))
+					.catch(() => notificar('No se pudo cargar tu inventario.', 'error'))
+					.finally(() => setCargandoInv(false)),
+				api.get('/objetos')
+					.then((respuesta) => setObjetosMercado(respuesta.data.data ?? []))
+					.catch(() => {})  // silencioso: el select quedará vacío
+					.finally(() => setCargandoMercado(false)),
+			]);
 		};
-		const cargarMercado = async () => {
-			try {
-				const res = await api.get('/objetos');
-				setObjetosMercado(res.data.data ?? []);
-			} catch {
-				// Silencioso: si falla el catálogo el select quedará vacío
-			} finally {
-				setCargandoMercado(false);
-			}
-		};
-		cargarInventario();
-		cargarMercado();
+		cargarDatos();
 	}, []);
 
 	const resetForm = () => {
@@ -74,7 +78,7 @@ const CrearIntercambio = () => {
 		resetForm();
 	};
 
-	const handleSubmit = (e) => {
+	const enviarFormulario = (e) => {
 		e.preventDefault();
 
 		// Validaciones básicas en cliente
@@ -103,23 +107,23 @@ const CrearIntercambio = () => {
 			return;
 		}
 
-		// Validaciones superadas → guardamos los datos y pedimos confirmación
-		setDatosPendientes({
-			objeto_ofrecido_id:   objetoOfrecidoId   || null,
-			monedas_ofrecidas:    Number(monedasOfrecidas),
-			objeto_solicitado_id: objetoSolicitadoId || null,
-			monedas_solicitadas:  Number(monedasSolicitadas),
-		});
+		// Validaciones superadas → abrimos confirmación
 		setConfirmar(true);
 	};
 
 	const publicarOferta = async () => {
 		setConfirmar(false);
-		if (!datosPendientes) return;
 		setEnviando(true);
-		const ok = await crearIntercambio(datosPendientes);
+		// El formulario no puede cambiar mientras el modal de confirmación está visible,
+		// así que leemos el estado directamente en vez de guardarlo en un estado extra
+		const creado = await crearIntercambio({
+			objeto_ofrecido_id:   objetoOfrecidoId   || null,
+			monedas_ofrecidas:    Number(monedasOfrecidas),
+			objeto_solicitado_id: objetoSolicitadoId || null,
+			monedas_solicitadas:  Number(monedasSolicitadas),
+		});
 		setEnviando(false);
-		if (ok) navegar('/intercambios');
+		if (creado) navegar('/intercambios');
 	};
 
 	const etiquetaTipo = { venta: 'Venta (objeto → KC)', trueque: 'Trueque (objeto → objeto)', compra: 'Compra (KC → objeto)' };
@@ -170,7 +174,7 @@ const CrearIntercambio = () => {
 					</button>
 				</div>
 
-				<form className="crear-form" onSubmit={handleSubmit}>
+				<form className="crear-form" onSubmit={enviarFormulario}>
 					{/* ——— VENTA ——— */}
 					{tipo === 'venta' && (
 						<>
@@ -290,7 +294,7 @@ const SeccionForm = ({ titulo, children }) => (
 const SelectObjeto = ({ inventario, cargando, valor, onChange }) => {
 	if (cargando) return <p className="cargando-texto">Cargando inventario...</p>;
 	if (inventario.length === 0) return (
-		<p className="crear-aviso">Tu vault está vacío. Abre cajas para conseguir objetos.</p>
+		<p className="crear-aviso">Tu inventario está vacío. Abre cajas para conseguir objetos.</p>
 	);
 
 	return (
@@ -347,17 +351,6 @@ const InputKC = ({ valor, onChange, max }) => (
 		/>
 		<span className="input-kc-sufijo">KC</span>
 	</div>
-);
-
-const InputTexto = ({ placeholder, valor, onChange, tipo = 'text' }) => (
-	<input
-		type={tipo}
-		className="crear-input"
-		value={valor}
-		onChange={(e) => onChange(e.target.value)}
-		placeholder={placeholder}
-		min={tipo === 'number' ? 1 : undefined}
-	/>
 );
 
 export default CrearIntercambio;

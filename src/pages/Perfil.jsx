@@ -210,6 +210,8 @@ const Perfil = () => {
 
 // =============================================================================
 // TARJETA WALLET — acceso rápido a la tienda desde el perfil
+// Muestra el saldo actual y el estado VIP. Al hacer clic lleva a /tienda.
+// La recarga real y la compra VIP están en Tienda.jsx para mantener el perfil limpio.
 // =============================================================================
 const TarjetaWallet = ({ usuario }) => (
 	<Link to="/tienda" className="wallet-card">
